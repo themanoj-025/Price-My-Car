@@ -1,0 +1,24 @@
+# =============================================================================
+# Car Price Prediction - Dependencies
+# =============================================================================
+# Install with: pip install -r requirements.txt
+
+# Core data science
+pandas==2.3.3
+numpy==2.3.5
+scikit-learn==1.7.2
+xgboost==3.2.0
+joblib==1.5.3
+
+# Visualization
+matplotlib==3.10.8
+seaborn==0.13.2
+plotly==6.7.0
+
+# Dashboard
+streamlit==1.57.0
+
+# Notebook utilities
+nbformat==5.10.4
+jupyter
+nbconvert

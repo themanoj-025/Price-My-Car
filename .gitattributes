@@ -1,0 +1,30 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Python source
+*.py text diff=python
+
+# Jupyter notebooks
+*.ipynb text diff=jupyter
+
+# CSV data
+*.csv text
+
+# HTML
+*.html text diff=html
+
+# Markdown
+*.md text
+
+# YAML/TOML/JSON configs
+*.yml text
+*.yaml text
+*.toml text
+*.json text
+
+# Binary files - don't modify
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.npy binary
+*.pkl binary
