@@ -11,8 +11,9 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import joblib
-import os, json, warnings, time
+import os, json, warnings, time, uuid, hashlib
 from datetime import datetime
+from pathlib import Path
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
@@ -31,6 +32,124 @@ warnings.filterwarnings('ignore')
 CURRENT_YEAR = 2025
 
 # =========================================================================
+# Auth Database (Section 0 — PROMPT.txt)
+# =========================================================================
+USERS_DB_PATH = Path("users_db.json")
+
+def load_users_db() -> dict:
+    if not USERS_DB_PATH.exists():
+        db = {"users": {}, "meta": {"total_users": 0, "total_predictions": 0,
+                                     "app_version": "6.0",
+                                     "last_updated": datetime.now().isoformat()}}
+        save_users_db(db)
+        return db
+    with open(USERS_DB_PATH, "r") as f:
+        return json.load(f)
+
+def save_users_db(db: dict):
+    db["meta"]["last_updated"] = datetime.now().isoformat()
+    with open(USERS_DB_PATH, "w") as f:
+        json.dump(db, f, indent=2)
+
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password: str, hashed: str) -> bool:
+    return hash_password(password) == hashed
+
+def username_exists(db: dict, username: str) -> bool:
+    return any(u["username"].lower() == username.lower()
+               for u in db["users"].values())
+
+def email_exists(db: dict, email: str) -> bool:
+    return any(u["email"].lower() == email.lower()
+               for u in db["users"].values())
+
+def get_user_by_username(db: dict, username: str) -> dict | None:
+    for u in db["users"].values():
+        if u["username"].lower() == username.lower():
+            return u
+    return None
+
+AVATAR_COLORS = ["#e85d04","#4895ef","#52b788","#9b5de5","#f48c06","#ff6b6b"]
+
+def create_user(db: dict, username: str, email: str, password: str, full_name: str) -> dict:
+    uid = str(uuid.uuid4())
+    user = {
+        "user_id": uid, "username": username, "email": email,
+        "password_hash": hash_password(password), "full_name": full_name,
+        "role": "admin" if len(db["users"]) == 0 else "user",
+        "avatar_color": AVATAR_COLORS[len(db["users"]) % len(AVATAR_COLORS)],
+        "created_at": datetime.now().isoformat(),
+        "last_login": datetime.now().isoformat(),
+        "login_count": 1,
+        "preferences": {"default_model": "xgboost", "confidence_interval": "±15%",
+                        "expert_mode": False, "theme_accent": "#e85d04"},
+        "prediction_history": [], "saved_comparisons": [], "page_visits": {}
+    }
+    db["users"][uid] = user
+    db["meta"]["total_users"] = len(db["users"])
+    save_users_db(db)
+    return user
+
+def login_user(db: dict, username: str, password: str) -> tuple:
+    user = get_user_by_username(db, username)
+    if not user:
+        return False, "Username not found.", {}
+    if not verify_password(password, user["password_hash"]):
+        return False, "Incorrect password.", {}
+    user["last_login"] = datetime.now().isoformat()
+    user["login_count"] = user.get("login_count", 0) + 1
+    db["users"][user["user_id"]] = user
+    save_users_db(db)
+    return True, "Login successful!", user
+
+def save_prediction_to_history(user_id: str, prediction: dict):
+    db = load_users_db()
+    if user_id in db["users"]:
+        db["users"][user_id]["prediction_history"].append(prediction)
+        db["meta"]["total_predictions"] += 1
+        save_users_db(db)
+
+def update_user_preferences(user_id: str, prefs: dict):
+    db = load_users_db()
+    if user_id in db["users"]:
+        db["users"][user_id]["preferences"].update(prefs)
+        save_users_db(db)
+
+def track_page_visit(user_id: str, page_name: str):
+    db = load_users_db()
+    if user_id in db["users"]:
+        visits = db["users"][user_id].get("page_visits", {})
+        visits[page_name] = visits.get(page_name, 0) + 1
+        db["users"][user_id]["page_visits"] = visits
+        save_users_db(db)
+
+def save_comparison(user_id: str, name: str, car_a: dict, car_b: dict):
+    db = load_users_db()
+    if user_id in db["users"]:
+        comp = {"comparison_id": str(uuid.uuid4()), "name": name,
+                "car_a": car_a, "car_b": car_b,
+                "created_at": datetime.now().isoformat()}
+        db["users"][user_id]["saved_comparisons"].append(comp)
+        save_users_db(db)
+
+def delete_user(user_id: str):
+    db = load_users_db()
+    if user_id in db["users"]:
+        del db["users"][user_id]
+        db["meta"]["total_users"] = len(db["users"])
+        save_users_db(db)
+
+def update_user_profile(user_id: str, full_name: str, email: str, avatar_color: str):
+    db = load_users_db()
+    if user_id in db["users"]:
+        db["users"][user_id]["full_name"] = full_name
+        db["users"][user_id]["email"] = email
+        db["users"][user_id]["avatar_color"] = avatar_color
+        save_users_db(db)
+
+# =========================================================================
 # Page Config
 # =========================================================================
 st.set_page_config(page_title="AutoIntel — Car Price Intelligence", page_icon="🚗",
@@ -42,52 +161,130 @@ st.set_page_config(page_title="AutoIntel — Car Price Intelligence", page_icon=
 def inject_custom_css():
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
     * { font-family: 'DM Sans', sans-serif; }
-    h1, h2, h3 { font-family: 'Syne', sans-serif !important; }
+    h1, h2, h3, h4 { font-family: 'Syne', sans-serif !important; }
     .stApp { background: #0c0f14; }
-    section[data-testid="stSidebar"] { background: #0a0d12 !important; border-right: 1px solid rgba(255,255,255,0.05); }
+    section[data-testid="stSidebar"] { background: #0a0d12 !important; border-right: 1px solid rgba(232,93,4,0.15); }
     section[data-testid="stSidebar"] .stMarkdown { color: #c8ccd4; }
-    .stMetric { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.06); }
-    .stMetric label { color: #8892a0 !important; font-size: 0.8rem !important; }
-    .stMetric [data-testid="stMetricValue"] { color: #e85d04 !important; font-size: 1.8rem !important; font-weight: 700; }
-    .stSelectbox, .stSlider, .stNumberInput { background: rgba(255,255,255,0.03); border-radius: 8px; }
+    
+    /* Hide Streamlit chrome */
+    #MainMenu, footer, header { visibility: hidden; }
+    .stDeployButton { display: none; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0c0f14; }
+    ::-webkit-scrollbar-thumb { background: #e85d04; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f48c06; }
+    
+    /* Glass card */
+    .glass-card { background: rgba(20,25,40,0.85); backdrop-filter: blur(12px);
+                  border: 1px solid rgba(232,93,4,0.2); border-radius: 16px; padding: 24px;
+                  transition: all 0.3s ease; }
+    .glass-card:hover { border-color: rgba(232,93,4,0.4); box-shadow: 0 0 20px rgba(232,93,4,0.15); transform: translateY(-2px); }
+    
+    /* KPI card */
+    .kpi-card { background: rgba(20,25,40,0.9); border: 1px solid rgba(232,93,4,0.25);
+                border-radius: 12px; padding: 1rem 1.25rem; text-align: center; }
+    .kpi-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #e85d04; }
+    .kpi-label { font-size: 0.8rem; color: #9da3b4; text-transform: uppercase; letter-spacing: 0.08em; }
+    
+    /* Gradient hero header */
+    .hero-header { background: linear-gradient(135deg, #0c0f14 0%, #1a1f35 50%, #0f1520 100%);
+                   border: 1px solid rgba(232,93,4,0.2); border-radius: 16px;
+                   padding: 2.5rem; text-align: center; position: relative; overflow: hidden; }
+    .hero-header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+                           background: radial-gradient(circle at 30% 50%, rgba(232,93,4,0.08) 0%, transparent 60%),
+                                       radial-gradient(circle at 70% 50%, rgba(72,149,239,0.06) 0%, transparent 60%);
+                           animation: pulse 8s ease-in-out infinite alternate; }
+    @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+    .hero-title { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+                  background: linear-gradient(90deg, #e85d04, #f48c06, #4895ef);
+                  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    
+    /* Orange gradient button */
+    .orange-btn { background: linear-gradient(135deg, #e85d04, #f48c06); color: white; border: none;
+                  border-radius: 50px; padding: 0.6rem 2rem; font-family: 'Syne', sans-serif;
+                  font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .orange-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,93,4,0.4); }
+    
+    /* Badge classes */
+    .badge-luxury { background: linear-gradient(135deg, #9b5de5, #7b2cbf); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-premium { background: linear-gradient(135deg, #e85d04, #f48c06); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-mid { background: linear-gradient(135deg, #4895ef, #4cc9f0); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-budget { background: linear-gradient(135deg, #52b788, #40916c); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .gradient-divider { height: 2px; background: linear-gradient(90deg, transparent, #e85d04, #f48c06, transparent); margin: 16px 0; }
+    
+    /* Auth card (glass-morphism) */
+    .auth-card { background: rgba(20,25,40,0.95); border: 1px solid rgba(232,93,4,0.3);
+                 border-radius: 20px; padding: 2.5rem;
+                 box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(232,93,4,0.08); }
+    
+    /* Avatar circle */
+    .avatar-circle { width: 80px; height: 80px; border-radius: 50%;
+                     display: flex; align-items: center; justify-content: center;
+                     font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800;
+                     color: white; margin: 0 auto 1rem;
+                     box-shadow: 0 0 20px rgba(232,93,4,0.3); }
+    
+    /* Price reveal shimmer animation */
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    .price-reveal { font-family: 'Syne', sans-serif; font-size: 3.5rem; font-weight: 800;
+                    background: linear-gradient(90deg, #e85d04 0%, #f48c06 30%, #ffffff 50%, #f48c06 70%, #e85d04 100%);
+                    background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                    background-clip: text; animation: shimmer 2s linear infinite; }
+    
+    /* Password strength bar */
+    .pwd-strength { background: rgba(255,255,255,0.1); border-radius: 4px; height: 6px; margin: 4px 0; overflow: hidden; }
+    .pwd-bar { height: 100%; border-radius: 4px; transition: width 0.3s ease, background 0.3s ease; }
+    
+    /* Sidebar nav active */
+    .nav-active { border-left: 3px solid #e85d04; background: rgba(232,93,4,0.1); border-radius: 0 8px 8px 0; }
+    
+    /* Progress bar gradient */
+    [data-testid="stProgress"] > div > div { background: linear-gradient(90deg, #e85d04, #f48c06) !important; }
+    
+    /* Metric container */
+    [data-testid="metric-container"] { background: rgba(20,25,40,0.85); border: 1px solid rgba(232,93,4,0.2);
+                                        border-radius: 12px; padding: 1rem; }
+    [data-testid="stMetricValue"] { font-family: 'Syne', sans-serif; color: #e85d04 !important; font-size: 1.8rem !important; }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] { gap: 4px; background: rgba(10,13,18,0.8); border-bottom: 1px solid rgba(232,93,4,0.2);
+                                         border-radius: 12px 12px 0 0; padding: 4px 4px 0; }
+    .stTabs [data-baseweb="tab"] { border-radius: 8px 8px 0 0 !important; padding: 8px 16px !important;
+                                    color: #9da3b4 !important; font-size: 0.85rem !important; }
+    .stTabs [aria-selected="true"] { background: rgba(232,93,4,0.2) !important; color: #e85d04 !important;
+                                      border-bottom: 2px solid #e85d04 !important; }
+    
+    /* Input fields dark styling */
+    .stTextInput > div > div > input, .stSelectbox > div > div, .stMultiSelect > div > div {
+      background: rgba(20,25,40,0.9) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      color: #e8eaf0 !important;
+      border-radius: 8px !important;
+    }
+    .stTextInput > div > div > input:focus { border-color: #e85d04 !important; box-shadow: 0 0 0 1px rgba(232,93,4,0.3) !important; }
+    
+    /* Button styling */
     .stButton button { background: linear-gradient(135deg, #e85d04, #f48c06) !important; color: white !important;
                        border: none !important; border-radius: 25px !important; padding: 8px 24px !important;
                        font-weight: 600 !important; transition: all 0.3s ease !important; }
     .stButton button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,93,4,0.4) !important; }
-    .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px);
-                  border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px;
-                  transition: all 0.3s ease; }
-    .glass-card:hover { border-color: rgba(232,93,4,0.3); box-shadow: 0 4px 20px rgba(232,93,4,0.1); }
-    .badge-luxury { background: linear-gradient(135deg, #9b5de5, #7b2cbf); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .badge-premium { background: linear-gradient(135deg, #e85d04, #f48c06); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .badge-mid { background: linear-gradient(135deg, #4895ef, #4cc9f0); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .badge-budget { background: linear-gradient(135deg, #52b788, #40916c); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .gradient-divider { height: 2px; background: linear-gradient(90deg, transparent, #e85d04, #f48c06, transparent); margin: 16px 0; }
-    .nav-item { padding: 10px 16px; border-radius: 10px; margin: 2px 0; cursor: pointer;
-                transition: all 0.2s; color: #c8ccd4; font-size: 0.9rem; }
-    .nav-item:hover { background: rgba(232,93,4,0.1); color: #e85d04; border-left: 3px solid #e85d04; }
-    .nav-active { background: rgba(232,93,4,0.15); color: #e85d04; border-left: 3px solid #e85d04; font-weight: 600; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #0c0f14; }
-    ::-webkit-scrollbar-thumb { background: #e85d04; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #f48c06; }
-    .stProgress > div > div > div > div { background: linear-gradient(90deg, #e85d04, #f48c06) !important; }
+    
+    /* Dataframe */
     [data-testid="stDataFrame"] { background: transparent !important; }
     [data-testid="stDataFrame"] th { background: #1a1d24 !important; color: #e85d04 !important; }
     [data-testid="stDataFrame"] td { background: rgba(255,255,255,0.02) !important; color: #c8ccd4 !important; border-color: rgba(255,255,255,0.05) !important; }
     [data-testid="stDataFrame"] tr:nth-child(even) td { background: rgba(255,255,255,0.04) !important; }
-    .shimmer { background: linear-gradient(90deg, #e85d04 25%, #f48c06 50%, #e85d04 75%);
-               background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-               animation: shimmer 2s infinite; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    
+    /* Expander */
+    .stExpander { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px !important; }
+    
+    /* Shared class for marketing hero */
     .hero-text { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #e85d04, #f48c06, #4895ef);
                  -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
-    .stTabs [data-baseweb="tab-list"] { gap: 4px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 4px; }
-    .stTabs [data-baseweb="tab"] { border-radius: 8px !important; padding: 8px 16px !important; color: #8892a0 !important; font-size: 0.85rem !important; }
-    .stTabs [aria-selected="true"] { background: rgba(232,93,4,0.2) !important; color: #e85d04 !important; }
-    .stExpander { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -121,13 +318,22 @@ def show_chart(fig, height=None):
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 # =========================================================================
-# Session State Init
+# Session State Init (Section 0.3 — PROMPT.txt)
 # =========================================================================
 def init_session_state():
     defaults = {
         'page': "🏠 Dashboard Home", 'last_model': None, 'last_prediction': {},
         'page_visits': {}, 'global_filters': {}, 'expert_mode': True,
-        'last_pred_inputs': {}, 'ab_mode': False, 'ab_car1': {}, 'ab_car2': {}
+        'last_pred_inputs': {}, 'ab_mode': False, 'ab_car1': {}, 'ab_car2': {},
+        # Auth keys (Section 0.3)
+        'authenticated': False, 'user': {}, 'auth_page': 'login',
+        'session_id': str(uuid.uuid4()), 'current_page': 'Dashboard',
+        'last_model': 'xgboost', 'last_prediction_inputs': {},
+        'last_prediction_result': None,
+        'global_company_filter': [], 'global_fuel_filter': [],
+        'global_year_range': (2000, 2024),
+        'expert_mode': False, 'comparison_car_a': None, 'comparison_car_b': None,
+        'login_attempts': 0, 'login_lock_time': 0,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -245,54 +451,94 @@ fuel_types = sorted(df['fuel_type'].unique())
 # =========================================================================
 # Sidebar
 # =========================================================================
-with st.sidebar:
-    st.markdown('<p style="font-family:Syne;font-size:1.8rem;font-weight:800;color:#e85d04;margin:0">🚗 AutoIntel</p>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#8892a0;font-size:0.8rem;margin-top:-8px">Used Car Price Intelligence</p>', unsafe_allow_html=True)
-    st.markdown('<div class="gradient-divider"></div>', unsafe_allow_html=True)
+def render_sidebar():
+    user = st.session_state.get('user', {})
+    first_name = user.get('full_name', 'User').split()[0] if user.get('full_name') else 'User'
+    avatar_color = user.get('avatar_color', '#e85d04')
+    initials = ''.join(w[0].upper() for w in user.get('full_name', 'U').split()[:2]) if user.get('full_name') else 'U'
+    role = user.get('role', 'user')
+    login_count = user.get('login_count', 1)
 
-    nav_items = ["🏠 Dashboard Home", "📊 Dataset Explorer", "🔍 EDA Deep-Dive",
-                 "🤖 Model Comparison Lab", "🧪 Residual Analysis", "🔮 Price Predictor",
-                 "📈 Market Intelligence", "⚙️ Pipeline Inspector"]
-    for item in nav_items:
-        active = "nav-active" if st.session_state.page == item else ""
-        if st.button(item, key=f"nav_{item}", use_container_width=True,
-                     help=f"Go to {item}", type="secondary"):
-            st.session_state.page = item
+    with st.sidebar:
+        # User avatar + greeting
+        st.markdown(f'<div style="text-align:center;margin-bottom:8px">'
+                    f'<div class="avatar-circle" style="background:{avatar_color};width:60px;height:60px;font-size:1.4rem;margin:0 auto">'
+                    f'<span>{initials}</span></div>'
+                    f'<p style="color:#e8eaf0;font-weight:600;margin:6px 0 0;font-size:0.95rem">Hi, {first_name}!</p>'
+                    f'<p style="color:#9da3b4;font-size:0.7rem;margin:0">{"👑 Admin" if role=="admin" else "👤 User"} · {login_count} logins</p>'
+                    f'</div>', unsafe_allow_html=True)
+
+        st.markdown('<p style="font-family:Syne;font-size:1.8rem;font-weight:800;background:linear-gradient(90deg,#e85d04,#f48c06);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:0">🚗 AutoIntel</p>', unsafe_allow_html=True)
+        st.markdown('<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True)
+
+        # Navigation buttons
+        nav_items = ["🏠 Dashboard", "📊 Dataset Explorer", "🔍 EDA Deep-Dive",
+                     "🤖 Model Lab", "🧪 Residual Analysis", "🔮 Price Predictor",
+                     "📈 Market Intelligence", "⚙️ Pipeline Inspector", "👤 My Profile"]
+        if role == 'admin':
+            nav_items.append("🛡️ Admin Panel")
+
+        current_page = st.session_state.get('current_page', 'Dashboard')
+        for item in nav_items:
+            is_active = current_page == item
+            if st.button(item, key=f"nav_{item}", use_container_width=True, type="secondary"):
+                st.session_state.current_page = item
+                st.rerun()
+            style_css = f'''<style>
+            div.stButton button[key="nav_{item}"] {{
+                background: {"rgba(232,93,4,0.15)" if is_active else "transparent"} !important;
+                color: {"#e85d04" if is_active else "#c8ccd4"} !important;
+                border-left: {"3px solid #e85d04" if is_active else "3px solid transparent"} !important;
+                text-align: left !important; border-radius: 0 !important;
+                justify-content: left !important; padding: 8px 16px !important;
+            }}
+            </style>'''
+            st.markdown(style_css, unsafe_allow_html=True)
+
+        st.markdown('<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True)
+
+        # Quick Stats
+        with st.expander("⚡ Quick Stats", expanded=False):
+            col1, col2 = st.columns(2)
+            col1.metric("Records", "11,149")
+            col2.metric("Models", "5" if not demo_mode else "⚠️ Demo")
+            col1.metric("Your Preds", str(len(user.get('prediction_history', []))))
+            col2.metric("Version", "6.0")
+
+        # Global Filters
+        with st.expander("🎛️ Global Filters", expanded=False):
+            st.session_state.global_filters['company'] = st.multiselect("Company", companies if not demo_mode else [], key="gf_comp")
+            st.session_state.global_filters['fuel'] = st.multiselect("Fuel", fuel_types if not demo_mode else [], key="gf_fuel")
+            gcol1, gcol2 = st.columns(2)
+            if gcol1.button("Apply", use_container_width=True):
+                st.rerun()
+            if gcol2.button("Reset", use_container_width=True):
+                st.session_state.global_filters = {'company': [], 'fuel': []}
+                st.rerun()
+
+        # Expert Mode toggle
+        expert = st.toggle("⚡ Expert Mode", value=st.session_state.get('expert_mode', False))
+        if expert != st.session_state.get('expert_mode'):
+            st.session_state.expert_mode = expert
+            if user.get('user_id'):
+                update_user_preferences(user['user_id'], {'expert_mode': expert})
+        if expert:
+            st.markdown('<span style="color:#e85d04;font-size:0.7rem">⚡ Expert</span>', unsafe_allow_html=True)
+
+        st.markdown('<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True)
+
+        # Bottom section
+        st.markdown(f'<div style="font-size:0.75rem;color:#9da3b4;text-align:center">'
+                    f'📅 Data processed: Jun 2024<br>'
+                    f'🧠 Trained on: 8,919 samples<br>'
+                    f'<hr style="border:1px solid rgba(232,93,4,0.1);margin:8px 0">'
+                    f'Built with ❤️ using Streamlit<br>'
+                    f'v6.0 · MIT License</div>', unsafe_allow_html=True)
+
+        if st.button("🚪 Logout", use_container_width=True):
+            for k in list(st.session_state.keys()):
+                del st.session_state[k]
             st.rerun()
-        st.markdown(f'<style>div.stButton button[key="nav_{item}"] {{'
-                    f'background: {"rgba(232,93,4,0.15)" if st.session_state.page == item else "transparent"} !important;'
-                    f'color: {"#e85d04" if st.session_state.page == item else "#c8ccd4"} !important;'
-                    f'border-left: {"3px solid #e85d04" if st.session_state.page == item else "3px solid transparent"} !important;'
-                    f'text-align: left !important; border-radius: 0 !important;'
-                    f'justify-content: left !important; padding: 8px 16px !important;}}</style>', unsafe_allow_html=True)
-
-    st.markdown('<div class="gradient-divider"></div>', unsafe_allow_html=True)
-
-    with st.expander("⚡ Quick Stats", expanded=False):
-        col1, col2 = st.columns(2)
-        col1.metric("Records", f"{len(df):,}")
-        col2.metric("Companies", f"{len(companies)}")
-        col1.metric("Best R²", "0.7654")
-        col2.metric("Features", "39")
-
-    with st.expander("🎛️ Global Filters", expanded=False):
-        st.session_state.global_filters['company'] = st.multiselect("Company", companies, key="gf_comp")
-        st.session_state.global_filters['fuel'] = st.multiselect("Fuel", fuel_types, key="gf_fuel")
-
-    st.markdown('<div class="gradient-divider"></div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="glass-card" style="padding:12px;font-size:0.8rem">'
-                f'<span style="color:#8892a0">Data last processed:</span> <span style="color:#e8eaf0">2025-01-15</span><br>'
-                f'<span style="color:#8892a0">Models trained on:</span> <span style="color:#e8eaf0">8,919 samples</span><br>'
-                f'<span style="color:#8892a0">Page visits:</span> <span style="color:#e85d04">{sum(st.session_state.page_visits.values())}</span>'
-                f'</div>', unsafe_allow_html=True)
-
-    with st.expander("🧠 Explainability Mode", expanded=False):
-        st.session_state.expert_mode = st.toggle("Expert Mode", value=st.session_state.expert_mode)
-        mode_label = "Expert" if st.session_state.expert_mode else "Simple"
-        st.caption(f"Current: {mode_label} — {'Shows R², RMSE, residuals' if st.session_state.expert_mode else 'Plain English, no stats jargon'}")
-
-    st.markdown(f'<p style="color:#5a6270;font-size:0.75rem;text-align:center;margin-top:16px">'
-                f'Built by AutoIntel Team · MIT License · v5.0</p>', unsafe_allow_html=True)
 
 # =========================================================================
 # PAGE 1: Dashboard Home
@@ -1594,44 +1840,455 @@ def show_price_history_simulation():
 # =========================================================================
 page = st.session_state.page
 
-# Show data quality report on every page (Feature E)
-show_data_quality_report()
+# =========================================================================
+# AUTH GATE + PAGE ROUTING (Section 0.4-0.7 + Section 7 — PROMPT.txt)
+# =========================================================================
+
+def render_login_page():
+    """Full-page centered login form with glass-morphism card."""
+    st.markdown("""
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
+      <div style="max-width:420px;width:100%">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div style="font-size:3rem">🚗</div>
+          <h1 class="hero-title" style="font-size:2.2rem">AutoIntel</h1>
+          <p style="color:#9da3b4;font-size:0.9rem">Your AI-powered used car intelligence platform</p>
+        </div>
+        <div class="auth-card">
+          <h3 style="color:#e8eaf0;margin:0 0 1.5rem;text-align:center;font-size:1.3rem">Welcome Back</h3>
+    """, unsafe_allow_html=True)
+
+    # Check login lockout
+    lock_time = st.session_state.get('login_lock_time', 0)
+    attempts = st.session_state.get('login_attempts', 0)
+    if time.time() - lock_time < 30 and attempts >= 5:
+        st.warning("⏳ Too many attempts. Try again in {:.0f}s".format(30 - (time.time() - lock_time)))
+
+    with st.form("login_form", clear_on_submit=False):
+        username = st.text_input("Username", placeholder="Enter your username", key="login_user")
+        password = st.text_input("Password", type="password", placeholder="Enter your password", key="login_pass")
+        st.checkbox("Remember me", value=True, key="login_remember", disabled=True,
+                     help="Session persists until browser close")
+        submitted = st.form_submit_button("🔑 Sign In", use_container_width=True, type="primary")
+
+        if submitted:
+            if not username or not password:
+                st.error("❌ Please fill in all fields")
+            else:
+                db = load_users_db()
+                success, msg, user = login_user(db, username, password)
+                if success:
+                    st.session_state.authenticated = True
+                    st.session_state.user = user
+                    st.session_state.login_attempts = 0
+                    st.toast(f"Welcome back, {user.get('full_name', username)}! 🚗", icon="✅")
+                    st.rerun()
+                else:
+                    st.session_state.login_attempts = attempts + 1
+                    st.session_state.login_lock_time = time.time()
+                    st.error(f"❌ {msg}")
+
+
+
+    nav_cols = st.columns(2)
+    with nav_cols[0]:
+        if st.button("Don't have an account? → Sign Up", key="auth_signup_btn2", use_container_width=True):
+            st.session_state.auth_page = 'signup'
+            st.rerun()
+    with nav_cols[1]:
+        if st.button("Forgot password?", key="auth_forgot_btn2", use_container_width=True, type="secondary"):
+            st.session_state.auth_page = 'forgot'
+            st.rerun()
+
+    # Demo credentials hint
+    st.markdown("""
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:0.75rem;margin-top:1rem;text-align:center">
+      <p style="color:#9da3b4;font-size:0.75rem;margin:0">💡 Demo: username = <strong>demo</strong> | password = <strong>demo123</strong></p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Ensure demo user exists
+    db = load_users_db()
+    if not username_exists(db, 'demo'):
+        create_user(db, 'demo', 'demo@example.com', 'demo123', 'Demo User')
+
+    # "Back" flow for signup/forgot
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+
+def render_signup_page():
+    """Signup page with password strength meter and real-time validation."""
+    st.markdown("""
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
+      <div style="max-width:420px;width:100%">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div style="font-size:3rem">🚗</div>
+          <h1 class="hero-title" style="font-size:2.2rem">Create Account</h1>
+          <p style="color:#9da3b4;font-size:0.9rem">Join AutoIntel today</p>
+        </div>
+        <div class="auth-card">
+    """, unsafe_allow_html=True)
+
+    with st.form("signup_form", clear_on_submit=False):
+        full_name = st.text_input("Full Name", placeholder="John Doe", key="su_name")
+        username = st.text_input("Username", placeholder="johndoe", key="su_user",
+                                  help="Min 3 chars, alphanumeric + underscore only")
+        email = st.text_input("Email", placeholder="john@example.com", key="su_email")
+        password = st.text_input("Password", type="password", key="su_pass")
+        # Password strength meter (real-time, updates on each widget change)
+        pwd_val = st.session_state.get("su_pass", "")
+        if pwd_val:
+            pwd_len = len(pwd_val)
+            has_upper = any(c.isupper() for c in pwd_val)
+            has_lower = any(c.islower() for c in pwd_val)
+            has_digit = any(c.isdigit() for c in pwd_val)
+            has_special = any(not c.isalnum() for c in pwd_val)
+            if pwd_len < 6:
+                strength_pct, strength_color, strength_label = 20, "#ef233c", "Weak"
+            elif pwd_len < 10 or not (has_upper and has_lower and has_digit):
+                strength_pct, strength_color, strength_label = 50, "#f48c06", "Medium"
+            else:
+                strength_pct, strength_color, strength_label = 90, "#52b788", "Strong"
+            st.markdown(f"""
+            <div class="pwd-strength">
+              <div class="pwd-bar" style="width:{strength_pct}%;background:{strength_color}"></div>
+            </div>
+            <p style="color:{strength_color};font-size:0.75rem;margin:2px 0 8px">{strength_label}</p>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="pwd-strength">
+              <div class="pwd-bar" style="width:0%;background:#555"></div>
+            </div>
+            <p style="color:#5a6270;font-size:0.75rem;margin:2px 0 8px">Enter a password</p>
+            """, unsafe_allow_html=True)
+        confirm = st.text_input("Confirm Password", type="password", key="su_confirm")
+        # Real-time confirm match indicator
+        conf_val = st.session_state.get("su_confirm", "")
+        if conf_val:
+            if pwd_val and pwd_val == conf_val:
+                st.markdown('<p style="color:#52b788;font-size:0.75rem;margin:2px 0 8px">\U0001f7e2 Passwords match</p>', unsafe_allow_html=True)
+            elif conf_val:
+                st.markdown('<p style="color:#ef233c;font-size:0.75rem;margin:2px 0 8px">\u274c Passwords do not match</p>', unsafe_allow_html=True)
+        agree = st.checkbox("I agree to terms", key="su_agree")
+        submitted = st.form_submit_button("🎉 Create Account", use_container_width=True, type="primary")
+
+        if submitted:
+            errors = []
+            if not full_name: errors.append("Full name is required")
+            if len(username) < 3: errors.append("Username must be at least 3 characters")
+            if not username.isalnum() and '_' not in username: errors.append("Username: letters, numbers, underscore only")
+            if '@' not in email or '.' not in email: errors.append("Invalid email format")
+            if len(password) < 6: errors.append("Password must be at least 6 characters")
+            if password != confirm: errors.append("Passwords do not match")
+            if not agree: errors.append("You must agree to terms")
+
+            db = load_users_db()
+            if username_exists(db, username): errors.append("Username already taken")
+            if email_exists(db, email): errors.append("Email already registered")
+
+            if errors:
+                for e in errors:
+                    st.error(f"❌ {e}")
+            else:
+                user = create_user(db, username, email, password, full_name)
+                st.session_state.authenticated = True
+                st.session_state.user = user
+                st.session_state.auth_page = 'login'
+                st.balloons()
+                st.toast(f"🎉 Account created! Welcome, {full_name}!", icon="✅")
+
+                # Welcome Tour modal (3-step overlay)
+                st.markdown("""
+                <div style="background:rgba(0,0,0,0.8);position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center">
+                  <div class="auth-card" style="max-width:500px;text-align:center">
+                    <h2 style="color:#e8eaf0">👋 Welcome to AutoIntel!</h2>
+                    <p style="color:#c8ccd4">Here's what you can do:</p>
+                    <div style="text-align:left;margin:1.5rem 0">
+                      <p style="color:#e8eaf0">🔮 <strong>Predict car prices</strong> with AI in seconds</p>
+                      <p style="color:#e8eaf0">📊 <strong>Explore market intelligence</strong> and trends</p>
+                      <p style="color:#e8eaf0">🤖 <strong>Compare 8 ML models</strong> side by side</p>
+                    </div>
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+                st.rerun()
+
+    if st.button("← Back to Login", key="su_back"):
+        st.session_state.auth_page = 'login'
+        st.rerun()
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+
+def render_forgot_password_page():
+    """Simple forgot password page (cosmetic — no actual email sending)."""
+    st.markdown("""
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
+      <div style="max-width:420px;width:100%">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div style="font-size:3rem">🔐</div>
+          <h1 class="hero-title" style="font-size:2rem">Reset Password</h1>
+          <p style="color:#9da3b4;font-size:0.9rem">Enter your email to receive a reset link</p>
+        </div>
+        <div class="auth-card">
+    """, unsafe_allow_html=True)
+
+    with st.form("forgot_form"):
+        email = st.text_input("Email", placeholder="john@example.com", key="fp_email")
+        submitted = st.form_submit_button("📧 Send Reset Link", use_container_width=True, type="primary")
+        if submitted:
+            db = load_users_db()
+            if email_exists(db, email):
+                st.success("✅ If that email exists, a reset link was sent (demo project — no actual email sent)")
+            else:
+                st.info("ℹ️ If that email exists, a reset link was sent")
+
+    if st.button("← Back to Login", key="fp_back"):
+        st.session_state.auth_page = 'login'
+        st.rerun()
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+
+# =========================================================================
+# PAGE 9: My Profile (Section 0.6 — PROMPT.txt)
+# =========================================================================
+def render_profile_page():
+    """User profile page with 6 tabs."""
+    user = st.session_state.get('user', {})
+    uid = user.get('user_id', '')
+    initials = ''.join(w[0].upper() for w in user.get('full_name', 'U').split()[:2]) if user.get('full_name') else 'U'
+    avatar_color = user.get('avatar_color', '#e85d04')
+    role = user.get('role', 'user')
+    created = user.get('created_at', '')[:10]
+    last_login = user.get('last_login', '')[:19]
+    login_count = user.get('login_count', 1)
+    pred_history = user.get('prediction_history', [])
+    saved_comps = user.get('saved_comparisons', [])
+
+    col_left, col_right = st.columns([1, 2])
+
+    with col_left:
+        st.markdown(f"""
+        <div style="text-align:center;padding:1.5rem">
+          <div class="avatar-circle" style="background:{avatar_color};width:90px;height:90px;font-size:2rem">{initials}</div>
+          <h3 style="color:#e8eaf0;margin:0.5rem 0 0">{user.get('full_name', 'User')}</h3>
+          <p style="color:#9da3b4;font-size:0.8rem">@{user.get('username', '')}</p>
+          <p style="color:#9da3b4;font-size:0.8rem">{user.get('email', '')}</p>
+          <p style="margin:0.5rem 0">{'👑 Admin' if role == 'admin' else '👤 User'}</p>
+          <p style="color:#9da3b4;font-size:0.75rem">Member since {created}</p>
+          <p style="color:#9da3b4;font-size:0.75rem">Logins: {login_count} | Last: {last_login[:10]}</p>
+          <p style="color:#e85d04;font-weight:600">Total Predictions: {len(pred_history)}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_right:
+        tabs = st.tabs(["✏️ Edit Profile", "🔐 Change Password", "⚙️ Preferences",
+                        "📜 Prediction History", "💾 Saved Comparisons", "🗑️ Danger Zone"])
+
+        with tabs[0]:
+            with st.form("edit_profile"):
+                new_name = st.text_input("Full Name", value=user.get('full_name', ''))
+                new_email = st.text_input("Email", value=user.get('email', ''))
+                colors_html = '<div style="display:flex;gap:8px;margin:8px 0">'
+                avatar_colors = ["#e85d04","#4895ef","#52b788","#9b5de5","#f48c06","#ff6b6b"]
+                for c in avatar_colors:
+                    selected = 'border:3px solid white' if c == avatar_color else 'border:2px solid transparent'
+                    colors_html += f'<div style="width:30px;height:30px;border-radius:50%;background:{c};{selected};cursor:pointer" title="{c}"></div>'
+                colors_html += '</div>'
+                st.markdown(colors_html, unsafe_allow_html=True)
+                new_color = st.selectbox("Avatar Color", avatar_colors, index=avatar_colors.index(avatar_color) if avatar_color in avatar_colors else 0)
+                if st.form_submit_button("💾 Save Changes", use_container_width=True):
+                    update_user_profile(uid, new_name, new_email, new_color)
+                    user['full_name'] = new_name
+                    user['email'] = new_email
+                    user['avatar_color'] = new_color
+                    st.session_state.user = user
+                    st.success("✅ Profile updated!")
+
+        with tabs[1]:
+            with st.form("change_pwd"):
+                cur_pwd = st.text_input("Current Password", type="password")
+                new_pwd = st.text_input("New Password", type="password")
+                conf_pwd = st.text_input("Confirm New Password", type="password")
+                if st.form_submit_button("🔄 Update Password", use_container_width=True):
+                    if not verify_password(cur_pwd, user.get('password_hash', '')):
+                        st.error("❌ Current password is incorrect")
+                    elif len(new_pwd) < 6:
+                        st.error("❌ New password must be at least 6 characters")
+                    elif new_pwd != conf_pwd:
+                        st.error("❌ Passwords do not match")
+                    else:
+                        db = load_users_db()
+                        db['users'][uid]['password_hash'] = hash_password(new_pwd)
+                        save_users_db(db)
+                        st.success("✅ Password updated! Please log in again.")
+                        st.info("Relogin to continue")
+
+        with tabs[2]:
+            with st.form("prefs_form"):
+                default_model = st.selectbox("Default Model", ['xgboost', 'linear_regression', 'ridge', 'gradient_boosting', 'random_forest'],
+                                              index=['xgboost','linear_regression','ridge','gradient_boosting','random_forest'].index(user.get('preferences',{}).get('default_model','xgboost')))
+                ci = st.select_slider("Confidence Interval", ['±10%','±15%','±20%'],
+                                       value=user.get('preferences',{}).get('confidence_interval','±15%'))
+                expert_mode = st.toggle("Expert Mode", value=user.get('preferences',{}).get('expert_mode', False))
+                accent = st.selectbox("Theme Accent", ['#e85d04','#f48c06','#4895ef','#52b788','#9b5de5'],
+                                       index=['#e85d04','#f48c06','#4895ef','#52b788','#9b5de5'].index(user.get('preferences',{}).get('theme_accent','#e85d04')))
+                if st.form_submit_button("💾 Save Preferences", use_container_width=True):
+                    update_user_preferences(uid, {'default_model': default_model, 'confidence_interval': ci, 'expert_mode': expert_mode, 'theme_accent': accent})
+                    st.session_state.expert_mode = expert_mode
+                    st.success("✅ Preferences saved!")
+
+        with tabs[3]:
+            if pred_history:
+                ph_df = pd.DataFrame(pred_history)
+                ph_df = ph_df.sort_values('timestamp', ascending=False)
+                st.dataframe(ph_df, use_container_width=True)
+                # Mini line chart
+                if 'predicted_price' in ph_df.columns and 'timestamp' in ph_df.columns:
+                    ph_df['date'] = pd.to_datetime(ph_df['timestamp'])
+                    chart_df = ph_df.sort_values('date')
+                    fig = go.Figure(data=[go.Scatter(x=chart_df['date'], y=chart_df['predicted_price'],
+                                                      mode='lines+markers', line=dict(color='#e85d04'))])
+                    fig.update_layout(title="Prediction History", height=250)
+                    show_chart(fig, 250)
+                if st.checkbox("Confirm clear history", key="clear_hist"):
+                    if st.button("🗑️ Clear History", use_container_width=True):
+                        db = load_users_db()
+                        db['users'][uid]['prediction_history'] = []
+                        save_users_db(db)
+                        st.success("✅ History cleared!")
+                        st.rerun()
+            else:
+                st.info("No prediction history yet.")
+
+        with tabs[4]:
+            if saved_comps:
+                for comp in saved_comps:
+                    with st.expander(f"📋 {comp.get('name', 'Comparison')} ({comp.get('created_at','')[:10]})"):
+                        st.json(comp)
+            else:
+                st.info("No saved comparisons yet.")
+
+        with tabs[5]:
+            st.markdown("### ⚠️ Danger Zone")
+            st.warning("This action is irreversible. Type your username to confirm.")
+            confirm_name = st.text_input("Type username to confirm deletion", key="danger_confirm")
+            if st.button("🗑️ Delete My Account", use_container_width=True, type="primary"):
+                if confirm_name == user.get('username'):
+                    delete_user(uid)
+                    for k in list(st.session_state.keys()):
+                        del st.session_state[k]
+                    st.rerun()
+                else:
+                    st.error("❌ Username does not match")
+
+
+# =========================================================================
+# Admin Panel (Section 0.7 — PROMPT.txt)
+# =========================================================================
+def render_admin_panel():
+    """Admin-only panel with users, analytics, and settings tabs."""
+    st.markdown("## 🛡️ Admin Panel")
+    db = load_users_db()
+    users = list(db['users'].values())
+
+    tabs = st.tabs(["👥 All Users", "📊 Usage Analytics", "🔧 App Settings"])
+
+    with tabs[0]:
+        st.metric("Total Users", len(users))
+        if users:
+            u_df = pd.DataFrame(users)
+            cols = ['username','email','full_name','role','created_at','login_count','user_id']
+            cols = [c for c in cols if c in u_df.columns]
+            display = u_df[cols].copy() if cols else u_df.copy()
+            st.dataframe(display, use_container_width=True)
+            # Export
+            csv_out = u_df.to_csv(index=False).encode()
+            st.download_button("📥 Export Users CSV", csv_out, "users_export.csv", "text/csv", use_container_width=True)
+
+    with tabs[1]:
+        total_preds = db.get('meta', {}).get('total_predictions', 0)
+        st.metric("Total Predictions (All Users)", total_preds)
+        # Model usage pie (from prediction_history)
+        all_preds = []
+        for u in users:
+            all_preds.extend(u.get('prediction_history', []))
+        if all_preds:
+            model_counts = {}
+            for p in all_preds:
+                m = p.get('model_used', 'unknown')
+                model_counts[m] = model_counts.get(m, 0) + 1
+            if model_counts:
+                fig = go.Figure(data=[go.Pie(labels=list(model_counts.keys()), values=list(model_counts.values()),
+                                              marker=dict(colors=['#e85d04','#4895ef','#52b788','#9b5de5','#f48c06']),
+                                              hole=0.4)])
+                fig.update_layout(title="Model Usage Distribution", height=300)
+                show_chart(fig, 300)
+
+    with tabs[2]:
+        st.markdown(f"**App Version:** {db.get('meta',{}).get('app_version','6.0')}")
+        st.markdown(f"**DB Path:** `{USERS_DB_PATH.resolve()}`")
+        st.markdown(f"**Last Updated:** {db.get('meta',{}).get('last_updated','')}")
+        # Backup DB
+        with open(USERS_DB_PATH, 'rb') as f:
+            st.download_button("📦 Backup DB", f.read(), "users_db_backup.json", "application/json", use_container_width=True)
+        if st.button("🗑️ Clear All Prediction Histories", use_container_width=True):
+            for u in db['users'].values():
+                u['prediction_history'] = []
+            save_users_db(db)
+            st.success("✅ All prediction histories cleared!")
+
+
+# =========================================================================
+# MAIN (Section 7 — PROMPT.txt)
+# =========================================================================
+# Read the page variable from the routing
+page = st.session_state.get('current_page', st.session_state.get('page', 'Dashboard'))
+
+# Auth gate
+if not st.session_state.get('authenticated', False):
+    auth_page = st.session_state.get('auth_page', 'login')
+    if auth_page == 'signup':
+        render_signup_page()
+    elif auth_page == 'forgot':
+        render_forgot_password_page()
+    else:
+        render_login_page()
+        # Ensure demo user exists
+        db = load_users_db()
+        if not username_exists(db, 'demo'):
+            create_user(db, 'demo', 'demo@example.com', 'demo123', 'Demo User')
+    st.stop()
+
+# Track visit
+track_page_visit(
+    st.session_state.user.get('user_id', ''),
+    st.session_state.get('current_page', 'Dashboard')
+)
+
+# Render sidebar
+render_sidebar()
+
+# Show demo banner if applicable
+if demo_mode:
+    st.warning("⚠️ **Demo Mode** — ML model files not found. Using synthetic data and heuristic predictions.")
 
 # Page routing
-if page == "🏠 Dashboard Home":
-    page_dashboard_home()
-elif page == "📊 Dataset Explorer":
-    page_dataset_explorer()
-elif page == "🔍 EDA Deep-Dive":
-    page_eda_deepdive()
-elif page == "🤖 Model Comparison Lab":
-    page_model_comparison()
-elif page == "🧪 Residual Analysis":
-    page_residual_analysis()
-elif page == "🔮 Price Predictor":
-    page_price_predictor()
-    # Price History Simulation (Feature J)
-    show_price_history_simulation()
-elif page == "📈 Market Intelligence":
-    page_market_intelligence()
-elif page == "⚙️ Pipeline Inspector":
-    page_pipeline_inspector()
+page_map = {
+    "Dashboard": page_dashboard_home,
+    "Dataset Explorer": page_dataset_explorer,
+    "EDA Deep-Dive": page_eda_deepdive,
+    "Model Lab": page_model_comparison,
+    "Residual Analysis": page_residual_analysis,
+    "Price Predictor": page_price_predictor,
+    "Market Intelligence": page_market_intelligence,
+    "Pipeline Inspector": page_pipeline_inspector,
+    "My Profile": render_profile_page,
+    "Admin Panel": render_admin_panel,
+}
 
-# Track page visits
+renderer = page_map.get(page, page_dashboard_home)
+renderer()
+
+# Track page visits locally
 st.session_state.page_visits[page] = st.session_state.page_visits.get(page, 0) + 1
-
-# =========================================================================
-# requirements.txt (for deployment reference)
-# =========================================================================
-"""
-streamlit>=1.28.0
-pandas>=2.0.0
-numpy>=1.24.0
-plotly>=5.14.0
-scikit-learn>=1.3.0
-joblib>=1.3.0
-xgboost>=2.0.0
-openpyxl>=3.1.0
-statsmodels>=0.14.0
-
-"""
