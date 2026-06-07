@@ -1,0 +1,307 @@
+You are a senior full-stack ML engineer. Build a COMPLETE, production-ready,
+single-file Streamlit application for a Car Price Prediction ML project.
+The app must be visually stunning, functionally rich, and deployable out of the box.
+
+════════════════════════════════════
+CONTEXT — PROJECT FACTS
+════════════════════════════════════
+Dataset: 11,149 Indian used car listings (Cleaned_Car_data.csv)
+Columns: name, company, year, Price, kms_driven, fuel_type
+Preprocessing: log1p(Price), StandardScaler, one-hot encoding → 39 features
+Models trained & saved in ml_ready/models/:
+  • gradient_boosting.pkl (R²=0.7373, RMSE=₹2.62L, lr=0.05, depth=5, n_est=200)
+  • xgboost.pkl         (R²=0.7463, RMSE=₹2.57L, lr=0.1, depth=3, n_est=300)
+  • random_forest.pkl   (R²=0.5850, RMSE=₹3.29L, depth=15, n_est=300)
+  • linear_regression.pkl (R²=0.7654 — best overall)
+  • ridge.pkl           (R²=0.7605)
+Saved artifacts: ml_ready/preprocessor.pkl, X_train/test.npy, y_train/test.npy,
+                 y_train_original.npy, y_test_original.npy, feature_names.npy
+Report assets: report_output/images/ (14 charts)
+
+════════════════════════════════════
+VISUAL DESIGN REQUIREMENTS
+════════════════════════════════════
+Theme: Dark mode, deep navy/charcoal backgrounds (#0c0f14 base)
+Accent palette: Flame orange (#e85d04), amber (#f48c06)
+Secondary: Teal (#52b788 success), Blue (#4895ef info), Purple (#9b5de5)
+Typography: DM Sans body + Syne bold headings via st.markdown + Google Fonts
+Apply via st.markdown with unsafe_allow_html=True and a full custom CSS block:
+  • Sidebar: darker than main (#0a0d12), glowing nav items on hover
+  • Cards: semi-transparent surface with 1px rgba border + subtle glow on hover
+  • KPI metrics: large font, colored values, animated number counters (JS via
+    st.components.v1.html)
+  • Charts: Plotly dark template with custom traces (#e85d04, #4895ef, #52b788)
+  • Buttons: gradient orange, pill-shaped, hover lift effect
+  • Tables: striped dark rows, colored header
+  • Progress bars: gradient orange fills
+  • ALL charts use plotly.graph_objects (not px) for full styling control
+
+════════════════════════════════════
+NAVIGATION STRUCTURE (8 PAGES via sidebar)
+════════════════════════════════════
+
+PAGE 1 — 🏠 Dashboard Home
+  • Animated hero banner: "AutoIntel — Used Car Price Intelligence"
+  • 5 KPI metric cards in a row:
+      Total Records | Cleaned Records | Best R² Score |
+      Price Range (₹20K–₹1Cr) | Features Engineered (39)
+  • 3-column insight cards: "Log Transform Boost", "Top Predictor: car_age",
+    "Luxury Premium: 8× higher than economy"
+  • Horizontal scrollable "project timeline" showing pipeline stages
+  • "Quick Predict" mini-widget (2 inputs → instant estimate) embedded at bottom
+
+PAGE 2 — 📊 Dataset Explorer
+  • Multi-filter sidebar panel: company multiselect, fuel type, year range slider,
+    price range slider, kms_driven range slider
+  • Live row count showing filtered results (e.g. "Showing 342 of 11,149 records")
+  • Interactive AgGrid-style table (use st.dataframe with column_config)
+    - Price column: progress bar visual
+    - KMs column: colored based on value (green/yellow/red)
+    - Company: colored badges
+  • Below table: 3 dynamic mini-charts that update with filters:
+      Price distribution (histogram), Fuel breakdown (donut), Year distribution (bar)
+  • CSV download button for filtered data
+  • "Surprise Me" button: picks a random filter combo and applies it
+
+PAGE 3 — 🔍 EDA Deep-Dive
+  Tabbed sub-sections (st.tabs):
+
+  Tab A — Price Analysis
+    • Side-by-side: raw price histogram vs log-transformed price histogram
+      (annotate skewness on both: 5.64 → -0.12)
+    • Price percentile explorer: slider (P10 to P99) → shows value + what car it buys
+
+  Tab B — Brand Intelligence
+    • Horizontal bar: top 20 companies by median price (sorted, colored by tier:
+      luxury/premium/mid/budget)
+    • Bubble chart: company × avg_price × count (size=count, color=tier)
+    • Brand comparison selector: pick 2-4 brands → overlaid box plots
+
+  Tab C — Feature Correlations
+    • Plotly heatmap: correlation matrix of numerical features
+    • Scatter matrix (price vs car_age vs kms_driven): color-coded by fuel_type
+    • VIF (Variance Inflation Factor) table for multicollinearity check
+
+  Tab D — Outlier Analysis
+    • IQR-based outlier detection: show count of outliers per feature
+    • Before/after scatter: kms_driven capping at 99th percentile
+    • Box plots per feature with outlier points highlighted in red
+
+  Tab E — Year & Mileage Trends
+    • Animated line chart: median price by year (2000–2024)
+      - Play button animates it year by year
+    • Hexbin-style density scatter: kms_driven vs price (2D histogram heatmap)
+
+PAGE 4 — 🤖 Model Comparison Lab
+  • Summary metrics table: all 8 models, sortable columns:
+      Model | R² | RMSE (₹) | MAE (₹) | Training Time | Params
+  • Visual comparisons:
+      - R² bar chart (color: green=top, blue=mid, gray=bottom)
+      - RMSE/MAE grouped bar chart (dual-axis)
+      - Training time vs R² scatter (annotated with model names)
+      - Radar/spider chart: 5 dimensions — R², Speed, RMSE, Interpretability, Stability
+  • Log Transform impact section:
+      - Side-by-side before/after for Linear Regression (R² 0.66 vs 0.77)
+      - Price distribution skewness visualization
+  • Hyperparameter tuning section:
+      - GridSearchCV results table for XGBoost, GB, RF
+      - Improvement delta: "+0.0104 R² from tuning XGBoost"
+  • Model recommendation engine:
+      - "What should I use?" selector based on use case (accuracy/speed/explainability)
+
+PAGE 5 — 🧪 Residual Analysis
+  • Model selector dropdown (all 5 trained models)
+  • Residual plot: predicted vs actual (scatter, colored by residual magnitude)
+  • Residual distribution histogram (check for normality, annotate mean±std)
+  • QQ plot (using plotly): assess normality of residuals
+  • Top 20 worst predictions table: show car details + actual vs predicted + error%
+  • Prediction error by feature:
+      - Error vs car_age (did it struggle on new or old cars?)
+      - Error vs kms_driven (under/over-prediction by mileage band)
+      - Error by company (which brands are hardest to predict?)
+  • Calibration curve: predicted confidence intervals vs actual coverage
+
+PAGE 6 — 🔮 Price Predictor
+  Layout: 2 columns (inputs left, results right, sticky)
+
+  LEFT — Input Panel:
+    • Company: searchable selectbox with brand logo placeholder icons
+    • Car name (free text with autocomplete from dataset names)
+    • Manufacturing year: slider (1996–2024) + number input synced
+    • Kms driven: slider (0–300,000) with formatted display
+    • Fuel type: pill-button selector (Petrol / Diesel / Electric / CNG / LPG)
+    • Model selector: XGBoost / Linear Reg. / Gradient Boosting
+    • "Advanced Options" expander:
+        - Confidence interval toggle (±10% / ±15% / ±20%)
+        - Show similar cars toggle
+        - Compare all models toggle
+
+  RIGHT — Results Panel:
+    • Animated price reveal: large ₹ value with shimmer animation
+    • Confidence range bar (low–mid–high)
+    • Price tier badge: Budget / Mid-range / Premium / Luxury
+    • Depreciation curve: mini-chart showing value over next 5 years
+    • If "Compare all models": show all 5 predictions with variance
+    • Similar cars section: 5 closest matches from dataset
+      (show as cards: name, year, kms, fuel, price, match score)
+    • "What affects this price most?" mini SHAP-style bar (feature contributions)
+      using a manual approximation if SHAP not installed
+
+  Input validation:
+    • Warn if kms_driven is suspiciously low for old cars
+    • Warn if year+kms combo seems unrealistic
+    • Show data coverage: "Based on X similar training examples"
+
+PAGE 7 — 📈 Market Intelligence (NEW FEATURE)
+  • Price trend forecast: extrapolate median prices 2025–2027 using simple trend
+  • Market heatmap: brand × year grid, cell color = median price
+  • "Best value" finder:
+      - Input budget slider → show top 5 best-value cars for that budget
+      - Value score = (car_age_score × fuel_efficiency_score × price_score)
+  • Depreciation calculator:
+      - Pick any car config → show year-by-year value depreciation curve
+      - Compare depreciation curves for 3 different cars
+  • Price alert simulator: "Would X car at ₹Y be a good deal?" → compares to
+    model prediction, flags overpriced/underpriced with % deviation
+  • Brand tier positioning chart: 2D scatter (avg_price vs count) with brand labels
+
+PAGE 8 — ⚙️ Pipeline Inspector (NEW FEATURE — for tech/portfolio showcase)
+  • Interactive pipeline diagram: clickable stages
+      Raw CSV → Dedup → Feature Eng. → Log Transform → Scale → Train/Test Split
+      → GridSearchCV → Model Export → Dashboard
+  • Preprocessing stats table: before/after for each transformation
+  • Feature engineering explainer: show how car_age is derived from year
+  • Log transform deep-dive: interactive slider showing how skewness changes
+    with different Box-Cox λ values
+  • Training data profiler: class distribution, value ranges, null check (all green)
+  • Model card for each saved model: architecture, hyperparams, training date,
+    performance summary (formatted like an ML model card)
+  • requirements.txt viewer + environment info display
+  • GitHub/portfolio links section with custom styled buttons
+
+════════════════════════════════════
+SIDEBAR DESIGN
+════════════════════════════════════
+- Custom logo at top: "🚗 AutoIntel" in large bold font
+- Navigation: icon + label buttons, highlight active page with orange left border
+- Collapsible sections:
+    "⚡ Quick Stats" (collapsed): shows 4 live metrics
+    "🎛️ Global Filters" (collapsed): apply dataset-wide filters
+- At bottom: dark card showing "Data last processed: [date]"
+  and "Models trained on: 8,919 samples"
+- Gradient dividers between sections
+- Footer: "Built by [Name] · MIT License · v5.0"
+
+════════════════════════════════════
+GLOBAL TECHNICAL REQUIREMENTS
+════════════════════════════════════
+
+1. File structure: single streamlit_app.py under 1800 lines (use helper functions)
+
+2. Caching strategy:
+   @st.cache_data for data loading and preprocessing
+   @st.cache_resource for model loading
+   Both with show_spinner=True and custom spinner messages
+
+3. Session state management:
+   - st.session_state for cross-page filter persistence
+   - Remember last selected model, last prediction inputs
+   - Page visit tracker (for analytics sidebar badge)
+
+4. Error handling:
+   - Try/except around all model loading with st.error fallback
+   - Graceful fallback if ml_ready/ directory doesn't exist:
+     show demo mode with synthetic data
+   - Input validation before prediction with colored warning banners
+
+5. Performance:
+   - Load only needed data per page (lazy loading pattern)
+   - Limit scatter plots to 2,000 sampled points
+   - Use @st.cache_data(ttl=3600) for filtered computations
+
+6. Custom CSS injection (place in main):
+   Full CSS block covering:
+   - Google Fonts import (DM Sans + Syne)
+   - .stMetric styling (large colored values)
+   - .stSelectbox, .stSlider custom dark styling
+   - Card class: .glass-card { backdrop-filter, border, glow }
+   - Animated gradient header
+   - Custom scrollbar (thin, orange thumb)
+   - .badge-luxury, .badge-premium, .badge-mid, .badge-budget classes
+
+7. Plotly chart config (apply to ALL charts):
+   layout.template = "plotly_dark"
+   layout.paper_bgcolor = "rgba(0,0,0,0)"
+   layout.plot_bgcolor = "rgba(13,16,25,0.8)"
+   layout.font.family = "DM Sans"
+   layout.font.color = "#e8eaf0"
+   Primary trace color: "#e85d04"
+   Secondary: "#4895ef", "#52b788", "#9b5de5"
+   Grid: rgba(255,255,255,0.05), 1px
+   config={"displayModeBar": False} on all charts
+
+8. Responsive layout:
+   Use st.columns() with appropriate ratios per page
+   All charts use use_container_width=True
+   Test at 1280px and 1920px widths
+
+════════════════════════════════════
+ENHANCED FEATURES (YOUR IDEAS TO ADD)
+════════════════════════════════════
+
+A. Smart Price Explainer
+   After each prediction, show a natural-language explanation:
+   "This 2019 Maruti Petrol with 45K kms is priced below market average
+    because [car_age=5 contributes -₹80K] but [Petrol fuel adds +₹30K]..."
+
+B. Deal Score System
+   Score each car 1–100 based on:
+   (predicted_price - actual_price) / predicted_price × market_rarity_factor
+   Show as a speedometer gauge chart
+
+C. Ensemble Prediction Confidence
+   Average top-3 model predictions, show weighted ensemble with variance
+   Color-code confidence: green (<10% spread), yellow (10-20%), red (>20%)
+
+D. Interactive SHAP-lite
+   Manually compute approximate feature contributions for XGBoost:
+   feature_contribution = (coef × feature_value) normalized
+   Display as waterfall chart: base_price ± contributions = final_price
+
+E. Data Quality Report
+   Auto-generate a mini report card on page load:
+   ✅ No nulls found · ✅ 2,135 duplicates removed · ✅ Outliers capped at P99
+   ⚠️ 3 rare fuel types grouped as "Alternative"
+
+F. Bulk Prediction Upload
+   File uploader accepting CSV with same schema
+   Run all 5 models on batch, download results as Excel with all predictions + ensemble
+
+G. Model Drift Simulator
+   Slider: "Fast forward to year 2027"
+   Re-scales car_age for all cars, shows how predictions shift
+   Visual: before/after price distribution overlay
+
+H. A/B Comparison Mode
+   Side-by-side prediction: "Compare two cars"
+   e.g. 2020 Maruti Petrol 30K kms vs 2019 Hyundai Diesel 60K kms
+   Show winner badge, price delta, feature-level diff table
+
+I. Explainability Mode Toggle
+   Toggle in sidebar: "Expert Mode / Simple Mode"
+   Expert: shows R², RMSE, feature importances, residuals
+   Simple: plain English summaries, no stats jargon
+
+J. Price History Simulation
+   Hypothetical: "When was the best time to buy this car?"
+   Show price trend from manufacture year to now with buy/sell indicators
+
+════════════════════════════════════
+DELIVERABLE
+════════════════════════════════════
+Produce the COMPLETE streamlit_app.py file.
+Every page must be fully implemented — no placeholder "# TODO" comments.
+All charts must use real data loaded from the project files.
+Apply all CSS and Plotly styling as specified.
+Include a requirements.txt at the end as a comment block.
+The app must run with: streamlit run streamlit_app.py
