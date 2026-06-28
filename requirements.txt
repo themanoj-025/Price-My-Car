@@ -28,4 +28,4 @@ statsmodels>=0.14.0
 # Notebook utilities
 nbformat>=5.0.0
 jupyter>=1.0.0
-nbconvert>=7.0.0
+nbconvert>=7.17.1
