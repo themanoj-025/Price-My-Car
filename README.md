@@ -8,6 +8,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/themanoj-025/Price-My-Car/ci.yml?branch=main&label=CI&logo=github)](https://github.com/themanoj-025/Price-My-Car/actions)
 [![Tests](https://img.shields.io/badge/tests-65%20passing-52b788?logo=pytest)](https://github.com/themanoj-025/Price-My-Car/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Dependabot](https://img.shields.io/badge/dependabot-enabled-025E8C?logo=dependabot)](https://github.com/themanoj-025/Price-My-Car/security/dependabot)
 
 > **AutoIntel v6.0** — A production-ready, full-stack ML application for predicting used car prices in the Indian market. Features **8 ML models**, **9 dashboard pages**, **user authentication**, **admin panel**, and **10 enhanced features** — all in a single deployable Streamlit app.
 

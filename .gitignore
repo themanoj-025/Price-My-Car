@@ -24,6 +24,7 @@ env/
 ml_ready/*.npy
 ml_ready/*.csv
 ml_ready/*.pkl                      # Ignore pkl files directly in ml_ready/
+ml_ready/models/*.pkl              # Ignore trained model artifacts in subdirectory
 !ml_ready/preprocessor.pkl          # Except the preprocessor (3.1K — needed for dashboard)
 
 # =============================================================================
