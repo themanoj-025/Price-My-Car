@@ -368,4 +368,3 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - Dataset sourced from the Indian used car market
 - Built with scikit-learn, XGBoost, Streamlit, and Plotly
-- Developed with [Codebuff](https://codebuff.com) AI-assisted development

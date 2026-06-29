@@ -578,7 +578,7 @@ html_parts.append(f'''
 html_parts.append('''
 </div>
 <div class="footer">
-    <p>Generated with &#128187; by Codebuff &nbsp;|&nbsp; Car Price Dataset EDA Report</p>
+    <p>Car Price Dataset EDA Report</p>
 </div>
 </body>
 </html>

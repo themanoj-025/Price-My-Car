@@ -49,3 +49,8 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# === Streamlit secrets (NEVER COMMIT) ===
+.streamlit/secrets.toml
+
+CLAUDE.md

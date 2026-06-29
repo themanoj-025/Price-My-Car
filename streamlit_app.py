@@ -1770,16 +1770,12 @@ def page_pipeline_inspector():
 
     # GitHub/portfolio links
     st.markdown("### 🔗 Links")
-    gl1, gl2, gl3 = st.columns(3)
+    gl1, gl2 = st.columns(2)
     with gl1:
         st.markdown(f'<a href="https://github.com" target="_blank">'
                     f'<div class="glass-card" style="text-align:center;cursor:pointer">'
                     f'<span style="font-size:1.5rem">📂</span><br>GitHub Repository</div></a>', unsafe_allow_html=True)
     with gl2:
-        st.markdown(f'<a href="https://codebuff.com" target="_blank">'
-                    f'<div class="glass-card" style="text-align:center;cursor:pointer">'
-                    f'<span style="font-size:1.5rem">🤖</span><br>Built with Codebuff</div></a>', unsafe_allow_html=True)
-    with gl3:
         st.markdown(f'<a href="https://opensource.org/licenses/MIT" target="_blank">'
                     f'<div class="glass-card" style="text-align:center;cursor:pointer">'
                     f'<span style="font-size:1.5rem">📜</span><br>MIT License</div></a>', unsafe_allow_html=True)
