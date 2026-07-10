@@ -1,42 +1,48 @@
-# Price-My-Car — Architecture
+# Architecture — Price-My-Car
 
-```mermaid
-graph TB
-    subgraph UI ["Streamlit Dashboard"]
-        A[streamlit_app.py] --> B[Prediction Form]
-        A --> C[Model Dashboard]
-        A --> D[Data Explorer]
-    end
+## System Architecture
 
-    subgraph ML ["ML Pipeline"]
-        E[helpers.py]
-        F[train_dashboard_models.py]
-        G[tune_hyperparameters.py]
-        H[prepare_ml_data.py]
-    end
-
-    subgraph Models ["Trained Models"]
-        I[ml_ready/preprocessor.pkl]
-        J[ml_ready/feature_names.pkl]
-        K[ml_ready/models/*.pkl]
-    end
-
-    subgraph Data ["Dataset"]
-        L[Cleaned_Car_data.csv]
-    end
-
-    UI --> E
-    UI --> I
-    UI --> J
-    UI --> K
-    ML --> L
-    ML --> I
-    ML --> K
+```
+User (Browser)
+       ↓
+  Streamlit Web App (streamlit_app.py)
+       │
+       ├── Data Loading & Preprocessing
+       │     ├── Cleaned_Car_data.csv
+       │     └── helpers.py (data utilities)
+       │
+       ├── ML Pipeline
+       │     ├── train_dashboard_models.py
+       │     ├── tune_hyperparameters.py
+       │     ├── prepare_ml_data.py
+       │     └── ml_ready/ (preprocessor.pkl, feature_names.pkl)
+       │
+       ├── Visualization
+       │     └── Car Price ML Comparison Notebook
+       │
+       └── Reports
+             └── generate_report.py
 ```
 
-## Key Patterns
+## Architecture Overview
+- **Single-tier**: Streamlit monolithic web application
+- **Frontend**: Streamlit renders UI server-side
+- **Backend**: Same Python process handles ML inference and business logic
+- **Data**: CSV file with cleaned car data
+- **ML**: Pre-trained models loaded from pickle files
 
-- **Multiple models compared**: Linear, Ridge, Lasso, KNN, SVR, Random Forest, Gradient Boosting, XGBoost
-- **Feature engineering**: Preprocessor pipeline in `ml_ready/preprocessor.pkl`
-- **No external API**: Fully local inference — no data sent to external services
-- **Notebook generation**: `create_notebook.py` auto-generates Jupyter notebooks from markdown
+## Data Flow
+1. User selects car features via Streamlit UI
+2. Input is preprocessed using saved preprocessor (`preprocessor.pkl`)
+3. Trained model predicts price
+4. Result displayed back to user
+
+## Key Components
+| Component | File | Role |
+|-----------|------|------|
+| Web UI | streamlit_app.py | User interface for price prediction |
+| Data Helpers | helpers.py | Data cleaning and utility functions |
+| ML Training | train_dashboard_models.py | Train prediction models |
+| Hyperparameter Tuning | tune_hyperparameters.py | Optimize model parameters |
+| Data Preparation | prepare_ml_data.py | Preprocess raw data for ML |
+| Report Generation | generate_report.py | Generate analysis reports |

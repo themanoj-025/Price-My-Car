@@ -368,3 +368,18 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 
 - Dataset sourced from the Indian used car market
 - Built with scikit-learn, XGBoost, Streamlit, and Plotly
+
+---
+
+## 📖 Documentation
+
+For comprehensive codebase intelligence and architecture documentation, see the [`docs/`](docs/) folder:
+
+| File | Description |
+|------|-------------|
+| [`memory.md`](memory.md) | Complete project brain — purpose, tech stack, features, data flow |
+| [`docs/architecture.md`](docs/architecture.md) | System architecture diagram + layered breakdown |
+| [`docs/routes.md`](docs/routes.md) | Full route table (app pages) |
+| [`docs/api-map.md`](docs/api-map.md) | Complete API inventory with inputs/outputs |
+| [`docs/database-map.md`](docs/database-map.md) | Data schema, entities, fields, relationships |
+| [`docs/dependency-graph.md`](docs/dependency-graph.md) | Module dependency map + critical files |
