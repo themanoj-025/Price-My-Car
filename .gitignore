@@ -38,6 +38,8 @@ report_output/*.html
 # =============================================================================
 # Codebuff / IDE
 # =============================================================================
+.vscode/*
+!.vscode/settings.json
 .sixth/
 streamlit.log
 _*.py
@@ -56,5 +58,6 @@ Thumbs.db
 .streamlit/secrets.toml
 
 .gemini/
+.cursorrules
 
 CLAUDE.md
