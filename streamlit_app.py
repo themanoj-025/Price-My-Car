@@ -11,8 +11,8 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import joblib
-import os, json, warnings, time, uuid, hashlib
-from datetime import datetime
+import os, json, warnings, time, uuid, bcrypt
+from datetime import datetime, timedelta
 from pathlib import Path
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.linear_model import LinearRegression, Ridge
@@ -51,11 +51,19 @@ def save_users_db(db: dict):
     with open(USERS_DB_PATH, "w") as f:
         json.dump(db, f, indent=2)
 
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_LOCKOUT_MINUTES = 15
+
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash a password using bcrypt."""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(password: str, hashed: str) -> bool:
-    return hash_password(password) == hashed
+    """Verify a password against its bcrypt hash."""
+    try:
+        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+    except (ValueError, AttributeError):
+        return False
 
 def username_exists(db: dict, username: str) -> bool:
     return any(u["username"].lower() == username.lower()
@@ -93,11 +101,53 @@ def create_user(db: dict, username: str, email: str, password: str, full_name: s
     return user
 
 def login_user(db: dict, username: str, password: str) -> tuple:
+    """
+    Authenticate a user with rate limiting and lockout protection.
+    Tracks failed attempts persistently in the database.
+    """
     user = get_user_by_username(db, username)
     if not user:
         return False, "Username not found.", {}
+
+    user_id = user["user_id"]
+
+    # Check persistent lockout
+    lock_until = user.get("lock_until")
+    if lock_until:
+        try:
+            lock_dt = datetime.fromisoformat(lock_until)
+            if datetime.now() < lock_dt:
+                remaining_minutes = int((lock_dt - datetime.now()).total_seconds() / 60)
+                return False, f"Account locked due to too many failed attempts. Try again in {remaining_minutes} minute(s).", {}
+        except (ValueError, TypeError):
+            pass  # malformed timestamp, ignore lock
+
+    # Reset lock if lockout period has expired
+    if lock_until:
+        try:
+            lock_dt = datetime.fromisoformat(lock_until)
+            if datetime.now() >= lock_dt:
+                user["failed_attempts"] = 0
+                user["lock_until"] = None
+        except (ValueError, TypeError):
+            pass
+
     if not verify_password(password, user["password_hash"]):
-        return False, "Incorrect password.", {}
+        # Track failed attempt persistently
+        attempts = user.get("failed_attempts", 0) + 1
+        user["failed_attempts"] = attempts
+        if attempts >= MAX_LOGIN_ATTEMPTS:
+            lock_time = datetime.now() + timedelta(minutes=LOGIN_LOCKOUT_MINUTES)
+            user["lock_until"] = lock_time.isoformat()
+            save_users_db(db)
+            return False, f"Maximum login attempts exceeded. Account locked for {LOGIN_LOCKOUT_MINUTES} minutes.", {}
+        save_users_db(db)
+        remaining = MAX_LOGIN_ATTEMPTS - attempts
+        return False, f"Incorrect password. {remaining} attempt(s) remaining.", {}
+
+    # Successful login — reset failed attempts
+    user["failed_attempts"] = 0
+    user["lock_until"] = None
     user["last_login"] = datetime.now().isoformat()
     user["login_count"] = user.get("login_count", 0) + 1
     db["users"][user["user_id"]] = user
@@ -140,6 +190,22 @@ def delete_user(user_id: str):
         del db["users"][user_id]
         db["meta"]["total_users"] = len(db["users"])
         save_users_db(db)
+
+def require_admin() -> bool:
+    """
+    Server-side admin authorization check.
+    Verifies the current user's role directly from the database,
+    not from session state (prevents client-side role tampering).
+    """
+    user = st.session_state.get('user', {})
+    user_id = user.get('user_id')
+    if not user_id:
+        return False
+    db = load_users_db()
+    db_user = db["users"].get(user_id)
+    if not db_user or db_user.get("role") != "admin":
+        return False
+    return True
 
 def update_user_profile(user_id: str, full_name: str, email: str, avatar_color: str):
     db = load_users_db()
@@ -475,7 +541,7 @@ def render_sidebar():
         nav_items = ["🏠 Dashboard", "📊 Dataset Explorer", "🔍 EDA Deep-Dive",
                      "🤖 Model Lab", "🧪 Residual Analysis", "🔮 Price Predictor",
                      "📈 Market Intelligence", "⚙️ Pipeline Inspector", "👤 My Profile"]
-        if role == 'admin':
+        if role == 'admin' and require_admin():
             nav_items.append("🛡️ Admin Panel")
 
         current_page = st.session_state.get('current_page', 'Dashboard')
@@ -1854,11 +1920,15 @@ def render_login_page():
           <h3 style="color:#e8eaf0;margin:0 0 1.5rem;text-align:center;font-size:1.3rem">Welcome Back</h3>
     """, unsafe_allow_html=True)
 
-    # Check login lockout
+    # Check login lockout (server-side persistent lockout is enforced in login_user())
+    # This client-side check provides immediate feedback without a server round-trip
     lock_time = st.session_state.get('login_lock_time', 0)
     attempts = st.session_state.get('login_attempts', 0)
-    if time.time() - lock_time < 30 and attempts >= 5:
-        st.warning("⏳ Too many attempts. Try again in {:.0f}s".format(30 - (time.time() - lock_time)))
+    if time.time() - lock_time < 15 * 60 and attempts >= 5:
+        remaining_secs = int(15 * 60 - (time.time() - lock_time))
+        remaining_min = remaining_secs // 60
+        remaining_sec = remaining_secs % 60
+        st.warning(f"⏳ Too many failed attempts. Please wait {remaining_min}m {remaining_sec}s before trying again.")
 
     with st.form("login_form", clear_on_submit=False):
         username = st.text_input("Username", placeholder="Enter your username", key="login_user")
@@ -2282,6 +2352,12 @@ page_map = {
     "My Profile": render_profile_page,
     "Admin Panel": render_admin_panel,
 }
+
+# Server-side authorization check: prevent non-admin users from accessing admin panel
+if page == "Admin Panel" and not require_admin():
+    st.error("⛔ Access denied. Admin privileges required.")
+    st.session_state.current_page = "Dashboard"
+    st.rerun()
 
 renderer = page_map.get(page, page_dashboard_home)
 renderer()
