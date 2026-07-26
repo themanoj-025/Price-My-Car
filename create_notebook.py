@@ -5,7 +5,6 @@ with radar chart comparison.
 
 from nbformat.v4 import new_notebook, new_code_cell, new_markdown_cell
 import nbformat
-import json
 
 nb = new_notebook()
 nb.metadata = {

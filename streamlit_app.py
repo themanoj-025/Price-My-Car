@@ -14,18 +14,13 @@ import joblib
 import os, json, warnings, time, uuid, bcrypt
 from datetime import datetime, timedelta
 from pathlib import Path
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-from sklearn.linear_model import LinearRegression, Ridge
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
-import xgboost as xgb
-from io import BytesIO, StringIO
+from io import BytesIO
 from helpers import (
-    fmt_inr, get_price_tier, price_tier_badge, get_fuel_simple,
-    get_company_tier, get_car_name_options, compute_deal_score,
-    ensemble_prediction, shap_lite_approximation,
-    generate_data_quality_report, generate_natural_language_explanation,
-    make_prediction, MODEL_METRICS, METRICS_DF, FUEL_COLORS, TIER_COLORS,
-    get_filtered_data as _get_filtered_data_raw,
+    fmt_inr, get_price_tier, get_fuel_simple, get_company_tier,
+    get_car_name_options, compute_deal_score, ensemble_prediction,
+    shap_lite_approximation, generate_data_quality_report,
+    generate_natural_language_explanation, make_prediction,
+    MODEL_METRICS, METRICS_DF, FUEL_COLORS, TIER_COLORS, get_filtered_data as _get_filtered_data_raw,
 )
 
 warnings.filterwarnings('ignore')
@@ -598,7 +593,7 @@ def render_sidebar():
                     f'📅 Data processed: Jun 2024<br>'
                     f'🧠 Trained on: 8,919 samples<br>'
                     f'<hr style="border:1px solid rgba(232,93,4,0.1);margin:8px 0">'
-                    f'Built with ❤️ using Streamlit<br>'
+                    f'Built using Streamlit<br>'
                     f'v6.0 · MIT License</div>', unsafe_allow_html=True)
 
         if st.button("🚪 Logout", use_container_width=True):

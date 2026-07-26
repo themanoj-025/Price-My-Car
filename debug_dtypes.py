@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 df = pd.read_csv('Cleaned_Car_data.csv', index_col=0)
 print("Dtypes:")

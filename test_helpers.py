@@ -3,10 +3,9 @@ Unit tests for AutoIntel — Car Price Intelligence helper functions.
 Tests all pure logic functions, data-dependent functions, and model-dependent functions.
 """
 
-import pytest
 import pandas as pd
 import numpy as np
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from helpers import (
     fmt_inr, get_price_tier, price_tier_badge, get_fuel_simple,
