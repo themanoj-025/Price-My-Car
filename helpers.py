@@ -10,15 +10,16 @@ import pandas as pd
 
 CURRENT_YEAR = 2025
 
+
 # =========================================================================
 # Formatting
 # =========================================================================
 def fmt_inr(val):
     """Format a number as Indian Rupees with compact notation."""
     if val >= 1e7:
-        return f"₹{val/1e7:.2f}Cr"
+        return f"₹{val / 1e7:.2f}Cr"
     if val >= 1e5:
-        return f"₹{val/1e5:.1f}L"
+        return f"₹{val / 1e5:.1f}L"
     return f"₹{val:,.0f}"
 
 
@@ -79,14 +80,70 @@ def get_filtered_data(df, companies, fuels, year_r, price_r, kms_r):
 # Pre-computed model metrics
 # =========================================================================
 MODEL_METRICS = [
-    {"Model": "Linear Regression", "Test R²": 0.7654, "RMSE": 247535, "MAE": 136979, "Time (s)": 0.04, "Params": "Standard"},
-    {"Model": "Ridge", "Test R²": 0.7605, "RMSE": 250108, "MAE": 136875, "Time (s)": 0.02, "Params": "α=1.0"},
-    {"Model": "XGBoost", "Test R²": 0.7463, "RMSE": 257436, "MAE": 131764, "Time (s)": 0.84, "Params": "lr=0.1, depth=3, n=300"},
-    {"Model": "Gradient Boosting", "Test R²": 0.7373, "RMSE": 261980, "MAE": 132826, "Time (s)": 3.74, "Params": "lr=0.05, depth=5, n=200"},
-    {"Model": "SVR", "Test R²": 0.6998, "RMSE": 280045, "MAE": 137355, "Time (s)": 26.32, "Params": "rbf kernel"},
-    {"Model": "Lasso", "Test R²": 0.6585, "RMSE": 298705, "MAE": 145382, "Time (s)": 0.06, "Params": "α=0.001"},
-    {"Model": "KNN", "Test R²": 0.6519, "RMSE": 301578, "MAE": 150841, "Time (s)": 0.00, "Params": "k=7, distance"},
-    {"Model": "Random Forest", "Test R²": 0.5850, "RMSE": 329250, "MAE": 147945, "Time (s)": 1.77, "Params": "depth=15, n=300"},
+    {
+        "Model": "Linear Regression",
+        "Test R²": 0.7654,
+        "RMSE": 247535,
+        "MAE": 136979,
+        "Time (s)": 0.04,
+        "Params": "Standard",
+    },
+    {
+        "Model": "Ridge",
+        "Test R²": 0.7605,
+        "RMSE": 250108,
+        "MAE": 136875,
+        "Time (s)": 0.02,
+        "Params": "α=1.0",
+    },
+    {
+        "Model": "XGBoost",
+        "Test R²": 0.7463,
+        "RMSE": 257436,
+        "MAE": 131764,
+        "Time (s)": 0.84,
+        "Params": "lr=0.1, depth=3, n=300",
+    },
+    {
+        "Model": "Gradient Boosting",
+        "Test R²": 0.7373,
+        "RMSE": 261980,
+        "MAE": 132826,
+        "Time (s)": 3.74,
+        "Params": "lr=0.05, depth=5, n=200",
+    },
+    {
+        "Model": "SVR",
+        "Test R²": 0.6998,
+        "RMSE": 280045,
+        "MAE": 137355,
+        "Time (s)": 26.32,
+        "Params": "rbf kernel",
+    },
+    {
+        "Model": "Lasso",
+        "Test R²": 0.6585,
+        "RMSE": 298705,
+        "MAE": 145382,
+        "Time (s)": 0.06,
+        "Params": "α=0.001",
+    },
+    {
+        "Model": "KNN",
+        "Test R²": 0.6519,
+        "RMSE": 301578,
+        "MAE": 150841,
+        "Time (s)": 0.00,
+        "Params": "k=7, distance",
+    },
+    {
+        "Model": "Random Forest",
+        "Test R²": 0.5850,
+        "RMSE": 329250,
+        "MAE": 147945,
+        "Time (s)": 1.77,
+        "Params": "depth=15, n=300",
+    },
 ]
 
 METRICS_DF = pd.DataFrame(MODEL_METRICS)
@@ -169,7 +226,9 @@ def generate_data_quality_report(df, df_original):
     nulls = int(df.isnull().sum().sum())
     kms_p99 = df["kms_driven"].quantile(0.99)
     kms_capped = int((df_original["kms_driven"] > kms_p99).sum())
-    alt_fuels = int(df_original[df_original["fuel_type"].isin(["CNG", "LPG", "Electric"])].shape[0])
+    alt_fuels = int(
+        df_original[df_original["fuel_type"].isin(["CNG", "LPG", "Electric"])].shape[0]
+    )
     return [
         ("✅", f"No nulls found — {nulls} missing values"),
         ("✅", f"{dupes:,} duplicates removed"),

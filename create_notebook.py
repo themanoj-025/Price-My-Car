@@ -8,15 +8,8 @@ import nbformat
 
 nb = new_notebook()
 nb.metadata = {
-    "kernelspec": {
-        "display_name": "Python 3",
-        "language": "python",
-        "name": "python3"
-    },
-    "language_info": {
-        "name": "python",
-        "version": "3.12.0"
-    }
+    "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+    "language_info": {"name": "python", "version": "3.12.0"},
 }
 
 cells = []
@@ -24,7 +17,8 @@ cells = []
 # ============================================================
 # Cell 1: Title
 # ============================================================
-cells.append(new_markdown_cell("""# Car Price Prediction - ML Algorithm Comparison
+cells.append(
+    new_markdown_cell("""# Car Price Prediction - ML Algorithm Comparison
 
 This notebook tests **8 different regression algorithms** on the car price dataset and compares them using a radar chart.
 
@@ -47,12 +41,14 @@ This notebook tests **8 different regression algorithms** on the car price datas
 - **R² Score** (higher is better, computed in original INR scale)
 - **RMSE** (Root Mean Squared Error, lower is better)
 - **MAE** (Mean Absolute Error, lower is better)
-"""))
+""")
+)
 
 # ============================================================
 # Cell 2: Imports
 # ============================================================
-cells.append(new_code_cell("""import numpy as np
+cells.append(
+    new_code_cell("""import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -78,20 +74,24 @@ print("All imports successful!")
 print(f"NumPy: {np.__version__}")
 print(f"Pandas: {pd.__version__}")
 print(f"XGBoost: {xgb.__version__}")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 3: Load data
 # ============================================================
-cells.append(new_markdown_cell("""## 1. Load Preprocessed Data
+cells.append(
+    new_markdown_cell("""## 1. Load Preprocessed Data
 
 Loading the data prepared by the preprocessing pipeline from `ml_ready/` folder.
 
 > **Note:** `y_train` and `y_test` contain log1p-transformed Price values.
 > Metrics are reported in **original INR scale** (via `expm1()`).
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# Load preprocessed data
+cells.append(
+    new_code_cell("""# Load preprocessed data
 X_train = np.load('ml_ready/X_train.npy')
 X_test = np.load('ml_ready/X_test.npy')
 y_train = np.load('ml_ready/y_train.npy')
@@ -106,17 +106,21 @@ print(f"Number of features: {len(feature_names)}")
 print(f"\\nFirst 10 feature names: {feature_names[:10].tolist()}")
 print(f"\\ny_train range: {y_train.min():.4f} - {y_train.max():.4f}")
 print(f"Equivalent INR: Rs.{np.expm1(y_train.min()):,.0f} - Rs.{np.expm1(y_train.max()):,.0f}")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 4: Define models
 # ============================================================
-cells.append(new_markdown_cell("""## 2. Define Models & Train
+cells.append(
+    new_markdown_cell("""## 2. Define Models & Train
 
 Training all 8 regression models on **log-transformed Price**. Metrics are computed in **original INR scale** by inverting predictions with `expm1()`.
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# Define all models (tuned hyperparams where available)
+cells.append(
+    new_code_cell("""# Define all models (tuned hyperparams where available)
 models = {
     'Linear Regression': LinearRegression(),
     'Ridge': Ridge(alpha=1.0),
@@ -180,17 +184,21 @@ for name, model in models.items():
     print(f"{name:<22} {train_r2:<10.4f} {test_r2:<10.4f} Rs.{rmse:<10,.0f} Rs.{mae:<10,.0f} {train_time:<8.2f}")
 
 print("\\nTraining complete!")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 5: Results table
 # ============================================================
-cells.append(new_markdown_cell("""## 3. Results Summary Table
+cells.append(
+    new_markdown_cell("""## 3. Results Summary Table
 
 A clean summary of all algorithm performances sorted by Test R² score (in original INR scale).
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# Create results dataframe
+cells.append(
+    new_code_cell("""# Create results dataframe
 results_df = pd.DataFrame(results)
 results_df = results_df.sort_values('Test R²', ascending=False).reset_index(drop=True)
 
@@ -217,19 +225,23 @@ best_mae = results_df.loc[results_df['MAE'].idxmin()]
 print(f"Best Test R²:  {best_test_r2['Model']} ({best_test_r2['Test R²']:.4f})")
 print(f"Lowest RMSE:   {best_rmse['Model']} (Rs.{best_rmse['RMSE']:,.0f})")
 print(f"Lowest MAE:    {best_mae['Model']} (Rs.{best_mae['MAE']:,.0f})")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 6: Bar chart comparison
 # ============================================================
-cells.append(new_markdown_cell("""## 4. Visual Comparison
+cells.append(
+    new_markdown_cell("""## 4. Visual Comparison
 
 ### 4a. Bar Chart - Test R² Score
 
 Higher is better. This shows how well each model explains the variance in car prices.
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# Bar chart - Test R²
+cells.append(
+    new_code_cell("""# Bar chart - Test R²
 fig, ax = plt.subplots(figsize=(12, 6))
 colors = plt.cm.viridis(np.linspace(0.2, 0.9, len(results_df)))
 bars = ax.barh(range(len(results_df)), results_df['Test R²'].values, color=colors, edgecolor='white')
@@ -247,17 +259,21 @@ fig.tight_layout()
 plt.savefig('report_output/images/model_comparison_r2.png', dpi=120, bbox_inches='tight')
 plt.show()
 print("Saved: report_output/images/model_comparison_r2.png")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 7: RMSE & MAE comparison
 # ============================================================
-cells.append(new_markdown_cell("""### 4b. RMSE & MAE Comparison
+cells.append(
+    new_markdown_cell("""### 4b. RMSE & MAE Comparison
 
 Lower is better for both metrics. RMSE penalizes large errors more heavily.
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# RMSE and MAE comparison
+cells.append(
+    new_code_cell("""# RMSE and MAE comparison
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
 # RMSE
@@ -284,12 +300,14 @@ fig.tight_layout()
 plt.savefig('report_output/images/model_rmse_mae.png', dpi=120, bbox_inches='tight')
 plt.show()
 print("Saved: report_output/images/model_rmse_mae.png")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 8: Radar Chart
 # ============================================================
-cells.append(new_markdown_cell("""### 4c. Radar Chart - Multi-dimensional Comparison
+cells.append(
+    new_markdown_cell("""### 4c. Radar Chart - Multi-dimensional Comparison
 
 The radar chart shows each algorithm's performance across 5 normalized metrics:
 - **Test R²** (scaled 0-1, higher better)
@@ -299,9 +317,11 @@ The radar chart shows each algorithm's performance across 5 normalized metrics:
 - **Training Time** (inverted, higher better after normalization)
 
 This gives a holistic view of which algorithm offers the best trade-off.
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# ============================================================
+cells.append(
+    new_code_cell("""# ============================================================
 # Radar Chart for Algorithm Comparison
 # ============================================================
 
@@ -384,17 +404,21 @@ fig.tight_layout()
 plt.savefig('report_output/images/radar_comparison.png', dpi=150, bbox_inches='tight')
 plt.show()
 print("Saved: report_output/images/radar_comparison.png")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 9: Feature Importance (tree-based)
 # ============================================================
-cells.append(new_markdown_cell("""## 5. Feature Importance (from XGBoost)
+cells.append(
+    new_markdown_cell("""## 5. Feature Importance (from XGBoost)
 
 XGBoost provides built-in feature importance, showing which factors most influence car prices.
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# Feature importance from XGBoost
+cells.append(
+    new_code_cell("""# Feature importance from XGBoost
 xgb_model = models['XGBoost']
 importance = xgb_model.feature_importances_
 
@@ -417,17 +441,21 @@ fig.tight_layout()
 plt.savefig('report_output/images/feature_importance.png', dpi=120, bbox_inches='tight')
 plt.show()
 print("Saved: report_output/images/feature_importance.png")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 10: Residual analysis
 # ============================================================
-cells.append(new_markdown_cell("""## 6. Residual Analysis (Best Model)
+cells.append(
+    new_markdown_cell("""## 6. Residual Analysis (Best Model)
 
 Examining the residuals of the best-performing model to check for patterns.
-"""))
+""")
+)
 
-cells.append(new_code_cell("""# Find best model by Test R²
+cells.append(
+    new_code_cell("""# Find best model by Test R²
 best_name = results_df.loc[results_df['Test R²'].idxmax(), 'Model']
 best_model = models[best_name]
 y_pred = best_model.predict(X_test)
@@ -463,12 +491,14 @@ fig.tight_layout()
 plt.savefig('report_output/images/residual_analysis.png', dpi=120, bbox_inches='tight')
 plt.show()
 print("Saved: report_output/images/residual_analysis.png")
-"""))
+""")
+)
 
 # ============================================================
 # Cell 11: Summary
 # ============================================================
-cells.append(new_markdown_cell("""## 7. Hyperparameter Tuning with GridSearchCV
+cells.append(
+    new_markdown_cell("""## 7. Hyperparameter Tuning with GridSearchCV
 
 After evaluating all 8 models, we apply GridSearchCV with 3-fold CV to fine-tune the **top 3 tree-based models**: Gradient Boosting, XGBoost, and Random Forest.
 
@@ -478,9 +508,11 @@ After evaluating all 8 models, we apply GridSearchCV with 3-fold CV to fine-tune
 | Gradient Boosting | n_estimators [100,200,300], max_depth [3,5,7], lr [0.05,0.1], min_samples_leaf [2,5], subsample [0.8,1.0] |
 | XGBoost | n_estimators [100,200,300], max_depth [3,6,9], lr [0.05,0.1,0.2], subsample [0.8,1.0], colsample_bytree [0.8,1.0] |
 | Random Forest | n_estimators [100,200,300], max_depth [10,15,None], min_samples_leaf [2,5], min_samples_split [2,5] |
-"""))
+""")
+)
 
-cells.append(new_code_cell("""from sklearn.model_selection import GridSearchCV
+cells.append(
+    new_code_cell("""from sklearn.model_selection import GridSearchCV
 
 # Only tune the top 3 tree-based models (SVR, KNN, linear models are not worth tuning)
 tune_config = {
@@ -538,16 +570,20 @@ for name, config in tune_config.items():
 
 print(f"\\n{'='*70}")
 print("Tuning complete! See results below.")
-"""))
+""")
+)
 
-cells.append(new_markdown_cell("""## 8. Conclusion
+cells.append(
+    new_markdown_cell("""## 8. Conclusion
 
 | Rank | Model | Test R² | RMSE | MAE |
 |------|-------|---------|------|-----|
-"""))
+""")
+)
 
 # Add summary markdown with actual results placeholders - we'll compute dynamically
-cells.append(new_code_cell("""# Print final summary
+cells.append(
+    new_code_cell("""# Print final summary
 print("=" * 70)
 print("FINAL MODEL RANKING (original INR scale)")
 print("=" * 70)
@@ -567,14 +603,15 @@ print("4. Random Forest underperforms GB/XGBoost on this tabular dataset")
 print("5. Linear models (Ridge, Lasso) improved significantly with log-transform")
 print("6. SVR performs poorly - feature scaling across all 39 features needed")
 print("7. Key price drivers: car_age, company brand, and fuel_type")
-"""))
+""")
+)
 
 # Assemble notebook
 nb.cells = cells
 
 # Write notebook
-output_path = 'car_price_ml_comparison.ipynb'
-with open(output_path, 'w', encoding='utf-8') as f:
+output_path = "car_price_ml_comparison.ipynb"
+with open(output_path, "w", encoding="utf-8") as f:
     nbformat.write(nb, f)
 
 print(f"Notebook created: {output_path}")
