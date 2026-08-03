@@ -1,0 +1,59 @@
+# ── Price-My-Car — .dockerignore ──────────────────────────────────────
+
+# VCS metadata
+.git
+.gitignore
+.gitattributes
+
+# Python caches / artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Runtime auth data (regenerated — the db lives on a volume)
+users_db.json
+users.json
+
+# IDE / editor config
+.vscode/
+.idea/
+*.swp
+*.swo
+.cursorrules
+
+# CI / agent config
+.github/
+.gemini/
+AGENTS.md
+AGENTS_FIX.md
+PROJECT_ANALYSIS.md
+
+# Logs & scratch
+*.log
+logs/
+archived_logs/
+latest_logs/
+report_output/
+
+# Notebooks (not needed at runtime)
+*.ipynb
