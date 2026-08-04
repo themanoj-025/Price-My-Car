@@ -10,6 +10,7 @@ on:
 
 jobs:
   test:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -45,6 +46,7 @@ jobs:
         run: python -m pytest test_helpers.py -v --tb=short -x
 
   link-check:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,6 +70,7 @@ jobs:
         continue-on-error: true
 
   docker:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     needs: test
     steps:

@@ -19,6 +19,7 @@ on:
 
 jobs:
   analyze:
+    timeout-minutes: 15
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
