@@ -4,6 +4,8 @@
 
 name: "Welcome new contributors"
 
+permissions:
+  contents: read
 on:
   issues:
     types: [opened]
