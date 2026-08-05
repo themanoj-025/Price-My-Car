@@ -476,7 +476,7 @@ html_parts.append(f"""
 """)
 
 # Section 3: Fuel Type Analysis
-html_parts.append(f"""
+html_parts.append("""
 <div class="section">
     <h2>&#51; Fuel Type Analysis</h2>
     <div class="dual">
@@ -524,7 +524,7 @@ html_parts.append(f"""
 """)
 
 # Section 5: Feature Correlations
-html_parts.append(f"""
+html_parts.append("""
 <div class="section">
     <h2>&#53; Feature Correlations</h2>
     <table class="stats-table" style="max-width:500px">

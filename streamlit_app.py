@@ -11,7 +11,12 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import joblib
-import os, json, warnings, time, uuid, bcrypt
+import os
+import json
+import warnings
+import time
+import uuid
+import bcrypt
 from datetime import datetime, timedelta
 from pathlib import Path
 from io import BytesIO
@@ -141,7 +146,7 @@ def login_user(db: dict, username: str, password: str) -> tuple:
     if not user:
         return False, "Username not found.", {}
 
-    user_id = user["user_id"]
+    user["user_id"]
 
     # Check persistent lockout
     lock_until = user.get("lock_until")
@@ -770,12 +775,12 @@ def render_sidebar():
 
         # Bottom section
         st.markdown(
-            f'<div style="font-size:0.75rem;color:#9da3b4;text-align:center">'
-            f"📅 Data processed: Jun 2024<br>"
-            f"🧠 Trained on: 8,919 samples<br>"
-            f'<hr style="border:1px solid rgba(232,93,4,0.1);margin:8px 0">'
-            f"Built using Streamlit<br>"
-            f"v6.0 · MIT License</div>",
+            '<div style="font-size:0.75rem;color:#9da3b4;text-align:center">'
+            "📅 Data processed: Jun 2024<br>"
+            "🧠 Trained on: 8,919 samples<br>"
+            '<hr style="border:1px solid rgba(232,93,4,0.1);margin:8px 0">'
+            "Built using Streamlit<br>"
+            "v6.0 · MIT License</div>",
             unsafe_allow_html=True,
         )
 
@@ -1011,8 +1016,8 @@ def page_dataset_explorer():
 
     with tab1:
         # Color KMs based on condition
-        km_med = float(df["kms_driven"].median())
-        km_high = float(df["kms_driven"].quantile(0.75))
+        float(df["kms_driven"].median())
+        float(df["kms_driven"].quantile(0.75))
         col_config = {
             "name": st.column_config.TextColumn("Car Name", width="large"),
             "company": st.column_config.TextColumn("Company", width="small"),
@@ -1029,10 +1034,10 @@ def page_dataset_explorer():
         }
         # Apply conditional coloring on KMs via CSS
         st.markdown(
-            f"""<style>
-        .kms-low td:nth-child(5) {{ color: #52b788 !important; }}
-        .kms-mid td:nth-child(5) {{ color: #f48c06 !important; }}
-        .kms-high td:nth-child(5) {{ color: #e85d04 !important; }}
+            """<style>
+        .kms-low td:nth-child(5) { color: #52b788 !important; }
+        .kms-mid td:nth-child(5) { color: #f48c06 !important; }
+        .kms-high td:nth-child(5) { color: #e85d04 !important; }
         </style>""",
             unsafe_allow_html=True,
         )
@@ -1770,23 +1775,23 @@ def page_model_comparison():
                     st.dataframe(gs_df, use_container_width=True)
                 if "xgboost" in name:
                     st.markdown(
-                        f'<div class="glass-card" style="text-align:center;border-left:3px solid #52b788">'
-                        f'<strong>Improvement Delta:</strong> <span style="color:#52b788">+0.0104 R²</span> '
-                        f"from tuning XGBoost (0.7359 → 0.7463)</div>",
+                        '<div class="glass-card" style="text-align:center;border-left:3px solid #52b788">'
+                        '<strong>Improvement Delta:</strong> <span style="color:#52b788">+0.0104 R²</span> '
+                        "from tuning XGBoost (0.7359 → 0.7463)</div>",
                         unsafe_allow_html=True,
                     )
                 if "gradient_boosting" in name:
                     st.markdown(
-                        f'<div class="glass-card" style="text-align:center;border-left:3px solid #4895ef">'
-                        f'<strong>Improvement Delta:</strong> <span style="color:#4895ef">+0.0082 R²</span> '
-                        f"from tuning Gradient Boosting</div>",
+                        '<div class="glass-card" style="text-align:center;border-left:3px solid #4895ef">'
+                        '<strong>Improvement Delta:</strong> <span style="color:#4895ef">+0.0082 R²</span> '
+                        "from tuning Gradient Boosting</div>",
                         unsafe_allow_html=True,
                     )
                 if "random_forest" in name:
                     st.markdown(
-                        f'<div class="glass-card" style="text-align:center;border-left:3px solid #9b5de5">'
-                        f'<strong>Improvement Delta:</strong> <span style="color:#9b5de5">+0.0035 R²</span> '
-                        f"from tuning Random Forest</div>",
+                        '<div class="glass-card" style="text-align:center;border-left:3px solid #9b5de5">'
+                        '<strong>Improvement Delta:</strong> <span style="color:#9b5de5">+0.0035 R²</span> '
+                        "from tuning Random Forest</div>",
                         unsafe_allow_html=True,
                     )
     else:
@@ -1878,7 +1883,7 @@ def page_residual_analysis():
     model = models[chosen]
 
     with st.spinner("Computing residuals..."):
-        X_test, y_test = pp_data["X_test"], pp_data["y_test"]
+        X_test, _y_test = pp_data["X_test"], pp_data["y_test"]
         y_test_orig = pp_data["y_test_orig"]
         pred_log = model.predict(X_test)
         pred_orig = np.expm1(pred_log)
@@ -2020,7 +2025,7 @@ def page_residual_analysis():
 
     # Calibration curve
     st.markdown("### 📐 Calibration Curve")
-    sorted_actual = np.sort(y_test_orig)
+    np.sort(y_test_orig)
     percentiles = np.linspace(5, 95, 10, dtype=int)
     actual_cov = []
     predicted_cov = []
@@ -2065,7 +2070,7 @@ def page_residual_analysis():
     )
     worst = errors_df.nlargest(20, "error_pct")
     # Map back to car names if possible
-    car_data = df.sample(min(len(worst), len(df)))
+    df.sample(min(len(worst), len(df)))
     worst_display = worst.copy()
     worst_display["Actual"] = worst_display["actual"].apply(fmt_inr)
     worst_display["Predicted"] = worst_display["pred"].apply(fmt_inr)
@@ -2162,8 +2167,8 @@ def page_price_predictor():
                     in companies
                     else 0,
                 )
-                name_options = get_car_name_options(df, company)
-                car_name = st.text_input(
+                get_car_name_options(df, company)
+                st.text_input(
                     "Car Name (optional)",
                     key=f"name{suffix}",
                     placeholder="e.g., Swift Dzire VDI",
@@ -2217,7 +2222,7 @@ def page_price_predictor():
                         value="±15%",
                         key=f"ci{suffix}",
                     )
-                    show_similar = st.checkbox(
+                    st.checkbox(
                         "Show similar cars", value=True, key=f"sim{suffix}"
                     )
                     compare_all = st.checkbox(
@@ -2433,7 +2438,7 @@ def page_price_predictor():
                     base = pred - sum(vals)
                     waterfall_vals = [base] + vals
                     waterfall_names = ["Base"] + [f"{n}" for n in names]
-                    colors_water = ["#5a6270"] + [
+                    ["#5a6270"] + [
                         "#52b788" if v > 0 else "#e85d04" for v in vals
                     ]
                     fig2 = go.Figure(
@@ -3192,10 +3197,10 @@ def page_pipeline_inspector():
         except:
             st.info("requirements.txt not found")
         st.markdown(
-            f'<div class="glass-card" style="font-size:0.85rem">'
-            f"<strong>Python:</strong> 3.9+ | <strong>Streamlit:</strong> 1.57.0 | "
-            f"<strong>scikit-learn:</strong> 1.7.2 | <strong>XGBoost:</strong> 3.2.0 | "
-            f"<strong>Plotly:</strong> 6.7.0</div>",
+            '<div class="glass-card" style="font-size:0.85rem">'
+            "<strong>Python:</strong> 3.9+ | <strong>Streamlit:</strong> 1.57.0 | "
+            "<strong>scikit-learn:</strong> 1.7.2 | <strong>XGBoost:</strong> 3.2.0 | "
+            "<strong>Plotly:</strong> 6.7.0</div>",
             unsafe_allow_html=True,
         )
 
@@ -3204,16 +3209,16 @@ def page_pipeline_inspector():
     gl1, gl2 = st.columns(2)
     with gl1:
         st.markdown(
-            f'<a href="https://github.com" target="_blank">'
-            f'<div class="glass-card" style="text-align:center;cursor:pointer">'
-            f'<span style="font-size:1.5rem">📂</span><br>GitHub Repository</div></a>',
+            '<a href="https://github.com" target="_blank">'
+            '<div class="glass-card" style="text-align:center;cursor:pointer">'
+            '<span style="font-size:1.5rem">📂</span><br>GitHub Repository</div></a>',
             unsafe_allow_html=True,
         )
     with gl2:
         st.markdown(
-            f'<a href="https://opensource.org/licenses/MIT" target="_blank">'
-            f'<div class="glass-card" style="text-align:center;cursor:pointer">'
-            f'<span style="font-size:1.5rem">📜</span><br>MIT License</div></a>',
+            '<a href="https://opensource.org/licenses/MIT" target="_blank">'
+            '<div class="glass-card" style="text-align:center;cursor:pointer">'
+            '<span style="font-size:1.5rem">📜</span><br>MIT License</div></a>',
             unsafe_allow_html=True,
         )
 
@@ -3457,7 +3462,7 @@ def render_signup_page():
             has_upper = any(c.isupper() for c in pwd_val)
             has_lower = any(c.islower() for c in pwd_val)
             has_digit = any(c.isdigit() for c in pwd_val)
-            has_special = any(not c.isalnum() for c in pwd_val)
+            any(not c.isalnum() for c in pwd_val)
             if pwd_len < 6:
                 strength_pct, strength_color, strength_label = 20, "#ef233c", "Weak"
             elif pwd_len < 10 or not (has_upper and has_lower and has_digit):
