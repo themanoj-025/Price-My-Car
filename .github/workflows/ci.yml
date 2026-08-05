@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        # 3.12 only: numpy>=2.5.1 and xgboost>=3.3.0 (dependabot) require
+        # Python >=3.12, so testing 3.11 would fail the pipeline.
+        python-version: ["3.12"]
 
     steps:
       - name: Checkout repository
