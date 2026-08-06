@@ -63,7 +63,7 @@ print(f"\n[5] Features after engineering: {features}")
 y_original = df_ml["Price"].copy()
 y_log = np.log1p(df_ml["Price"])  # log(1 + price) — handles zero values
 
-print(f"\n[6] Log-transformed Price:")
+print("\n[6] Log-transformed Price:")
 print(f"    Original skewness: {y_original.skew():.2f}")
 print(f"    Log-transformed skewness: {y_log.skew():.2f}")
 print(f"    Original range: Rs.{y_original.min():,.0f} - Rs.{y_original.max():,.0f}")
@@ -76,7 +76,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y_log, test_size=0.2, random_state=42
 )
 
-print(f"\n[7] Train/test split:")
+print("\n[7] Train/test split:")
 print(f"    X_train: {X_train.shape}, y_train: {y_train.shape}")
 print(f"    X_test:  {X_test.shape}, y_test:  {y_test.shape}")
 
@@ -103,7 +103,7 @@ cat_feature_names = preprocessor.named_transformers_["cat"].get_feature_names_ou
 )
 all_feature_names = numerical_features + list(cat_feature_names)
 
-print(f"\n[8] Preprocessing complete:")
+print("\n[8] Preprocessing complete:")
 print(f"    X_train processed: {X_train_processed.shape}")
 print(f"    X_test processed:  {X_test_processed.shape}")
 print(f"    Feature count:     {len(all_feature_names)}")
@@ -135,21 +135,21 @@ y_original_train, y_original_test = train_test_split(
 np.save("ml_ready/y_train_original.npy", y_original_train.values)
 np.save("ml_ready/y_test_original.npy", y_original_test.values)
 print(
-    f"    Also saved original (untransformed) Price to y_train_original.npy / y_test_original.npy"
+    "    Also saved original (untransformed) Price to y_train_original.npy / y_test_original.npy"
 )
 
-print(f"\n[9] Saved to 'ml_ready/' folder:")
+print("\n[9] Saved to 'ml_ready/' folder:")
 print(f"    |-- X_train.npy        ({X_train_processed.nbytes / 1e6:.1f} MB)")
-print(f"    |-- X_test.npy")
-print(f"    |-- y_train.npy        (log1p-transformed)")
-print(f"    |-- y_test.npy         (log1p-transformed)")
-print(f"    |-- y_train_original.npy (original Price for reference)")
-print(f"    |-- y_test_original.npy")
-print(f"    |-- feature_names.npy")
-print(f"    |-- train_data.csv")
-print(f"    |-- test_data.csv")
-print(f"    |-- preprocessor.pkl")
-print(f"    |-- feature_names.pkl")
+print("    |-- X_test.npy")
+print("    |-- y_train.npy        (log1p-transformed)")
+print("    |-- y_test.npy         (log1p-transformed)")
+print("    |-- y_train_original.npy (original Price for reference)")
+print("    |-- y_test_original.npy")
+print("    |-- feature_names.npy")
+print("    |-- train_data.csv")
+print("    |-- test_data.csv")
+print("    |-- preprocessor.pkl")
+print("    |-- feature_names.pkl")
 
 # -- 10. Summary -----------------------------------------------------------
 print(f"\n{'=' * 60}")
@@ -161,21 +161,21 @@ print(f"  Final rows:         {len(df)}")
 print(f"  Features:           {len(all_feature_names)}")
 print(f"  Train samples:      {len(y_train)}")
 print(f"  Test samples:       {len(y_test)}")
-print(f"  Target:             Price (log1p-transformed regression)")
+print("  Target:             Price (log1p-transformed regression)")
 print(
     f"  Original skewness:  {y_original.skew():.2f} -> log skewness: {y_log.skew():.2f}"
 )
-print(f"")
-print(f"  Predict with:       np.expm1(prediction) to get original INR price")
-print(f"")
-print(f"  Ready for ML algorithms like:")
-print(f"    - Linear Regression / Ridge / Lasso")
-print(f"    - Random Forest / Gradient Boosting / XGBoost")
-print(f"    - Neural Networks")
+print("")
+print("  Predict with:       np.expm1(prediction) to get original INR price")
+print("")
+print("  Ready for ML algorithms like:")
+print("    - Linear Regression / Ridge / Lasso")
+print("    - Random Forest / Gradient Boosting / XGBoost")
+print("    - Neural Networks")
 print(f"{'=' * 60}")
 
 # -- 11. Sanity Check -----------------------------------------------------
-print(f"\n[11] Quick validation:")
+print("\n[11] Quick validation:")
 print(f"    X_train mean (should be ~0): {X_train_processed.mean(axis=0)[:5].round(3)}")
 print(f"    X_train std  (should be ~1): {X_train_processed.std(axis=0)[:5].round(3)}")
 print(f"    y_train (log) range: {y_train.min():.4f} - {y_train.max():.4f}")
@@ -184,4 +184,4 @@ print(
     f"    Inverse check: expm1({y_train.mean():.4f}) = Rs.{np.expm1(y_train.mean()):,.0f} (original price scale)"
 )
 print(f"    Missing values in processed data: {np.isnan(X_train_processed).sum()}")
-print(f"\nDone! ML-ready data successfully prepared.")
+print("\nDone! ML-ready data successfully prepared.")

@@ -30,7 +30,7 @@ X_test = np.load("ml_ready/X_test.npy")
 y_train = np.load("ml_ready/y_train.npy")
 y_test = np.load("ml_ready/y_test.npy")
 
-print(f"\nLoaded log-transformed data:")
+print("\nLoaded log-transformed data:")
 print(f"  X_train: {X_train.shape}, y_train: {y_train.shape}")
 print(f"  X_test:  {X_test.shape}, y_test:  {y_test.shape}")
 print(f"  y_train range: {y_train.min():.4f} - {y_train.max():.4f}")
@@ -126,14 +126,14 @@ for model_name, config in models_to_tune.items():
     cv_score = gs.best_score_  # This is CV mean R² in log-space
 
     print(f"\n  [OK] Tuned in {elapsed:.1f}s")
-    print(f"\n  Best Parameters:")
+    print("\n  Best Parameters:")
     for param, value in gs.best_params_.items():
         print(f"    {param}: {value}")
-    print(f"\n  Log-space performance:")
+    print("\n  Log-space performance:")
     print(f"    CV R² (log):         {cv_score:.4f}")
     print(f"    Train R² (log):      {train_r2_log:.4f}")
     print(f"    Test R² (log):       {test_r2_log:.4f}")
-    print(f"\n  Original-scale performance:")
+    print("\n  Original-scale performance:")
     print(f"    Train R² (original): {train_r2:.4f}")
     print(f"    Test R² (original):  {test_r2:.4f}")
     print(f"    RMSE (original):     INR {rmse:,.0f}")
@@ -195,5 +195,5 @@ for r in tuning_results:
     for param, value in r["Best Params"].items():
         print(f"  {param}: {value}")
 
-print(f"\nAll tuned models saved to ml_ready/models/")
+print("\nAll tuned models saved to ml_ready/models/")
 print("Done!")
