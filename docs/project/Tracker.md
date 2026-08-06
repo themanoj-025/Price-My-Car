@@ -60,6 +60,7 @@
 
 ## 6. Changelog
 
+- 2026-08-06: **Documentation suite complete** — 14-file suite consolidated into `docs/`, categorized structure, cross-linked navigation, deployment/git/auth diagrams, quality gate passed (238/238), merged to `main`.
 | Date | What shipped |
 | --- | --- |
 | 2026-08-06 | Docs suite v0.1 |
