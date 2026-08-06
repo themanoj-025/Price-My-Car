@@ -82,6 +82,23 @@ test_helpers.py           # 65 tests
 **Ask a human when:** auth model changes, new datasets, scope changes.
 **Decide autonomously:** UI polish, tests, model tuning.
 
+## Git / PR Workflow
+
+```mermaid
+flowchart TD
+    A["Start: pick an issue / task"] --> B["Create branch: feat/slug, fix/slug"]
+    B --> C["Commit: Conventional Commits"]
+    C --> D["Push branch to origin"]
+    D --> E["Open pull request: ≤ 400 lines"]
+    E --> F{"CI green?"}
+    F -- No --> C
+    F -- Yes --> G{"Review approved?"}
+    G -- No --> H["Address feedback"]
+    H --> C
+    G -- Yes --> I["Squash merge to main"]
+    I --> J["Delete merged branch"]
+```
+
 ## 10. Related Documents
 
 | Document | Relationship |

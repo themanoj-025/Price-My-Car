@@ -43,6 +43,27 @@
 
 - Internal contracts; UI is the only consumer.
 
+## Authentication Flow (session-less credential check)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as Streamlit App
+    participant A as authenticate()
+    participant S as users JSON store
+    U->>UI: submit username + password
+    UI->>A: authenticate(credentials)
+    A->>S: lookup user record
+    S-->>A: user or None
+    alt valid credentials
+        A-->>UI: user object
+        UI-->>U: dashboard access granted
+    else invalid credentials
+        A-->>UI: auth_failed
+        UI-->>U: retry login
+    end
+```
+
 ## 5. Related Documents
 
 | Document | Relationship |

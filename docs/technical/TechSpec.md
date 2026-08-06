@@ -108,6 +108,34 @@ None — fully local/self-contained.
 | Log-skew | log1p transform (documented win) |
 | JSON concurrency | Low-scale; admin panel |
 
+## Deployment Topology
+
+```mermaid
+graph TD
+    USER[User] --> UI[Streamlit dashboard]
+    UI --> MODELS[8 model ensemble: sklearn + XGBoost]
+    MODELS --> DATA[(Cleaned car data)]
+    UI --> AUTH[authenticate + users JSON persistence]
+    subgraph Deploy
+        UI --> SC[Streamlit Cloud]
+        CI[GitHub Actions pipeline] --> MODELS
+    end
+```
+
+## Sequence: Price Prediction
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as Streamlit App
+    participant M as Model Ensemble
+    U->>UI: enter car attributes
+    UI->>M: predict_price(features)
+    M->>M: ensemble inference (sklearn + XGBoost)
+    M-->>UI: price estimate + confidence
+    UI-->>U: estimate with feature breakdown
+```
+
 ## 11. Related Documents
 
 | Document | Relationship |
