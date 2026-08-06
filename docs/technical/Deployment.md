@@ -1,19 +1,19 @@
 # Deployment — AutoIntel: Environments, CI/CD, Rollback
 
-|Field|Value|
-|---|---|
-|Version|v0.1|
-|Last Updated|2026-08-06|
-|Owner|DevOps Engineer|
-|Status|In Review|
+| Field | Value |
+| --- | --- |
+| Version | v0.1 |
+| Last Updated | 2026-08-06 |
+| Owner | DevOps Engineer |
+| Status | In Review |
 
 ---
 
 ## 1. Service Topology
 
-|Service|Purpose|Port|
-|---|---|---|
-|streamlit|App|8501|
+| Service | Purpose | Port |
+| --- | --- | --- |
+| streamlit | App | 8501 |
 
 ## 2. CI/CD Pipeline
 
@@ -27,10 +27,10 @@ graph LR
 
 ## 3. Environment Promotion
 
-|Step|From|To|Trigger|
-|---|---|---|---|
-|1|main|staging|CI green|
-|2|staging|prod (Streamlit Cloud)|manual|
+| Step | From | To | Trigger |
+| --- | --- | --- | --- |
+| 1 | main | staging | CI green |
+| 2 | staging | prod (Streamlit Cloud) | manual |
 
 ## 4. Rollback Procedure
 
@@ -49,18 +49,18 @@ graph LR
 
 ## 7. Related Documents
 
-|Document|Relationship|
-|---|---|
-|[TechSpec.md](TechSpec.md)|Environments|
-|[SecurityAndCompliance.md](SecurityAndCompliance.md)|Deploy policy|
-|[PRD.md](../product/PRD.md)|Release criteria|
-|[AppFlow.md](../design/AppFlow.md)|Flows|
-|[Schema.md](Schema.md)|Data|
-|[Design.md](../design/Design.md)|Design|
-|[ImplementationPlan.md](../project/ImplementationPlan.md)|Rollout|
-|[Tracker.md](../project/Tracker.md)|Status|
-|[Rules.md](../project/Rules.md)|Standards|
-|[API.md](API.md)|Interfaces|
-|[Testing.md](Testing.md)|CI gates|
-|[Glossary.md](../reference/Glossary.md)|Vocabulary|
-|[RiskRegister.md](../project/RiskRegister.md)|Risks|
+| Document | Relationship |
+| --- | --- |
+| [TechSpec.md](TechSpec.md) | Environments |
+| [SecurityAndCompliance.md](SecurityAndCompliance.md) | Deploy policy |
+| [PRD.md](../product/PRD.md) | Release criteria |
+| [AppFlow.md](../design/AppFlow.md) | Flows |
+| [Schema.md](Schema.md) | Data |
+| [Design.md](../design/Design.md) | Design |
+| [ImplementationPlan.md](../project/ImplementationPlan.md) | Rollout |
+| [Tracker.md](../project/Tracker.md) | Status |
+| [Rules.md](../project/Rules.md) | Standards |
+| [API.md](API.md) | Interfaces |
+| [Testing.md](Testing.md) | CI gates |
+| [Glossary.md](../reference/Glossary.md) | Vocabulary |
+| [RiskRegister.md](../project/RiskRegister.md) | Risks |

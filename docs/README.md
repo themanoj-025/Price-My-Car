@@ -5,7 +5,7 @@
 ## 🎯 Core Documentation
 
 | Document | Purpose |
-|---|---|
+| --- | --- |
 | [PRD](product/PRD.md) | Product Requirements Document — what & why |
 | [TechSpec](technical/TechSpec.md) | Technical specification — how it's built |
 | [AppFlow](design/AppFlow.md) | Application flows, screens & states |

@@ -1,11 +1,11 @@
 # API — AutoIntel: Interfaces Reference
 
-|Field|Value|
-|---|---|
-|Version|v0.1|
-|Last Updated|2026-08-06|
-|Owner|Backend Engineer|
-|Status|In Review|
+| Field | Value |
+| --- | --- |
+| Version | v0.1 |
+| Last Updated | 2026-08-06 |
+| Owner | Backend Engineer |
+| Status | In Review |
 
 ---
 
@@ -13,14 +13,14 @@
 
 ## 1. Function Contracts (helpers.py)
 
-|Function|Purpose|Input → Output|
-|---|---|---|
-|`predict_price(features)`|Price prediction|features → price + CI|
-|`preprocess_features(raw)`|Feature prep|raw → features|
-|`compute_depreciation(price, years)`|Resale curve|price, years → series|
-|`authenticate(username, password)`|Auth check|creds → user/None|
-|`validate_csv(rows)`|Batch validation|rows → valid/invalid|
-|`get_market_stats()`|Market aggregates|— → stats|
+| Function | Purpose | Input → Output |
+| --- | --- | --- |
+| `predict_price(features)` | Price prediction | features → price + CI |
+| `preprocess_features(raw)` | Feature prep | raw → features |
+| `compute_depreciation(price, years)` | Resale curve | price, years → series |
+| `authenticate(username, password)` | Auth check | creds → user/None |
+| `validate_csv(rows)` | Batch validation | rows → valid/invalid |
+| `get_market_stats()` | Market aggregates | — → stats |
 
 ## 2. Example: predict_price
 
@@ -33,11 +33,11 @@
 
 ## 3. Error Codes
 
-|Code|Meaning|Retry?|
-|---|---|---|
-|invalid_input|Form/CSV validation|Fix input|
-|model_missing|Artifact absent|Run training|
-|auth_failed|Bad credentials|Retry login|
+| Code | Meaning | Retry? |
+| --- | --- | --- |
+| invalid_input | Form/CSV validation | Fix input |
+| model_missing | Artifact absent | Run training |
+| auth_failed | Bad credentials | Retry login |
 
 ## 4. Versioning Policy
 
@@ -45,18 +45,18 @@
 
 ## 5. Related Documents
 
-|Document|Relationship|
-|---|---|
-|[TechSpec.md](TechSpec.md)|Helpers layer|
-|[Schema.md](Schema.md)|Data contracts|
-|[AppFlow.md](../design/AppFlow.md)|Flows|
-|[PRD.md](../product/PRD.md)|Requirements|
-|[Design.md](../design/Design.md)|Rendering|
-|[ImplementationPlan.md](../project/ImplementationPlan.md)|Tasks|
-|[Tracker.md](../project/Tracker.md)|Status|
-|[Rules.md](../project/Rules.md)|Standards|
-|[SecurityAndCompliance.md](SecurityAndCompliance.md)|Auth|
-|[Testing.md](Testing.md)|Contract tests|
-|[Deployment.md](Deployment.md)|Deploy|
-|[Glossary.md](../reference/Glossary.md)|Vocabulary|
-|[RiskRegister.md](../project/RiskRegister.md)|Risks|
+| Document | Relationship |
+| --- | --- |
+| [TechSpec.md](TechSpec.md) | Helpers layer |
+| [Schema.md](Schema.md) | Data contracts |
+| [AppFlow.md](../design/AppFlow.md) | Flows |
+| [PRD.md](../product/PRD.md) | Requirements |
+| [Design.md](../design/Design.md) | Rendering |
+| [ImplementationPlan.md](../project/ImplementationPlan.md) | Tasks |
+| [Tracker.md](../project/Tracker.md) | Status |
+| [Rules.md](../project/Rules.md) | Standards |
+| [SecurityAndCompliance.md](SecurityAndCompliance.md) | Auth |
+| [Testing.md](Testing.md) | Contract tests |
+| [Deployment.md](Deployment.md) | Deploy |
+| [Glossary.md](../reference/Glossary.md) | Vocabulary |
+| [RiskRegister.md](../project/RiskRegister.md) | Risks |

@@ -1,11 +1,11 @@
 # Design — AutoIntel: Design System & UX Principles
 
-|Field|Value|
-|---|---|
-|Version|v0.1|
-|Last Updated|2026-08-06|
-|Owner|Design Lead|
-|Status|In Review|
+| Field | Value |
+| --- | --- |
+| Version | v0.1 |
+| Last Updated | 2026-08-06 |
+| Owner | Design Lead |
+| Status | In Review |
 
 ---
 
@@ -24,26 +24,26 @@
 
 ## 3. Color System
 
-|Token|Hex|Usage|Contrast (AA)|
-|---|---|---|---|
-|bg|`#F8FAFC`|light bg|—|
-|surface|`#FFFFFF`|cards|—|
-|primary|`#2563EB`|CTAs|5.9:1|
-|text|`#0F172A`|body|15:1|
-|muted|`#64748B`|secondary|4.9:1|
-|success|`#16A34A`|good value|5.1:1|
-|warning|`#D97706`|fair value|4.7:1|
-|danger|`#DC2626`|overpriced|5.9:1|
+| Token | Hex | Usage | Contrast (AA) |
+| --- | --- | --- | --- |
+| bg | `#F8FAFC` | light bg | — |
+| surface | `#FFFFFF` | cards | — |
+| primary | `#2563EB` | CTAs | 5.9:1 |
+| text | `#0F172A` | body | 15:1 |
+| muted | `#64748B` | secondary | 4.9:1 |
+| success | `#16A34A` | good value | 5.1:1 |
+| warning | `#D97706` | fair value | 4.7:1 |
+| danger | `#DC2626` | overpriced | 5.9:1 |
 
 ## 4. Typography Scale
 
-|Token|Font|Size|Weight|Line-height|Usage|
-|---|---|---|---|---|---|
-|display|sans|30px|700|1.2|price display|
-|heading|sans|20px|600|1.3|page titles|
-|body|sans|14px|400|1.5|content|
-|price|mono|24px|700|1.2|predicted price|
-|caption|sans|12px|400|1.4|meta|
+| Token | Font | Size | Weight | Line-height | Usage |
+| --- | --- | --- | --- | --- | --- |
+| display | sans | 30px | 700 | 1.2 | price display |
+| heading | sans | 20px | 600 | 1.3 | page titles |
+| body | sans | 14px | 400 | 1.5 | content |
+| price | mono | 24px | 700 | 1.2 | predicted price |
+| caption | sans | 12px | 400 | 1.4 | meta |
 
 ## 5. Spacing & Grid
 
@@ -88,18 +88,18 @@ Light theme default; dark roadmap.
 
 ## 12. Related Documents
 
-|Document|Relationship|
-|---|---|
-|[AppFlow.md](AppFlow.md)|Screens|
-|[PRD.md](../product/PRD.md)|UX goals|
-|[TechSpec.md](../technical/TechSpec.md)|Stack|
-|[Schema.md](../technical/Schema.md)|Display data|
-|[ImplementationPlan.md](../project/ImplementationPlan.md)|Tasks|
-|[Tracker.md](../project/Tracker.md)|Status|
-|[Rules.md](../project/Rules.md)|Standards|
-|[API.md](../technical/API.md)|Contracts|
-|[SecurityAndCompliance.md](../technical/SecurityAndCompliance.md)|Auth|
-|[Testing.md](../technical/Testing.md)|UI tests|
-|[Deployment.md](../technical/Deployment.md)|Deploy|
-|[Glossary.md](../reference/Glossary.md)|Vocabulary|
-|[RiskRegister.md](../project/RiskRegister.md)|Risks|
+| Document | Relationship |
+| --- | --- |
+| [AppFlow.md](AppFlow.md) | Screens |
+| [PRD.md](../product/PRD.md) | UX goals |
+| [TechSpec.md](../technical/TechSpec.md) | Stack |
+| [Schema.md](../technical/Schema.md) | Display data |
+| [ImplementationPlan.md](../project/ImplementationPlan.md) | Tasks |
+| [Tracker.md](../project/Tracker.md) | Status |
+| [Rules.md](../project/Rules.md) | Standards |
+| [API.md](../technical/API.md) | Contracts |
+| [SecurityAndCompliance.md](../technical/SecurityAndCompliance.md) | Auth |
+| [Testing.md](../technical/Testing.md) | UI tests |
+| [Deployment.md](../technical/Deployment.md) | Deploy |
+| [Glossary.md](../reference/Glossary.md) | Vocabulary |
+| [RiskRegister.md](../project/RiskRegister.md) | Risks |

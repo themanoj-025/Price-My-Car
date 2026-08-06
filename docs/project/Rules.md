@@ -1,11 +1,11 @@
 # Rules — AutoIntel: Coding Standards & AI-Agent Operating Rules
 
-|Field|Value|
-|---|---|
-|Version|v0.1|
-|Last Updated|2026-08-06|
-|Owner|Engineering Lead|
-|Status|In Review|
+| Field | Value |
+| --- | --- |
+| Version | v0.1 |
+| Last Updated | 2026-08-06 |
+| Owner | Engineering Lead |
+| Status | In Review |
 
 ---
 
@@ -70,12 +70,12 @@ test_helpers.py           # 65 tests
 
 ## 8. Prohibited Patterns
 
-|Anti-pattern|Why|
-|---|---|
-|Streamlit imports in helpers|Testability|
-|Plaintext passwords|Security|
-|Hardcoded model paths|Portability|
-|Blanket except|Hides failures|
+| Anti-pattern | Why |
+| --- | --- |
+| Streamlit imports in helpers | Testability |
+| Plaintext passwords | Security |
+| Hardcoded model paths | Portability |
+| Blanket except | Hides failures |
 
 ## 9. Escalation Rules
 
@@ -84,18 +84,18 @@ test_helpers.py           # 65 tests
 
 ## 10. Related Documents
 
-|Document|Relationship|
-|---|---|
-|[Testing.md](../technical/Testing.md)|Test requirements|
-|[SecurityAndCompliance.md](../technical/SecurityAndCompliance.md)|Auth|
-|[PRD.md](../product/PRD.md)|Requirements|
-|[TechSpec.md](../technical/TechSpec.md)|Architecture|
-|[AppFlow.md](../design/AppFlow.md)|Flows|
-|[Design.md](../design/Design.md)|Design|
-|[Schema.md](../technical/Schema.md)|Data|
-|[ImplementationPlan.md](ImplementationPlan.md)|Tasks|
-|[Tracker.md](Tracker.md)|Status|
-|[API.md](../technical/API.md)|Interfaces|
-|[Deployment.md](../technical/Deployment.md)|Env vars|
-|[Glossary.md](../reference/Glossary.md)|Vocabulary|
-|[RiskRegister.md](RiskRegister.md)|Risks|
+| Document | Relationship |
+| --- | --- |
+| [Testing.md](../technical/Testing.md) | Test requirements |
+| [SecurityAndCompliance.md](../technical/SecurityAndCompliance.md) | Auth |
+| [PRD.md](../product/PRD.md) | Requirements |
+| [TechSpec.md](../technical/TechSpec.md) | Architecture |
+| [AppFlow.md](../design/AppFlow.md) | Flows |
+| [Design.md](../design/Design.md) | Design |
+| [Schema.md](../technical/Schema.md) | Data |
+| [ImplementationPlan.md](ImplementationPlan.md) | Tasks |
+| [Tracker.md](Tracker.md) | Status |
+| [API.md](../technical/API.md) | Interfaces |
+| [Deployment.md](../technical/Deployment.md) | Env vars |
+| [Glossary.md](../reference/Glossary.md) | Vocabulary |
+| [RiskRegister.md](RiskRegister.md) | Risks |
