@@ -161,9 +161,7 @@ for model_name, config in models_to_tune.items():
     )
 
     # Save full GridSearchCV results for analysis
-    results_df_path = (
-        f"ml_ready/models/{model_name.lower().replace(' ', '_')}_gs_results.json"
-    )
+    results_df_path = f"ml_ready/models/{model_name.lower().replace(' ', '_')}_gs_results.json"
     cv_results = {
         "params": [str(p) for p in gs.cv_results_["params"]],
         "mean_test_score": [round(s, 4) for s in gs.cv_results_["mean_test_score"]],

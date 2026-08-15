@@ -226,9 +226,7 @@ def generate_data_quality_report(df, df_original):
     nulls = int(df.isnull().sum().sum())
     kms_p99 = df["kms_driven"].quantile(0.99)
     kms_capped = int((df_original["kms_driven"] > kms_p99).sum())
-    alt_fuels = int(
-        df_original[df_original["fuel_type"].isin(["CNG", "LPG", "Electric"])].shape[0]
-    )
+    alt_fuels = int(df_original[df_original["fuel_type"].isin(["CNG", "LPG", "Electric"])].shape[0])
     return [
         ("✅", f"No nulls found — {nulls} missing values"),
         ("✅", f"{dupes:,} duplicates removed"),

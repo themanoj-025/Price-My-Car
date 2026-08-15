@@ -44,9 +44,7 @@ from app.helpers import (
     make_prediction,
     shap_lite_approximation,
 )
-from app.helpers import (
-    get_filtered_data as _get_filtered_data_raw,
-)
+from app.helpers import get_filtered_data as _get_filtered_data_raw
 
 warnings.filterwarnings("ignore")
 CURRENT_YEAR = 2025
@@ -115,9 +113,7 @@ def get_user_by_username(db: dict, username: str) -> dict | None:
 AVATAR_COLORS = ["#e85d04", "#4895ef", "#52b788", "#9b5de5", "#f48c06", "#ff6b6b"]
 
 
-def create_user(
-    db: dict, username: str, email: str, password: str, full_name: str
-) -> dict:
+def create_user(db: dict, username: str, email: str, password: str, full_name: str) -> dict:
     uid = str(uuid.uuid4())
     user = {
         "user_id": uid,
@@ -305,29 +301,29 @@ def inject_custom_css():
     .stApp { background: #0c0f14; }
     section[data-testid="stSidebar"] { background: #0a0d12 !important; border-right: 1px solid rgba(232,93,4,0.15); }
     section[data-testid="stSidebar"] .stMarkdown { color: #c8ccd4; }
-    
+
     /* Hide Streamlit chrome */
     #MainMenu, footer, header { visibility: hidden; }
     .stDeployButton { display: none; }
-    
+
     /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0c0f14; }
     ::-webkit-scrollbar-thumb { background: #e85d04; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #f48c06; }
-    
+
     /* Glass card */
     .glass-card { background: rgba(20,25,40,0.85); backdrop-filter: blur(12px);
                   border: 1px solid rgba(232,93,4,0.2); border-radius: 16px; padding: 24px;
                   transition: all 0.3s ease; }
     .glass-card:hover { border-color: rgba(232,93,4,0.4); box-shadow: 0 0 20px rgba(232,93,4,0.15); transform: translateY(-2px); }
-    
+
     /* KPI card */
     .kpi-card { background: rgba(20,25,40,0.9); border: 1px solid rgba(232,93,4,0.25);
                 border-radius: 12px; padding: 1rem 1.25rem; text-align: center; }
     .kpi-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #e85d04; }
     .kpi-label { font-size: 0.8rem; color: #9da3b4; text-transform: uppercase; letter-spacing: 0.08em; }
-    
+
     /* Gradient hero header */
     .hero-header { background: linear-gradient(135deg, #0c0f14 0%, #1a1f35 50%, #0f1520 100%);
                    border: 1px solid rgba(232,93,4,0.2); border-radius: 16px;
@@ -340,54 +336,54 @@ def inject_custom_css():
     .hero-title { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
                   background: linear-gradient(90deg, #e85d04, #f48c06, #4895ef);
                   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    
+
     /* Orange gradient button */
     .orange-btn { background: linear-gradient(135deg, #e85d04, #f48c06); color: white; border: none;
                   border-radius: 50px; padding: 0.6rem 2rem; font-family: 'Syne', sans-serif;
                   font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
     .orange-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,93,4,0.4); }
-    
+
     /* Badge classes */
     .badge-luxury { background: linear-gradient(135deg, #9b5de5, #7b2cbf); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .badge-premium { background: linear-gradient(135deg, #e85d04, #f48c06); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .badge-mid { background: linear-gradient(135deg, #4895ef, #4cc9f0); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .badge-budget { background: linear-gradient(135deg, #52b788, #40916c); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .gradient-divider { height: 2px; background: linear-gradient(90deg, transparent, #e85d04, #f48c06, transparent); margin: 16px 0; }
-    
+
     /* Auth card (glass-morphism) */
     .auth-card { background: rgba(20,25,40,0.95); border: 1px solid rgba(232,93,4,0.3);
                  border-radius: 20px; padding: 2.5rem;
                  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(232,93,4,0.08); }
-    
+
     /* Avatar circle */
     .avatar-circle { width: 80px; height: 80px; border-radius: 50%;
                      display: flex; align-items: center; justify-content: center;
                      font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800;
                      color: white; margin: 0 auto 1rem;
                      box-shadow: 0 0 20px rgba(232,93,4,0.3); }
-    
+
     /* Price reveal shimmer animation */
     @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
     .price-reveal { font-family: 'Syne', sans-serif; font-size: 3.5rem; font-weight: 800;
                     background: linear-gradient(90deg, #e85d04 0%, #f48c06 30%, #ffffff 50%, #f48c06 70%, #e85d04 100%);
                     background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
                     background-clip: text; animation: shimmer 2s linear infinite; }
-    
+
     /* Password strength bar */
     .pwd-strength { background: rgba(255,255,255,0.1); border-radius: 4px; height: 6px; margin: 4px 0; overflow: hidden; }
     .pwd-bar { height: 100%; border-radius: 4px; transition: width 0.3s ease, background 0.3s ease; }
-    
+
     /* Sidebar nav active */
     .nav-active { border-left: 3px solid #e85d04; background: rgba(232,93,4,0.1); border-radius: 0 8px 8px 0; }
-    
+
     /* Progress bar gradient */
     [data-testid="stProgress"] > div > div { background: linear-gradient(90deg, #e85d04, #f48c06) !important; }
-    
+
     /* Metric container */
     [data-testid="metric-container"] { background: rgba(20,25,40,0.85); border: 1px solid rgba(232,93,4,0.2);
                                         border-radius: 12px; padding: 1rem; }
     [data-testid="stMetricValue"] { font-family: 'Syne', sans-serif; color: #e85d04 !important; font-size: 1.8rem !important; }
-    
+
     /* Tabs */
     .stTabs [data-baseweb="tab-list"] { gap: 4px; background: rgba(10,13,18,0.8); border-bottom: 1px solid rgba(232,93,4,0.2);
                                          border-radius: 12px 12px 0 0; padding: 4px 4px 0; }
@@ -395,7 +391,7 @@ def inject_custom_css():
                                     color: #9da3b4 !important; font-size: 0.85rem !important; }
     .stTabs [aria-selected="true"] { background: rgba(232,93,4,0.2) !important; color: #e85d04 !important;
                                       border-bottom: 2px solid #e85d04 !important; }
-    
+
     /* Input fields dark styling */
     .stTextInput > div > div > input, .stSelectbox > div > div, .stMultiSelect > div > div {
       background: rgba(20,25,40,0.9) !important;
@@ -404,22 +400,22 @@ def inject_custom_css():
       border-radius: 8px !important;
     }
     .stTextInput > div > div > input:focus { border-color: #e85d04 !important; box-shadow: 0 0 0 1px rgba(232,93,4,0.3) !important; }
-    
+
     /* Button styling */
     .stButton button { background: linear-gradient(135deg, #e85d04, #f48c06) !important; color: white !important;
                        border: none !important; border-radius: 25px !important; padding: 8px 24px !important;
                        font-weight: 600 !important; transition: all 0.3s ease !important; }
     .stButton button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,93,4,0.4) !important; }
-    
+
     /* Dataframe */
     [data-testid="stDataFrame"] { background: transparent !important; }
     [data-testid="stDataFrame"] th { background: #1a1d24 !important; color: #e85d04 !important; }
     [data-testid="stDataFrame"] td { background: rgba(255,255,255,0.02) !important; color: #c8ccd4 !important; border-color: rgba(255,255,255,0.05) !important; }
     [data-testid="stDataFrame"] tr:nth-child(even) td { background: rgba(255,255,255,0.04) !important; }
-    
+
     /* Expander */
     .stExpander { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px !important; }
-    
+
     /* Shared class for marketing hero */
     .hero-text { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #e85d04, #f48c06, #4895ef);
                  -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
@@ -450,12 +446,8 @@ def apply_plotly_config(fig, height=None):
             font=dict(size=10),
         ),
     )
-    fig.update_xaxes(
-        gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font=dict(size=11)
-    )
-    fig.update_yaxes(
-        gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font=dict(size=11)
-    )
+    fig.update_xaxes(gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font=dict(size=11))
+    fig.update_yaxes(gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font=dict(size=11))
     # Only apply marker styling to traces that support it (scatter, bar, etc.)
     for trace in fig.data:
         if trace.__class__.__name__ not in (
@@ -467,9 +459,7 @@ def apply_plotly_config(fig, height=None):
             trace.update(marker=dict(line=dict(width=0)))
     fig.update_layout(showlegend=False)
     fig.update_layout(legend=dict(font=dict(size=9)))
-    fig.update_layout(
-        hoverlabel=dict(bgcolor="#1a1d24", font_size=12, font_family="DM Sans")
-    )
+    fig.update_layout(hoverlabel=dict(bgcolor="#1a1d24", font_size=12, font_family="DM Sans"))
     return fig
 
 
@@ -484,7 +474,6 @@ def show_chart(fig, height=None):
 def init_session_state():
     defaults = {
         "page": "🏠 Dashboard Home",
-        "last_model": None,
         "last_prediction": {},
         "page_visits": {},
         "global_filters": {},
@@ -618,9 +607,7 @@ try:
     if not models:
         demo_mode = True
 except Exception as e:
-    st.error(
-        f"⚠️ Could not load ML artifacts: {e}. Running in demo mode with synthetic data."
-    )
+    st.error(f"⚠️ Could not load ML artifacts: {e}. Running in demo mode with synthetic data.")
     demo_mode = True
 
 if demo_mode:
@@ -630,15 +617,11 @@ if demo_mode:
     df = pd.DataFrame(
         {
             "name": [f"Demo Car {i}" for i in range(n)],
-            "company": np.random.choice(
-                ["Maruti", "Hyundai", "Honda", "Toyota", "BMW"], n
-            ),
+            "company": np.random.choice(["Maruti", "Hyundai", "Honda", "Toyota", "BMW"], n),
             "year": np.random.randint(2000, 2025, n),
             "Price": np.random.lognormal(mean=13, sigma=0.8, size=n),
             "kms_driven": np.random.randint(1000, 200000, n),
-            "fuel_type": np.random.choice(
-                ["Petrol", "Diesel", "CNG"], n, p=[0.6, 0.35, 0.05]
-            ),
+            "fuel_type": np.random.choice(["Petrol", "Diesel", "CNG"], n, p=[0.6, 0.35, 0.05]),
         }
     )
     df["car_age"] = CURRENT_YEAR - df["year"]
@@ -671,9 +654,7 @@ fuel_types = sorted(df["fuel_type"].unique())
 # =========================================================================
 def render_sidebar():
     user = st.session_state.get("user", {})
-    first_name = (
-        user.get("full_name", "User").split()[0] if user.get("full_name") else "User"
-    )
+    first_name = user.get("full_name", "User").split()[0] if user.get("full_name") else "User"
     avatar_color = user.get("avatar_color", "#e85d04")
     initials = (
         "".join(w[0].upper() for w in user.get("full_name", "U").split()[:2])
@@ -699,9 +680,7 @@ def render_sidebar():
             '<p style="font-family:Syne;font-size:1.8rem;font-weight:800;background:linear-gradient(90deg,#e85d04,#f48c06);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin:0">🚗 AutoIntel</p>',
             unsafe_allow_html=True,
         )
-        st.markdown(
-            '<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True
-        )
+        st.markdown('<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True)
 
         # Navigation buttons
         nav_items = [
@@ -721,9 +700,7 @@ def render_sidebar():
         current_page = st.session_state.get("current_page", "Dashboard")
         for item in nav_items:
             is_active = current_page == item
-            if st.button(
-                item, key=f"nav_{item}", use_container_width=True, type="secondary"
-            ):
+            if st.button(item, key=f"nav_{item}", use_container_width=True, type="secondary"):
                 st.session_state.current_page = item
                 st.rerun()
             style_css = f"""<style>
@@ -737,9 +714,7 @@ def render_sidebar():
             </style>"""
             st.markdown(style_css, unsafe_allow_html=True)
 
-        st.markdown(
-            '<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True
-        )
+        st.markdown('<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True)
 
         # Quick Stats
         with st.expander("⚡ Quick Stats", expanded=False):
@@ -765,9 +740,7 @@ def render_sidebar():
                 st.rerun()
 
         # Expert Mode toggle
-        expert = st.toggle(
-            "⚡ Expert Mode", value=st.session_state.get("expert_mode", False)
-        )
+        expert = st.toggle("⚡ Expert Mode", value=st.session_state.get("expert_mode", False))
         if expert != st.session_state.get("expert_mode"):
             st.session_state.expert_mode = expert
             if user.get("user_id"):
@@ -778,9 +751,7 @@ def render_sidebar():
                 unsafe_allow_html=True,
             )
 
-        st.markdown(
-            '<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True
-        )
+        st.markdown('<hr style="border:1px solid rgba(232,93,4,0.2)">', unsafe_allow_html=True)
 
         # Bottom section
         st.markdown(
@@ -833,9 +804,7 @@ def page_dashboard_home():
 
     # Animated counter JS for KPI metrics
     kpi_html = "<script>"
-    kpi_html += (
-        'document.querySelectorAll("[data-testid=stMetricValue]").forEach(el => {'
-    )
+    kpi_html += 'document.querySelectorAll("[data-testid=stMetricValue]").forEach(el => {'
     kpi_html += '  const target = el.textContent.replace(/[^0-9.,KLCr]/g, "").trim();'
     kpi_html += "  if (!target) return;"
     kpi_html += '  const numeric = parseFloat(target.replace(/,/g, "")) || 0;'
@@ -844,9 +813,7 @@ def page_dashboard_home():
     kpi_html += "  const step = Math.max(1, Math.floor(numeric / 40));"
     kpi_html += "  const interval = setInterval(() => {"
     kpi_html += "    current += step;"
-    kpi_html += (
-        "    if (current >= numeric) { current = numeric; clearInterval(interval); }"
-    )
+    kpi_html += "    if (current >= numeric) { current = numeric; clearInterval(interval); }"
     kpi_html += '    const numStr = current.toLocaleString("en-IN");'
     kpi_html += "    el.textContent = suffix ? `₹${numStr}${suffix}` : `$${numStr}`;"
     kpi_html += "  }, 30);"
@@ -936,9 +903,7 @@ def page_dashboard_home():
                     ]
                 )
                 if "Linear Regression" in models:
-                    pred = make_prediction(
-                        models["Linear Regression"], input_df, preprocessor
-                    )
+                    pred = make_prediction(models["Linear Regression"], input_df, preprocessor)
                     tier, cls = get_price_tier(pred)
                     st.markdown(
                         f'<div class="glass-card" style="text-align:center;padding:20px">'
@@ -968,9 +933,7 @@ def page_dataset_explorer():
                 "Company", companies, default=companies[:5], key="de_comp"
             )
         with f2:
-            sel_fuels = st.multiselect(
-                "Fuel Type", fuel_types, default=fuel_types, key="de_fuel"
-            )
+            sel_fuels = st.multiselect("Fuel Type", fuel_types, default=fuel_types, key="de_fuel")
         with f3:
             yr_range = st.slider(
                 "Year Range",
@@ -1097,11 +1060,7 @@ def page_dataset_explorer():
                     go.Pie(
                         labels=fuel_counts.index,
                         values=fuel_counts.values,
-                        marker=dict(
-                            colors=[
-                                FUEL_COLORS.get(f, "#888") for f in fuel_counts.index
-                            ]
-                        ),
+                        marker=dict(colors=[FUEL_COLORS.get(f, "#888") for f in fuel_counts.index]),
                         textinfo="label+percent",
                         hole=0.5,
                     )
@@ -1121,22 +1080,14 @@ def page_dataset_explorer():
                     )
                 ]
             )
-            fig3.update_layout(
-                title="KMs Distribution", xaxis_title="Kilometers Driven"
-            )
+            fig3.update_layout(title="KMs Distribution", xaxis_title="Kilometers Driven")
             show_chart(fig3, 300)
 
             yr_counts = filtered["year"].value_counts().sort_index()
             fig4 = go.Figure(
-                data=[
-                    go.Bar(
-                        x=yr_counts.index, y=yr_counts.values, marker_color="#52b788"
-                    )
-                ]
+                data=[go.Bar(x=yr_counts.index, y=yr_counts.values, marker_color="#52b788")]
             )
-            fig4.update_layout(
-                title="Year Distribution", xaxis_title="Year", yaxis_title="Count"
-            )
+            fig4.update_layout(title="Year Distribution", xaxis_title="Year", yaxis_title="Count")
             show_chart(fig4, 300)
 
 
@@ -1217,14 +1168,10 @@ def page_eda_deepdive():
     with tabs[1]:
         c1, c2 = st.columns(2)
         with c1:
-            med_prices = (
-                df.groupby("company")["Price"].median().sort_values(ascending=True)
-            )
+            med_prices = df.groupby("company")["Price"].median().sort_values(ascending=True)
             top20 = med_prices.tail(20)
             colors = [
-                TIER_COLORS.get(
-                    get_company_tier(df[df["company"] == c]["Price"].mean()), "#888"
-                )
+                TIER_COLORS.get(get_company_tier(df[df["company"] == c]["Price"].mean()), "#888")
                 for c in top20.index
             ]
             fig = go.Figure(
@@ -1262,9 +1209,7 @@ def page_eda_deepdive():
                         textposition="top center",
                         marker=dict(
                             size=np.sqrt(brand_stats["count"]) * 3,
-                            color=[
-                                TIER_COLORS.get(t, "#888") for t in brand_stats["tier"]
-                            ],
+                            color=[TIER_COLORS.get(t, "#888") for t in brand_stats["tier"]],
                             line=dict(color="white", width=1),
                         ),
                         textfont=dict(size=8),
@@ -1294,9 +1239,7 @@ def page_eda_deepdive():
                         y=bdata,
                         name=brand,
                         marker_color=TIER_COLORS.get(
-                            get_company_tier(
-                                df[df["company"] == brand]["Price"].mean()
-                            ),
+                            get_company_tier(df[df["company"] == brand]["Price"].mean()),
                             "#888",
                         ),
                         boxmean="sd",
@@ -1357,21 +1300,13 @@ def page_eda_deepdive():
                         )
                 else:
                     fig2.add_trace(
-                        go.Histogram(
-                            x=sample_df[dim_x], marker_color="#4895ef", showlegend=False
-                        ),
+                        go.Histogram(x=sample_df[dim_x], marker_color="#4895ef", showlegend=False),
                         row=i + 1,
                         col=j + 1,
                     )
-                fig2.update_xaxes(
-                    title_text=dim_x if i == 2 else "", row=i + 1, col=j + 1
-                )
-                fig2.update_yaxes(
-                    title_text=dim_y if j == 0 else "", row=i + 1, col=j + 1
-                )
-        fig2.update_layout(
-            title="Scatter Matrix: Price × Car Age × KMs Driven", height=600
-        )
+                fig2.update_xaxes(title_text=dim_x if i == 2 else "", row=i + 1, col=j + 1)
+                fig2.update_yaxes(title_text=dim_y if j == 0 else "", row=i + 1, col=j + 1)
+        fig2.update_layout(title="Scatter Matrix: Price × Car Age × KMs Driven", height=600)
         show_chart(fig2, 600)
 
         # VIF table for multicollinearity check
@@ -1383,8 +1318,7 @@ def page_eda_deepdive():
             vif_data = pd.DataFrame()
             vif_data["Feature"] = vif_df.columns
             vif_data["VIF"] = [
-                variance_inflation_factor(vif_df.values, i)
-                for i in range(vif_df.shape[1])
+                variance_inflation_factor(vif_df.values, i) for i in range(vif_df.shape[1])
             ]
             st.dataframe(
                 vif_data.style.applymap(
@@ -1397,9 +1331,7 @@ def page_eda_deepdive():
                 ),
                 use_container_width=True,
             )
-            st.caption(
-                "VIF > 10 indicates severe multicollinearity; > 5 moderate; < 5 low."
-            )
+            st.caption("VIF > 10 indicates severe multicollinearity; > 5 moderate; < 5 low.")
         except ImportError:
             # Manual VIF approximation
             corr = df[["Price", "car_age", "kms_driven"]].corr()
@@ -1640,9 +1572,11 @@ def page_model_comparison():
     # R² bar chart (shown in both modes)
     sorted_df = METRICS_DF.sort_values("Test R²")
     colors_r2 = [
-        "#52b788"
-        if i == len(sorted_df) - 1
-        else ("#4895ef" if i > len(sorted_df) - 4 else "#5a6270")
+        (
+            "#52b788"
+            if i == len(sorted_df) - 1
+            else ("#4895ef" if i > len(sorted_df) - 4 else "#5a6270")
+        )
         for i in range(len(sorted_df))
     ]
     fig = go.Figure(
@@ -1657,9 +1591,7 @@ def page_model_comparison():
             )
         ]
     )
-    fig.update_layout(
-        title="R² Score (higher is better)", xaxis_range=[0, 1], height=400
-    )
+    fig.update_layout(title="R² Score (higher is better)", xaxis_range=[0, 1], height=400)
     show_chart(fig, 400)
 
     c1, c2 = st.columns(2)
@@ -1673,9 +1605,7 @@ def page_model_comparison():
         fig2 = go.Figure()
         for metric, color in [("RMSE", "#e85d04"), ("MAE", "#4895ef")]:
             m = melted[melted["Metric"] == metric]
-            fig2.add_trace(
-                go.Bar(name=metric, x=m["Model"], y=m["Value"], marker_color=color)
-            )
+            fig2.add_trace(go.Bar(name=metric, x=m["Model"], y=m["Value"], marker_color=color))
         fig2.update_layout(
             title="RMSE & MAE (lower is better)",
             barmode="group",
@@ -1693,10 +1623,7 @@ def page_model_comparison():
                     text=METRICS_DF["Model"],
                     textposition="top center",
                     marker=dict(
-                        size=[
-                            20 if m == best["Model"] else 12
-                            for m in METRICS_DF["Model"]
-                        ],
+                        size=[20 if m == best["Model"] else 12 for m in METRICS_DF["Model"]],
                         color=[
                             "#e85d04" if m == best["Model"] else "#4895ef"
                             for m in METRICS_DF["Model"]
@@ -1824,17 +1751,11 @@ def page_model_comparison():
                     )
                 ]
             )
-            fig5.update_layout(
-                title="Linear Regression: Before vs After Log Transform", height=300
-            )
+            fig5.update_layout(title="Linear Regression: Before vs After Log Transform", height=300)
             show_chart(fig5, 300)
         with c2:
             fig6 = go.Figure(
-                data=[
-                    go.Histogram(
-                        x=np.log1p(df["Price"]), nbinsx=40, marker_color="#e85d04"
-                    )
-                ]
+                data=[go.Histogram(x=np.log1p(df["Price"]), nbinsx=40, marker_color="#e85d04")]
             )
             fig6.update_layout(
                 title="Log-Transformed Price Distribution (skewness: -0.12)", height=300
@@ -1944,29 +1865,21 @@ def page_residual_analysis():
 
     c1, c2 = st.columns(2)
     with c1:
-        fig2 = go.Figure(
-            data=[go.Histogram(x=residuals, nbinsx=50, marker_color="#4895ef")]
-        )
+        fig2 = go.Figure(data=[go.Histogram(x=residuals, nbinsx=50, marker_color="#4895ef")])
         fig2.add_vline(
             x=residuals.mean(),
             line=dict(color="#e85d04", dash="dash"),
             annotation_text=f"μ={residuals.mean():,.0f}",
         )
-        fig2.add_vline(
-            x=residuals.mean() + residuals.std(), line=dict(color="#52b788", dash="dot")
-        )
-        fig2.add_vline(
-            x=residuals.mean() - residuals.std(), line=dict(color="#52b788", dash="dot")
-        )
+        fig2.add_vline(x=residuals.mean() + residuals.std(), line=dict(color="#52b788", dash="dot"))
+        fig2.add_vline(x=residuals.mean() - residuals.std(), line=dict(color="#52b788", dash="dot"))
         fig2.update_layout(
             title=f"Residual Distribution (μ±σ: ₹{residuals.std():,.0f})", height=350
         )
         show_chart(fig2, 350)
     with c2:
         sorted_res = np.sort(residuals)
-        theoretical = np.random.normal(
-            residuals.mean(), residuals.std(), len(sorted_res)
-        )
+        theoretical = np.random.normal(residuals.mean(), residuals.std(), len(sorted_res))
         theoretical.sort()
         fig3 = go.Figure(
             data=[
@@ -2009,9 +1922,7 @@ def page_residual_analysis():
                     }
                 )
         if company_errors:
-            err_df = pd.DataFrame(company_errors).sort_values(
-                "Avg Error ₹", ascending=False
-            )
+            err_df = pd.DataFrame(company_errors).sort_values("Avg Error ₹", ascending=False)
             fig_err = go.Figure(
                 data=[
                     go.Bar(
@@ -2074,9 +1985,7 @@ def page_residual_analysis():
 
     # Top 20 worst predictions
     st.markdown("### Top 20 Worst Predictions")
-    errors_df = pd.DataFrame(
-        {"pred": pred_orig, "actual": y_test_orig, "error_pct": pct_errors}
-    )
+    errors_df = pd.DataFrame({"pred": pred_orig, "actual": y_test_orig, "error_pct": pct_errors})
     worst = errors_df.nlargest(20, "error_pct")
     # Map back to car names if possible
     df.sample(min(len(worst), len(df)))
@@ -2142,9 +2051,7 @@ def page_price_predictor():
     )
 
     # Track visit
-    st.session_state.page_visits["predictor"] = (
-        st.session_state.page_visits.get("predictor", 0) + 1
-    )
+    st.session_state.page_visits["predictor"] = st.session_state.page_visits.get("predictor", 0) + 1
 
     # AB Mode Toggle
     ab_mode = st.checkbox("🔄 A/B Comparison Mode — Compare Two Cars", key="ab_toggle")
@@ -2155,9 +2062,7 @@ def page_price_predictor():
     for car_idx in range(num_cars):
         suffix = f"_{car_idx}" if ab_mode else ""
         label = (
-            f"### {'🚗 Car A' if car_idx == 0 else '🚙 Car B'}"
-            if ab_mode
-            else "### Car Details"
+            f"### {'🚗 Car A' if car_idx == 0 else '🚙 Car B'}" if ab_mode else "### Car Details"
         )
 
         with st.container():
@@ -2169,12 +2074,13 @@ def page_price_predictor():
                     "Company",
                     companies,
                     key=f"comp{suffix}",
-                    index=companies.index(
-                        st.session_state.last_pred_inputs.get(f"comp{suffix}", "Maruti")
-                    )
-                    if st.session_state.last_pred_inputs.get(f"comp{suffix}")
-                    in companies
-                    else 0,
+                    index=(
+                        companies.index(
+                            st.session_state.last_pred_inputs.get(f"comp{suffix}", "Maruti")
+                        )
+                        if st.session_state.last_pred_inputs.get(f"comp{suffix}") in companies
+                        else 0
+                    ),
                 )
                 get_car_name_options(df, company)
                 st.text_input(
@@ -2193,14 +2099,13 @@ def page_price_predictor():
                     "Fuel Type",
                     fuel_types,
                     key=f"fuel{suffix}",
-                    index=fuel_types.index(
-                        st.session_state.last_pred_inputs.get(
-                            f"fuel{suffix}", fuel_types[0]
+                    index=(
+                        fuel_types.index(
+                            st.session_state.last_pred_inputs.get(f"fuel{suffix}", fuel_types[0])
                         )
-                    )
-                    if st.session_state.last_pred_inputs.get(f"fuel{suffix}")
-                    in fuel_types
-                    else 0,
+                        if st.session_state.last_pred_inputs.get(f"fuel{suffix}") in fuel_types
+                        else 0
+                    ),
                 )
 
             with col2:
@@ -2216,13 +2121,15 @@ def page_price_predictor():
                     "ML Model",
                     list(models.keys()),
                     key=f"model{suffix}",
-                    index=list(models.keys()).index(
-                        st.session_state.last_pred_inputs.get(
-                            f"model{suffix}", list(models.keys())[0]
+                    index=(
+                        list(models.keys()).index(
+                            st.session_state.last_pred_inputs.get(
+                                f"model{suffix}", list(models.keys())[0]
+                            )
                         )
-                    )
-                    if st.session_state.last_pred_inputs.get(f"model{suffix}") in models
-                    else 0,
+                        if st.session_state.last_pred_inputs.get(f"model{suffix}") in models
+                        else 0
+                    ),
                 )
                 with st.expander("⚙️ Advanced Options"):
                     ci = st.select_slider(
@@ -2231,12 +2138,8 @@ def page_price_predictor():
                         value="±15%",
                         key=f"ci{suffix}",
                     )
-                    st.checkbox(
-                        "Show similar cars", value=True, key=f"sim{suffix}"
-                    )
-                    compare_all = st.checkbox(
-                        "Compare all models", value=False, key=f"all{suffix}"
-                    )
+                    st.checkbox("Show similar cars", value=True, key=f"sim{suffix}")
+                    compare_all = st.checkbox("Compare all models", value=False, key=f"all{suffix}")
 
             # Validation
             car_age = CURRENT_YEAR - year
@@ -2248,9 +2151,7 @@ def page_price_predictor():
             if kms > 50000 and car_age < 3:
                 warnings_list.append("⚠️ High mileage for a relatively new car — verify")
             if fuel == "Electric" and year < 2015:
-                warnings_list.append(
-                    "⚠️ Electric cars before 2015 are rare — verify fuel type"
-                )
+                warnings_list.append("⚠️ Electric cars before 2015 are rare — verify fuel type")
 
             for w in warnings_list:
                 st.warning(w)
@@ -2264,9 +2165,7 @@ def page_price_predictor():
     if st.button("🚀 Predict Price", use_container_width=True, key="predict_btn"):
         for car_idx in range(num_cars):
             suffix = f"_{car_idx}" if ab_mode else ""
-            company = st.session_state.last_pred_inputs.get(
-                f"comp{suffix}", companies[0]
-            )
+            company = st.session_state.last_pred_inputs.get(f"comp{suffix}", companies[0])
             year = st.session_state.last_pred_inputs.get(f"year{suffix}", 2018)
             fuel = st.session_state.last_pred_inputs.get(f"fuel{suffix}", fuel_types[0])
             kms = st.session_state.last_pred_inputs.get(f"kms{suffix}", 50000)
@@ -2330,7 +2229,7 @@ def page_price_predictor():
                 )
 
                 # Depreciation curve
-                years_future = list(range(0, 6))
+                years_future = list(range(6))
                 dep_values = [pred * (0.85**y) for y in years_future]
                 fig = go.Figure(
                     data=[
@@ -2345,9 +2244,7 @@ def page_price_predictor():
                         )
                     ]
                 )
-                fig.update_layout(
-                    title="Depreciation Curve (5-Year Forecast)", height=250
-                )
+                fig.update_layout(title="Depreciation Curve (5-Year Forecast)", height=250)
                 show_chart(fig, 250)
 
                 # SMART PRICE EXPLAINER (Feature A)
@@ -2357,9 +2254,7 @@ def page_price_predictor():
                     preprocessor,
                     pp_data["feature_names"],
                 )
-                explanation = generate_natural_language_explanation(
-                    contribs, pred * 0.5, pred
-                )
+                explanation = generate_natural_language_explanation(contribs, pred * 0.5, pred)
                 st.markdown(
                     f'<div class="glass-card" style="border-left:3px solid #4895ef">'
                     f'<strong style="color:#4895ef">🧠 Smart Price Explainer</strong><br>'
@@ -2368,16 +2263,14 @@ def page_price_predictor():
                 )
 
                 # DEAL SCORE (Feature B) — speedometer gauge
-                similar_actuals = df[
-                    (df["company"] == company) & (df["fuel_type"] == fuel)
-                ]["Price"]
+                similar_actuals = df[(df["company"] == company) & (df["fuel_type"] == fuel)][
+                    "Price"
+                ]
                 if len(similar_actuals) > 0:
                     avg_actual = similar_actuals.mean()
                     score = compute_deal_score(pred, avg_actual)
                     gauge_color = (
-                        "#52b788"
-                        if score > 60
-                        else ("#f48c06" if score > 40 else "#e85d04")
+                        "#52b788" if score > 60 else ("#f48c06" if score > 40 else "#e85d04")
                     )
                     fig_gauge = go.Figure(
                         go.Indicator(
@@ -2427,9 +2320,7 @@ def page_price_predictor():
                     st.plotly_chart(fig_gauge, use_container_width=True)
 
                 # ENSEMBLE PREDICTION (Feature C)
-                ensemble_mean, spread, color = ensemble_prediction(
-                    models, input_df, preprocessor
-                )
+                ensemble_mean, spread, color = ensemble_prediction(models, input_df, preprocessor)
                 if ensemble_mean:
                     st.markdown(
                         f'<div class="glass-card" style="border-left:3px solid {color}">'
@@ -2447,9 +2338,7 @@ def page_price_predictor():
                     base = pred - sum(vals)
                     waterfall_vals = [base] + vals
                     waterfall_names = ["Base"] + [f"{n}" for n in names]
-                    ["#5a6270"] + [
-                        "#52b788" if v > 0 else "#e85d04" for v in vals
-                    ]
+                    ["#5a6270"] + ["#52b788" if v > 0 else "#e85d04" for v in vals]
                     fig2 = go.Figure(
                         data=[
                             go.Waterfall(
@@ -2483,9 +2372,9 @@ def page_price_predictor():
                             {
                                 "Model": m_name,
                                 "Prediction": p,
-                                "R²": METRICS_DF[METRICS_DF["Model"] == m_name][
-                                    "Test R²"
-                                ].values[0],
+                                "R²": METRICS_DF[METRICS_DF["Model"] == m_name]["Test R²"].values[
+                                    0
+                                ],
                             }
                         )
                     preds_df = pd.DataFrame(all_preds)
@@ -2508,9 +2397,7 @@ def page_price_predictor():
                     )
                     show_chart(fig3, 350)
                     st.dataframe(
-                        preds_df.style.format(
-                            {"Prediction": lambda x: fmt_inr(x), "R²": "{:.4f}"}
-                        ),
+                        preds_df.style.format({"Prediction": lambda x: fmt_inr(x), "R²": "{:.4f}"}),
                         use_container_width=True,
                     )
 
@@ -2543,9 +2430,7 @@ def page_price_predictor():
                         st.info("No similar cars found for this exact configuration.")
 
                 if ab_mode and car_idx == 0:
-                    st.markdown(
-                        '<div class="gradient-divider"></div>', unsafe_allow_html=True
-                    )
+                    st.markdown('<div class="gradient-divider"></div>', unsafe_allow_html=True)
 
         # AB Mode comparison
         if ab_mode and num_cars == 2:
@@ -2558,9 +2443,7 @@ def page_price_predictor():
                 yr = st.session_state.last_pred_inputs.get(f"year{s}", 2018)
                 fl = st.session_state.last_pred_inputs.get(f"fuel{s}", fuel_types[0])
                 km = st.session_state.last_pred_inputs.get(f"kms{s}", 50000)
-                mdl = st.session_state.last_pred_inputs.get(
-                    f"model{s}", list(models.keys())[0]
-                )
+                mdl = st.session_state.last_pred_inputs.get(f"model{s}", list(models.keys())[0])
                 inp_df = pd.DataFrame(
                     [
                         {
@@ -2700,9 +2583,7 @@ def page_price_predictor():
 
     # Model Drift Simulator (Feature G)
     with st.expander("⏱️ Model Drift Simulator — Fast Forward to 2027"):
-        drift_year = st.slider(
-            "Fast forward to year", 2025, 2030, 2027, key="drift_slider"
-        )
+        drift_year = st.slider("Fast forward to year", 2025, 2030, 2027, key="drift_slider")
         if st.button("Simulate Drift", key="drift_btn"):
             drift_age = drift_year - CURRENT_YEAR
             st.markdown(
@@ -2816,9 +2697,7 @@ def page_market_intelligence():
     st.markdown("### 💰 Depreciation Calculator")
     dc1, dc2, dc3 = st.columns(3)
     cars_for_dep = []
-    for ci, (col, default_comp) in enumerate(
-        zip([dc1, dc2, dc3], ["Maruti", "Hyundai", "BMW"])
-    ):
+    for ci, (col, default_comp) in enumerate(zip([dc1, dc2, dc3], ["Maruti", "Hyundai", "BMW"])):
         with col:
             dc_comp = st.selectbox(
                 f"Car {ci + 1} Brand",
@@ -2826,18 +2705,12 @@ def page_market_intelligence():
                 key=f"dc_comp_{ci}",
                 index=companies.index(default_comp) if default_comp in companies else 0,
             )
-            dc_year = st.slider(
-                f"Car {ci + 1} Year", 2000, 2024, 2018, key=f"dc_year_{ci}"
-            )
+            dc_year = st.slider(f"Car {ci + 1} Year", 2000, 2024, 2018, key=f"dc_year_{ci}")
             dc_kms = st.number_input(
                 f"Car {ci + 1} KMs", 0, 200000, 50000, key=f"dc_kms_{ci}", step=10000
             )
-            dc_fuel = st.selectbox(
-                f"Car {ci + 1} Fuel", fuel_types, key=f"dc_fuel_{ci}", index=0
-            )
-            cars_for_dep.append(
-                {"comp": dc_comp, "year": dc_year, "kms": dc_kms, "fuel": dc_fuel}
-            )
+            dc_fuel = st.selectbox(f"Car {ci + 1} Fuel", fuel_types, key=f"dc_fuel_{ci}", index=0)
+            cars_for_dep.append({"comp": dc_comp, "year": dc_year, "kms": dc_kms, "fuel": dc_fuel})
     if st.button("Compare Depreciation", key="dep_btn", use_container_width=True):
         fig_dep = go.Figure()
         colors_dep = ["#e85d04", "#4895ef", "#52b788"]
@@ -2853,12 +2726,10 @@ def page_market_intelligence():
                 ]
             )
             if "Linear Regression" in models:
-                base_price = make_prediction(
-                    models["Linear Regression"], inp_df, preprocessor
-                )
+                base_price = make_prediction(models["Linear Regression"], inp_df, preprocessor)
             else:
                 base_price = 500000
-            years = list(range(0, 11))
+            years = list(range(11))
             vals = [base_price * (0.88**y) for y in years]
             fig_dep.add_trace(
                 go.Scatter(
@@ -2893,9 +2764,7 @@ def page_market_intelligence():
             + (1 / (budget_df["kms_driven"] / 10000 + 1)) * 0.3
             + (budget / budget_df["Price"]).clip(0, 2) * 0.3
         )
-        budget_df["value_score"] = (
-            budget_df["value_score"] / budget_df["value_score"].max() * 100
-        )
+        budget_df["value_score"] = budget_df["value_score"] / budget_df["value_score"].max() * 100
         best_values = budget_df.nlargest(5, "value_score")
         st.markdown(f"### Top 5 Best Value Cars Around {fmt_inr(budget)}")
         for _, row in best_values.iterrows():
@@ -2930,9 +2799,7 @@ def page_market_intelligence():
                     text=tdata["company"],
                     textposition="top center",
                     textfont=dict(size=8, color=color),
-                    marker=dict(
-                        size=12, color=color, line=dict(color="white", width=1)
-                    ),
+                    marker=dict(size=12, color=color, line=dict(color="white", width=1)),
                 )
             )
     fig3.update_layout(
@@ -3067,9 +2934,7 @@ def page_pipeline_inspector():
         )
     with c2:
         st.markdown("### 📐 Log Transform Deep-Dive")
-        log_lambda = st.slider(
-            "Box-Cox λ value", -2.0, 2.0, 0.0, 0.1, key="boxcox_slider"
-        )
+        log_lambda = st.slider("Box-Cox λ value", -2.0, 2.0, 0.0, 0.1, key="boxcox_slider")
         prices = df["Price"].values + 1
         if log_lambda == 0:
             transformed = np.log(prices)
@@ -3084,11 +2949,7 @@ def page_pipeline_inspector():
             unsafe_allow_html=True,
         )
         fig = go.Figure(
-            data=[
-                go.Histogram(
-                    x=transformed, nbinsx=50, marker_color="#e85d04", opacity=0.8
-                )
-            ]
+            data=[go.Histogram(x=transformed, nbinsx=50, marker_color="#e85d04", opacity=0.8)]
         )
         fig.update_layout(
             title=f"Transformed Price (λ={log_lambda:.1f}, skew={skew_val:.2f})",
@@ -3266,13 +3127,9 @@ def show_price_history_simulation():
     if st.button("Simulate History", key="ph_btn", use_container_width=True):
         ph_df = df[df["company"] == ph_company]
         if ph_model_name:
-            ph_df = ph_df[
-                ph_df["name"].str.contains(ph_model_name, case=False, na=False)
-            ]
+            ph_df = ph_df[ph_df["name"].str.contains(ph_model_name, case=False, na=False)]
         if len(ph_df) > 0:
-            trend = (
-                ph_df.groupby("year")["Price"].agg(["mean", "min", "max"]).reset_index()
-            )
+            trend = ph_df.groupby("year")["Price"].agg(["mean", "min", "max"]).reset_index()
             fig = go.Figure()
             fig.add_trace(
                 go.Scatter(
@@ -3360,9 +3217,7 @@ def render_login_page():
         )
 
     with st.form("login_form", clear_on_submit=False):
-        username = st.text_input(
-            "Username", placeholder="Enter your username", key="login_user"
-        )
+        username = st.text_input("Username", placeholder="Enter your username", key="login_user")
         password = st.text_input(
             "Password",
             type="password",
@@ -3376,9 +3231,7 @@ def render_login_page():
             disabled=True,
             help="Session persists until browser close",
         )
-        submitted = st.form_submit_button(
-            "🔑 Sign In", use_container_width=True, type="primary"
-        )
+        submitted = st.form_submit_button("🔑 Sign In", use_container_width=True, type="primary")
 
         if submitted:
             if not username or not password:
@@ -3687,9 +3540,7 @@ def render_profile_page():
                 new_color = st.selectbox(
                     "Avatar Color",
                     avatar_colors,
-                    index=avatar_colors.index(avatar_color)
-                    if avatar_color in avatar_colors
-                    else 0,
+                    index=avatar_colors.index(avatar_color) if avatar_color in avatar_colors else 0,
                 )
                 if st.form_submit_button("💾 Save Changes", use_container_width=True):
                     update_user_profile(uid, new_name, new_email, new_color)
@@ -3699,80 +3550,70 @@ def render_profile_page():
                     st.session_state.user = user
                     st.success("✅ Profile updated!")
 
-        with tabs[1]:
-            with st.form("change_pwd"):
-                cur_pwd = st.text_input("Current Password", type="password")
-                new_pwd = st.text_input("New Password", type="password")
-                conf_pwd = st.text_input("Confirm New Password", type="password")
-                if st.form_submit_button(
-                    "🔄 Update Password", use_container_width=True
-                ):
-                    if not verify_password(cur_pwd, user.get("password_hash", "")):
-                        st.error("❌ Current password is incorrect")
-                    elif len(new_pwd) < 6:
-                        st.error("❌ New password must be at least 6 characters")
-                    elif new_pwd != conf_pwd:
-                        st.error("❌ Passwords do not match")
-                    else:
-                        db = load_users_db()
-                        db["users"][uid]["password_hash"] = hash_password(new_pwd)
-                        save_users_db(db)
-                        st.success("✅ Password updated! Please log in again.")
-                        st.info("Relogin to continue")
+        with tabs[1], st.form("change_pwd"):
+            cur_pwd = st.text_input("Current Password", type="password")
+            new_pwd = st.text_input("New Password", type="password")
+            conf_pwd = st.text_input("Confirm New Password", type="password")
+            if st.form_submit_button("🔄 Update Password", use_container_width=True):
+                if not verify_password(cur_pwd, user.get("password_hash", "")):
+                    st.error("❌ Current password is incorrect")
+                elif len(new_pwd) < 6:
+                    st.error("❌ New password must be at least 6 characters")
+                elif new_pwd != conf_pwd:
+                    st.error("❌ Passwords do not match")
+                else:
+                    db = load_users_db()
+                    db["users"][uid]["password_hash"] = hash_password(new_pwd)
+                    save_users_db(db)
+                    st.success("✅ Password updated! Please log in again.")
+                    st.info("Relogin to continue")
 
-        with tabs[2]:
-            with st.form("prefs_form"):
-                default_model = st.selectbox(
-                    "Default Model",
-                    [
-                        "xgboost",
-                        "linear_regression",
-                        "ridge",
-                        "gradient_boosting",
-                        "random_forest",
-                    ],
-                    index=[
-                        "xgboost",
-                        "linear_regression",
-                        "ridge",
-                        "gradient_boosting",
-                        "random_forest",
-                    ].index(
-                        user.get("preferences", {}).get("default_model", "xgboost")
-                    ),
+        with tabs[2], st.form("prefs_form"):
+            default_model = st.selectbox(
+                "Default Model",
+                [
+                    "xgboost",
+                    "linear_regression",
+                    "ridge",
+                    "gradient_boosting",
+                    "random_forest",
+                ],
+                index=[
+                    "xgboost",
+                    "linear_regression",
+                    "ridge",
+                    "gradient_boosting",
+                    "random_forest",
+                ].index(user.get("preferences", {}).get("default_model", "xgboost")),
+            )
+            ci = st.select_slider(
+                "Confidence Interval",
+                ["±10%", "±15%", "±20%"],
+                value=user.get("preferences", {}).get("confidence_interval", "±15%"),
+            )
+            expert_mode = st.toggle(
+                "Expert Mode",
+                value=user.get("preferences", {}).get("expert_mode", False),
+            )
+            accent = st.selectbox(
+                "Theme Accent",
+                ["#e85d04", "#f48c06", "#4895ef", "#52b788", "#9b5de5"],
+                index=["#e85d04", "#f48c06", "#4895ef", "#52b788", "#9b5de5"].index(
+                    user.get("preferences", {}).get("theme_accent", "#e85d04")
+                ),
+            )
+            if st.form_submit_button("💾 Save Preferences", use_container_width=True):
+                update_user_preferences(
+                    uid,
+                    {
+                        "default_model": default_model,
+                        "confidence_interval": ci,
+                        "expert_mode": expert_mode,
+                        "theme_accent": accent,
+                    },
                 )
-                ci = st.select_slider(
-                    "Confidence Interval",
-                    ["±10%", "±15%", "±20%"],
-                    value=user.get("preferences", {}).get(
-                        "confidence_interval", "±15%"
-                    ),
-                )
-                expert_mode = st.toggle(
-                    "Expert Mode",
-                    value=user.get("preferences", {}).get("expert_mode", False),
-                )
-                accent = st.selectbox(
-                    "Theme Accent",
-                    ["#e85d04", "#f48c06", "#4895ef", "#52b788", "#9b5de5"],
-                    index=["#e85d04", "#f48c06", "#4895ef", "#52b788", "#9b5de5"].index(
-                        user.get("preferences", {}).get("theme_accent", "#e85d04")
-                    ),
-                )
-                if st.form_submit_button(
-                    "💾 Save Preferences", use_container_width=True
-                ):
-                    update_user_preferences(
-                        uid,
-                        {
-                            "default_model": default_model,
-                            "confidence_interval": ci,
-                            "expert_mode": expert_mode,
-                            "theme_accent": accent,
-                        },
-                    )
-                    st.session_state.expert_mode = expert_mode
-                    st.success("✅ Preferences saved!")
+                st.session_state.expert_mode = expert_mode
+                st.success("✅ Preferences saved!")
 
         with tabs[3]:
             if pred_history:
@@ -3818,12 +3659,8 @@ def render_profile_page():
         with tabs[5]:
             st.markdown("### ⚠️ Danger Zone")
             st.warning("This action is irreversible. Type your username to confirm.")
-            confirm_name = st.text_input(
-                "Type username to confirm deletion", key="danger_confirm"
-            )
-            if st.button(
-                "🗑️ Delete My Account", use_container_width=True, type="primary"
-            ):
+            confirm_name = st.text_input("Type username to confirm deletion", key="danger_confirm")
+            if st.button("🗑️ Delete My Account", use_container_width=True, type="primary"):
                 if confirm_name == user.get("username"):
                     delete_user(uid)
                     for k in list(st.session_state.keys()):

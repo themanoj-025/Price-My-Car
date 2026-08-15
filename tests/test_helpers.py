@@ -270,9 +270,7 @@ class TestGetFilteredData:
         )
 
     def test_filter_by_company(self):
-        result = get_filtered_data(
-            self.df, ["Maruti"], ["Petrol", "Diesel"], None, None, None
-        )
+        result = get_filtered_data(self.df, ["Maruti"], ["Petrol", "Diesel"], None, None, None)
         assert len(result) == 2
         assert all(result["company"] == "Maruti")
 
@@ -536,9 +534,7 @@ class TestShapLiteApproximation:
         mock_preprocessor = MagicMock()
         mock_preprocessor.transform.return_value = np.array([[1.0, 2.0]])
 
-        result = shap_lite_approximation(
-            mock_model, None, mock_preprocessor, np.array(["a", "b"])
-        )
+        result = shap_lite_approximation(mock_model, None, mock_preprocessor, np.array(["a", "b"]))
         assert result == []
 
     def test_limits_to_8_contributions(self):
@@ -573,9 +569,7 @@ class TestEnsemblePrediction:
         mock_preprocessor.transform.return_value = np.array([[0.5, 0.3]])
 
         input_df = pd.DataFrame({"feature1": [0.5]})
-        mean_pred, spread, color = ensemble_prediction(
-            models, input_df, mock_preprocessor
-        )
+        mean_pred, spread, color = ensemble_prediction(models, input_df, mock_preprocessor)
 
         assert mean_pred is not None
         assert abs(spread) < 0.01
@@ -596,9 +590,7 @@ class TestEnsemblePrediction:
         mock_preprocessor.transform.return_value = np.array([[0.5, 0.3]])
 
         input_df = pd.DataFrame({"feature1": [0.5]})
-        mean_pred, spread, color = ensemble_prediction(
-            models, input_df, mock_preprocessor
-        )
+        mean_pred, spread, color = ensemble_prediction(models, input_df, mock_preprocessor)
 
         assert mean_pred is not None
         assert spread > 20
@@ -619,9 +611,7 @@ class TestEnsemblePrediction:
         mock_preprocessor.transform.return_value = np.array([[0.5, 0.3]])
 
         input_df = pd.DataFrame({"feature1": [0.5]})
-        mean_pred, spread, color = ensemble_prediction(
-            models, input_df, mock_preprocessor
-        )
+        mean_pred, spread, color = ensemble_prediction(models, input_df, mock_preprocessor)
 
         assert mean_pred is not None
         assert 10 < spread < 20, f"Expected spread 10-20%, got {spread:.1f}%"

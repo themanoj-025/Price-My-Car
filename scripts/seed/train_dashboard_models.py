@@ -20,15 +20,11 @@ y_train = np.load("ml_ready/y_train.npy")
 X_test = np.load("ml_ready/X_test.npy")
 y_test = np.load("ml_ready/y_test.npy")
 
-print(
-    f"Training on log-transformed y_train (range: {y_train.min():.4f} - {y_train.max():.4f})"
-)
+print(f"Training on log-transformed y_train (range: {y_train.min():.4f} - {y_train.max():.4f})")
 
 models = {}
 
-print(
-    "\nTraining Gradient Boosting (tuned: lr=0.05, depth=5, n_est=200, subsample=0.8)..."
-)
+print("\nTraining Gradient Boosting (tuned: lr=0.05, depth=5, n_est=200, subsample=0.8)...")
 t0 = time.time()
 models["Gradient Boosting"] = GradientBoostingRegressor(
     n_estimators=200,
@@ -40,9 +36,7 @@ models["Gradient Boosting"] = GradientBoostingRegressor(
 ).fit(X_train, y_train)
 print(f"  Done in {time.time() - t0:.1f}s")
 
-print(
-    "\nTraining XGBoost (tuned: lr=0.1, depth=3, n_est=300, subsample=0.8, colsample=0.8)..."
-)
+print("\nTraining XGBoost (tuned: lr=0.1, depth=3, n_est=300, subsample=0.8, colsample=0.8)...")
 t0 = time.time()
 models["XGBoost"] = xgb.XGBRegressor(
     n_estimators=300,
