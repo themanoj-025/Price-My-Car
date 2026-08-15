@@ -163,3 +163,11 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 - ⭐ Star the repository if you found it useful
 - 🐛 [Report a bug](https://github.com/themanoj-025/Price-My-Car/issues)
 - 💡 [Request a feature](https://github.com/themanoj-025/Price-My-Car/issues)
+---
+
+## ⭐ Star History
+
+[![Last Commit](https://img.shields.io/github/last-commit/themanoj-025/Price-My-Car?style=flat-square)](https://github.com/themanoj-025/Price-My-Car)
+[![Contributors](https://img.shields.io/github/contributors/themanoj-025/Price-My-Car?style=flat-square)](https://github.com/themanoj-025/Price-My-Car/graphs/contributors)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=themanoj-025/Price-My-Car&type=Date)](https://star-history.com/#Price-My-Car&Date)
