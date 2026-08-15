@@ -1,0 +1,43 @@
+# ======================================================================
+# Car Price Prediction - Dependencies
+# Install: pip install -r requirements.txt
+# ======================================================================
+
+# Core data science
+bcrypt>=4.0.0
+
+pandas>=3.0.5
+numpy>=2.5.1
+
+pandas>=3.0.5
+numpy>=2.5.1
+
+scipy>=1.10.0
+scikit-learn>=1.3.0
+xgboost>=1.7.0
+joblib>=1.5.3
+
+# Visualization
+matplotlib>=3.11.1
+seaborn>=0.12.0
+plotly>=6.9.0
+
+# Dashboard
+streamlit>=1.60.0
+
+# Excel export (bulk prediction download)
+openpyxl>=3.1.5
+
+# VIF calculation (multicollinearity check in EDA)
+statsmodels>=0.14.6
+
+# Notebook utilities
+nbformat>=5.0.0
+jupyter>=1.0.0
+nbconvert>=7.17.1
+
+# Pinned transitive deps with security advisories
+# msgpack: GHSA-6v7p-g79w-8964 (HIGH, OOB read) — fixed in 1.2.1
+# setuptools: CVE-2025-47273 (path traversal) — fixed in 78.1.1
+msgpack>=1.2.1
+setuptools>=78.1.1

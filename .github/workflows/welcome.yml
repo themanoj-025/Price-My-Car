@@ -1,0 +1,29 @@
+# Welcome first-time contributors with a friendly comment
+#
+# https://github.com/actions/first-interaction
+
+name: "Welcome new contributors"
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: >
+            👋 Thanks for opening your first issue! Please make sure you've checked
+            existing issues to avoid duplicates. We'll review it as soon as possible.
+          pr-message: >
+            🎉 Thanks for your first pull request! A maintainer will review your
+            changes shortly. Make sure all CI checks pass and your changes follow
+            the contribution guidelines in CONTRIBUTING.md.

@@ -1,0 +1,33 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Price-My-Car (AutoIntel) — Docker Compose (base)
+#
+# Single-service Streamlit app. Data + ML artifacts ship inside the image.
+# A named volume persists the users.json auth database across restarts.
+#
+# Usage:
+#   docker compose up -d
+# ═══════════════════════════════════════════════════════════════════════
+
+name: autointel
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    # users_db.json holds bcrypt-hashed credentials. The app writes it to
+    # the working dir (/app/users_db.json), so for persistence add a bind
+    # mount in prod:  - ./users_db.json:/app/users_db.json
+    # (see docs/docker.md).
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+
