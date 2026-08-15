@@ -11,6 +11,25 @@ A production-ready ML application for predicting used car prices in the Indian m
 
 ---
 
+## 📋 Table of Contents
+
+- [Dataset](#dataset)
+- [Features](#features)
+- [Pages](#pages)
+- [Installation](#installation)
+- [Workflow](#workflow)
+- [Model Performance](#model-performance)
+- [Files](#files)
+- [License](#-license)
+- [Contributing](#-contributing)
+- [Show Your Support](#-show-your-support)
+
+---
+
+> 📸 **Screenshot placeholder:** Add a screenshot of the Price Predictor page with a confidence interval.
+
+---
+
 ## Dataset
 
 The dataset contains 13,284 used car listings from the Indian market:
@@ -62,14 +81,16 @@ The dataset contains 13,284 used car listings from the Indian market:
 
 ```bash
 git clone https://github.com/themanoj-025/Price-My-Car.git
-cd car-price-prediction
+cd Price-My-Car
 python -m venv venv
-venv\Scripts\activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 streamlit run app/streamlit_app.py
 ```
 
 **Demo credentials:** username = `demo`, password = `demo123`
+
+> 💡 **Tip:** `setup.sh` automates environment setup and model training on first clone.
 
 ---
 
@@ -120,6 +141,25 @@ Log-transforming Price was the biggest improvement — boosting Linear Regressio
 
 ---
 
-## License
+## 📄 License
 
-MIT
+MIT — see [LICENSE](LICENSE).
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push and open a Pull Request
+
+---
+
+## ⭐ Show Your Support
+
+- ⭐ Star the repository if you found it useful
+- 🐛 [Report a bug](https://github.com/themanoj-025/Price-My-Car/issues)
+- 💡 [Request a feature](https://github.com/themanoj-025/Price-My-Car/issues)
