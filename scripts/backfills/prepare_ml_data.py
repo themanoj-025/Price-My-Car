@@ -50,9 +50,7 @@ df["fuel_type_simple"] = df["fuel_type"].replace(
 kms_upper = df["kms_driven"].quantile(0.99)
 kms_outliers = (df["kms_driven"] > kms_upper).sum()
 df["kms_driven"] = df["kms_driven"].clip(upper=kms_upper)
-print(
-    f"\n[4] Capped {kms_outliers} kms_driven outliers at 99th percentile ({kms_upper:,.0f})"
-)
+print(f"\n[4] Capped {kms_outliers} kms_driven outliers at 99th percentile ({kms_upper:,.0f})")
 
 # -- 5. Drop unnecessary columns ------------------------------------------
 df_ml = df.drop(columns=["name", "year", "fuel_type"])
@@ -73,9 +71,7 @@ print(f"    Log range: {y_log.min():.4f} – {y_log.max():.4f}")
 # -- 7. Train/Test Split --------------------------------------------------
 X = df_ml.drop(columns=["Price"])
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y_log, test_size=0.2, random_state=42
-)
+X_train, X_test, y_train, y_test = train_test_split(X, y_log, test_size=0.2, random_state=42)
 
 print("\n[7] Train/test split:")
 print(f"    X_train: {X_train.shape}, y_train: {y_train.shape}")
@@ -130,14 +126,10 @@ joblib.dump(preprocessor, "ml_ready/preprocessor.pkl")
 joblib.dump(all_feature_names, "ml_ready/feature_names.pkl")
 
 # Also save original (untransformed) y for reference / EDA
-y_original_train, y_original_test = train_test_split(
-    y_original, test_size=0.2, random_state=42
-)
+y_original_train, y_original_test = train_test_split(y_original, test_size=0.2, random_state=42)
 np.save("ml_ready/y_train_original.npy", y_original_train.values)
 np.save("ml_ready/y_test_original.npy", y_original_test.values)
-print(
-    "    Also saved original (untransformed) Price to y_train_original.npy / y_test_original.npy"
-)
+print("    Also saved original (untransformed) Price to y_train_original.npy / y_test_original.npy")
 
 print("\n[9] Saved to 'ml_ready/' folder:")
 print(f"    |-- X_train.npy        ({X_train_processed.nbytes / 1e6:.1f} MB)")
@@ -163,12 +155,10 @@ print(f"  Features:           {len(all_feature_names)}")
 print(f"  Train samples:      {len(y_train)}")
 print(f"  Test samples:       {len(y_test)}")
 print("  Target:             Price (log1p-transformed regression)")
-print(
-    f"  Original skewness:  {y_original.skew():.2f} -> log skewness: {y_log.skew():.2f}"
-)
-print("")
+print(f"  Original skewness:  {y_original.skew():.2f} -> log skewness: {y_log.skew():.2f}")
+print()
 print("  Predict with:       np.expm1(prediction) to get original INR price")
-print("")
+print()
 print("  Ready for ML algorithms like:")
 print("    - Linear Regression / Ridge / Lasso")
 print("    - Random Forest / Gradient Boosting / XGBoost")

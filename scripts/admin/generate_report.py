@@ -51,9 +51,7 @@ def save_plot(fig, filename):
 
 # === 2a. Price Distribution ===
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-axes[0].hist(
-    df["price_lakhs"], bins=50, color="steelblue", edgecolor="white", alpha=0.8
-)
+axes[0].hist(df["price_lakhs"], bins=50, color="steelblue", edgecolor="white", alpha=0.8)
 axes[0].set_xlabel("Price (in lakhs)")
 axes[0].set_ylabel("Frequency")
 axes[0].set_title("Distribution of Car Prices")
@@ -69,9 +67,7 @@ save_plot(fig, "price_distribution.png")
 
 # === 2b. Price by Fuel Type ===
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-fuel_order = (
-    df.groupby("fuel_type")["Price"].median().sort_values(ascending=False).index
-)
+fuel_order = df.groupby("fuel_type")["Price"].median().sort_values(ascending=False).index
 sns.boxplot(
     data=df,
     x="fuel_type",
@@ -83,9 +79,7 @@ sns.boxplot(
 axes[0].set_xlabel("Fuel Type")
 axes[0].set_ylabel("Price (in lakhs)")
 axes[0].set_title("Price Distribution by Fuel Type")
-sns.violinplot(
-    data=df, x="fuel_type", y="log_price", order=fuel_order, palette="Set2", ax=axes[1]
-)
+sns.violinplot(data=df, x="fuel_type", y="log_price", order=fuel_order, palette="Set2", ax=axes[1])
 axes[1].set_xlabel("Fuel Type")
 axes[1].set_ylabel("Log(Price)")
 axes[1].set_title("Log-Price Distribution by Fuel Type")
@@ -101,16 +95,12 @@ top_companies = (
 )
 
 fig, ax = plt.subplots(figsize=(12, 6))
-bars = ax.barh(
-    range(len(top_companies)), top_companies["avg_price"] / 1e5, color="teal", alpha=0.8
-)
+bars = ax.barh(range(len(top_companies)), top_companies["avg_price"] / 1e5, color="teal", alpha=0.8)
 ax.set_yticks(range(len(top_companies)))
 ax.set_yticklabels(top_companies.index)
 ax.set_xlabel("Average Price (in lakhs)")
 ax.set_title("Top 15 Car Companies by Average Price")
-for i, (v, c) in enumerate(
-    zip(top_companies["avg_price"] / 1e5, top_companies["count"])
-):
+for i, (v, c) in enumerate(zip(top_companies["avg_price"] / 1e5, top_companies["count"])):
     ax.text(v + 0.5, i, f"n={c}", va="center", fontsize=9)
 fig.tight_layout()
 save_plot(fig, "top_companies_price.png")
@@ -163,9 +153,7 @@ save_plot(fig, "year_distribution.png")
 # === 2g. Price by Company (Box Plot - Top 20) ===
 top20_companies = df["company"].value_counts().head(20).index
 df_top20 = df[df["company"].isin(top20_companies)]
-company_order = (
-    df_top20.groupby("company")["Price"].median().sort_values(ascending=False).index
-)
+company_order = df_top20.groupby("company")["Price"].median().sort_values(ascending=False).index
 
 fig, ax = plt.subplots(figsize=(14, 7))
 sns.boxplot(
@@ -206,9 +194,7 @@ fig.tight_layout()
 save_plot(fig, "correlation_heatmap.png")
 
 # === 2i. Top 10 Most Expensive Cars Table ===
-top10 = df.nlargest(10, "Price")[
-    ["name", "company", "year", "Price", "kms_driven", "fuel_type"]
-]
+top10 = df.nlargest(10, "Price")[["name", "company", "year", "Price", "kms_driven", "fuel_type"]]
 
 fig, ax = plt.subplots(figsize=(12, 5))
 ax.axis("off")
@@ -291,8 +277,7 @@ stats["corr_price_year"] = round(df["Price"].corr(df["year"]), 3)
 stats["corr_price_logkms"] = round(df["Price"].corr(np.log1p(df["kms_driven"])), 3)
 
 stats["price_percentiles"] = {
-    str(pct): int(df["Price"].quantile(pct / 100))
-    for pct in [1, 5, 10, 25, 50, 75, 90, 95, 99]
+    str(pct): int(df["Price"].quantile(pct / 100)) for pct in [1, 5, 10, 25, 50, 75, 90, 95, 99]
 }
 stats["missing_values"] = int(df.isnull().sum().sum())
 
@@ -318,7 +303,8 @@ def fmt_price(val):
 
 
 html_parts = []
-html_parts.append(f"""<!DOCTYPE html>
+html_parts.append(
+    f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -391,10 +377,12 @@ html_parts.append(f"""<!DOCTYPE html>
     <div class="meta">Generated on {datetime.now().strftime("%B %d, %Y at %H:%M")} &nbsp;|&nbsp; {stats["total_rows_clean"]:,} records after deduplication</div>
 </div>
 <div class="container">
-""")
+"""
+)
 
 # KPI Cards
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="kpi-grid">
     <div class="kpi-card">
         <div class="value">{stats["total_rows_clean"]:,}</div>
@@ -421,10 +409,12 @@ html_parts.append(f"""
         <div class="label">Duplicates Removed</div>
     </div>
 </div>
-""")
+"""
+)
 
 # Section 1: Dataset Overview
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#49; Dataset Overview</h2>
     <table class="stats-table">
@@ -437,10 +427,12 @@ html_parts.append(f"""
         <tr><td>Column Names</td><td style="font-size:0.85em">{", ".join(stats["columns"])}</td></tr>
     </table>
 </div>
-""")
+"""
+)
 
 # Section 2: Price Analysis
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#50; Price Analysis</h2>
     <div class="dual">
@@ -461,12 +453,14 @@ html_parts.append(f"""
         <div>
             <table class="stats-table">
                 <tr><th>Percentile</th><th>Price</th></tr>
-""")
+"""
+)
 for pct in [1, 5, 10, 25, 50, 75, 90, 95, 99]:
     html_parts.append(
         f"<tr><td>{pct}th</td><td>{fmt_price(stats['price_percentiles'][str(pct)])}</td></tr>\n"
     )
-html_parts.append(f"""
+html_parts.append(
+    f"""
             </table>
         </div>
     </div>
@@ -474,17 +468,20 @@ html_parts.append(f"""
         <div class="img-container">{img_html("price_distribution.png")}</div>
     </div>
 </div>
-""")
+"""
+)
 
 # Section 3: Fuel Type Analysis
-html_parts.append("""
+html_parts.append(
+    """
 <div class="section">
     <h2>&#51; Fuel Type Analysis</h2>
     <div class="dual">
         <div>
             <table class="stats-table">
                 <tr><th>Fuel Type</th><th>Count</th><th>% of Total</th><th>Avg Price</th></tr>
-""")
+"""
+)
 for fuel in ["Diesel", "Petrol", "CNG", "LPG", "Electric"]:
     count = stats["fuel_counts"].get(fuel, 0)
     pct = count / stats["total_rows_clean"] * 100
@@ -492,16 +489,19 @@ for fuel in ["Diesel", "Petrol", "CNG", "LPG", "Electric"]:
     html_parts.append(
         f"<tr><td>{fuel}</td><td>{count:,}</td><td>{pct:.1f}%</td><td>{fmt_price(avg_p)}</td></tr>\n"
     )
-html_parts.append(f"""
+html_parts.append(
+    f"""
             </table>
         </div>
         <div class="img-container">{img_html("price_by_fuel.png")}</div>
     </div>
 </div>
-""")
+"""
+)
 
 # Section 4: Company Analysis
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#52; Company Analysis</h2>
     <p style="margin-bottom:12px"><strong>Total unique companies:</strong> {stats["num_companies"]} &nbsp;|&nbsp; <strong>Most listings:</strong> {stats["company_most_listings"]} ({stats["company_most_listings_count"]:,} cars)</p>
@@ -509,28 +509,33 @@ html_parts.append(f"""
         <div>
             <table class="stats-table">
                 <tr><th>#</th><th>Company</th><th>Listings</th><th>%</th></tr>
-""")
+"""
+)
 for i, (company, count) in enumerate(stats["top10_companies"].items(), 1):
     pct = count / stats["total_rows_clean"] * 100
     html_parts.append(
         f"<tr><td>{i}</td><td>{company}</td><td>{count:,}</td><td>{pct:.1f}%</td></tr>\n"
     )
-html_parts.append(f"""
+html_parts.append(
+    f"""
             </table>
         </div>
         <div class="img-container">{img_html("top_companies_price.png")}</div>
     </div>
     <div class="img-container">{img_html("price_by_company_box.png")}</div>
 </div>
-""")
+"""
+)
 
 # Section 5: Feature Correlations
-html_parts.append("""
+html_parts.append(
+    """
 <div class="section">
     <h2>&#53; Feature Correlations</h2>
     <table class="stats-table" style="max-width:500px">
         <tr><th>Relationship</th><th>Correlation</th><th>Strength</th></tr>
-""")
+"""
+)
 corr_pairs = [
     ("Price vs Car Age", stats["corr_price_age"]),
     ("Price vs Year", stats["corr_price_year"]),
@@ -544,17 +549,20 @@ for label, val in corr_pairs:
     html_parts.append(
         f'<tr><td>{label}</td><td style="color:{color};font-weight:700">{val:+.3f}</td><td>{strength} {direction}</td></tr>\n'
     )
-html_parts.append(f"""
+html_parts.append(
+    f"""
     </table>
     <div class="img-row">
         <div class="img-container">{img_html("correlation_heatmap.png")}</div>
         <div class="img-container">{img_html("price_vs_age.png")}</div>
     </div>
 </div>
-""")
+"""
+)
 
 # Section 6: KMs Driven
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#54; KMs Driven Analysis</h2>
     <div class="dual">
@@ -570,10 +578,12 @@ html_parts.append(f"""
         <div class="img-container">{img_html("kms_distribution.png")}</div>
     </div>
 </div>
-""")
+"""
+)
 
 # Section 7: Year / Age
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#55; Manufacturing Year &amp; Age</h2>
     <table class="stats-table" style="max-width:400px">
@@ -586,18 +596,22 @@ html_parts.append(f"""
     </table>
     <div class="img-container">{img_html("year_distribution.png")}</div>
 </div>
-""")
+"""
+)
 
 # Section 8: Top 10 Most Expensive
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#56; Top 10 Most Expensive Cars</h2>
     <div class="img-container">{img_html("top10_expensive.png")}</div>
 </div>
-""")
+"""
+)
 
 # Section 9: ML Readiness
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#57; ML Readiness Summary</h2>
     <table class="stats-table">
@@ -612,14 +626,16 @@ html_parts.append(f"""
         <tr><td>Target Variable</td><td style="color:#2980b9;font-weight:700">Price</td><td>Regression task (range: {fmt_price(stats["price_min"])} &ndash; {fmt_price(stats["price_max"])})</td></tr>
     </table>
 </div>
-""")
+"""
+)
 
 # Section 10: Key Insights
 diesel_pct = stats["fuel_diesel"] / stats["total_rows_clean"] * 100
 maruti_pct = stats["company_most_listings_count"] / stats["total_rows_clean"] * 100
 dup_pct = stats["duplicates"] / stats["total_rows_original"] * 100
 
-html_parts.append(f"""
+html_parts.append(
+    f"""
 <div class="section">
     <h2>&#49;&#48; Key Insights</h2>
     <ol style="margin-left:20px; line-height:2">
@@ -638,17 +654,20 @@ html_parts.append(f"""
             were removed, indicating possible scraping artifacts or repeated listings.</li>
     </ol>
 </div>
-""")
+"""
+)
 
 # Close tags
-html_parts.append("""
+html_parts.append(
+    """
 </div>
 <div class="footer">
     <p>Car Price Dataset EDA Report</p>
 </div>
 </body>
 </html>
-""")
+"""
+)
 
 # Write report
 report_html = "\n".join(html_parts)
