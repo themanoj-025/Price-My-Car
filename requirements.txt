@@ -33,7 +33,7 @@ statsmodels>=0.14.6
 
 # Notebook utilities
 nbformat>=5.11.0
-jupyter>=1.0.0
+jupyter>=1.1.1
 nbconvert>=7.17.1
 
 # Pinned transitive deps with security advisories
