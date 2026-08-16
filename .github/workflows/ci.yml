@@ -110,4 +110,4 @@ jobs:
           # 70.3.0) even though the app's real runtime packages in site-packages
           # are patched (msgpack 1.2.1, setuptools 84.0.0). The app never imports
           # pip's vendored copies, so exclude that directory from the scan.
-          args: --skip-dirs /usr/local/lib/python3.12/site-packages/pip/_vendor
+          skip-dirs: /usr/local/lib/python3.12/site-packages/pip/_vendor
