@@ -38,8 +38,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # 70.3.0 (CVE-2025-47273) in /usr/lib/python3/dist-packages. The pip
     # install in the deps stage provides patched versions (msgpack 1.2.1,
     # setuptools 78.1.1+) in /usr/local, but Trivy scans every copy — so the
-    # unpatched apt copies must be purged or the image scan fails.
-    && apt-get purge -y --auto-remove python3-msgpack python3-setuptools \
+    # unpatched apt copies must be removed or the image scan fails.
+    && apt-get purge -y --auto-remove python3-msgpack python3-setuptools || true \
+    && rm -rf /usr/lib/python3/dist-packages/msgpack* \
+              /usr/lib/python3/dist-packages/setuptools* \
+              /usr/lib/python3/dist-packages/pkg_resources* \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
