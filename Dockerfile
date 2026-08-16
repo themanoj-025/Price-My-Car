@@ -33,16 +33,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
         tini \
         curl \
-    # Remove Debian's apt-managed python packages: python:3.12-slim ships
-    # python3-msgpack 1.1.2 (GHSA-6v7p-g79w-8964, HIGH) and python3-setuptools
-    # 70.3.0 (CVE-2025-47273) in /usr/lib/python3/dist-packages. The pip
-    # install in the deps stage provides patched versions (msgpack 1.2.1,
-    # setuptools 78.1.1+) in /usr/local, but Trivy scans every copy — so the
-    # unpatched apt copies must be removed or the image scan fails.
-    && apt-get purge -y --auto-remove python3-msgpack python3-setuptools || true \
-    && rm -rf /usr/lib/python3/dist-packages/msgpack* \
-              /usr/lib/python3/dist-packages/setuptools* \
-              /usr/lib/python3/dist-packages/pkg_resources* \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
