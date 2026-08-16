@@ -477,7 +477,6 @@ def init_session_state():
         "last_prediction": {},
         "page_visits": {},
         "global_filters": {},
-        "expert_mode": True,
         "last_pred_inputs": {},
         "ab_mode": False,
         "ab_car1": {},
