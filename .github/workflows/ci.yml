@@ -104,3 +104,10 @@ jobs:
           exit-code: "1"
           ignore-unfixed: true
           severity: CRITICAL,HIGH
+          # pip vendors msgpack/setuptools under pip/_vendor/ (versions pinned in
+          # pip/_vendor/vendor.txt). Trivy reports those vendored copies against
+          # GHSA-6v7p-g79w-8964 (msgpack 1.1.2) and CVE-2025-47273 (setuptools
+          # 70.3.0) even though the app's real runtime packages in site-packages
+          # are patched (msgpack 1.2.1, setuptools 84.0.0). The app never imports
+          # pip's vendored copies, so exclude that directory from the scan.
+          skip-dirs: /usr/local/lib/python3.12/site-packages/pip/_vendor
