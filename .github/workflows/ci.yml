@@ -111,3 +111,19 @@ jobs:
           # are patched (msgpack 1.2.1, setuptools 84.0.0). The app never imports
           # pip's vendored copies, so exclude that directory from the scan.
           skip-dirs: /usr/local/lib/python3.12/site-packages/pip/_vendor
+
+  typecheck:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install mypy
+      - name: Type check with mypy
+        run: mypy . --ignore-missing-imports
