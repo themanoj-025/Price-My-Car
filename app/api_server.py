@@ -11,7 +11,6 @@ Auth:
     When unset, all endpoints are open (backward compatible).
 """
 
-import json
 import os
 import secrets
 import sys
@@ -25,7 +24,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 # Ensure project root is on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.helpers import fmt_inr, get_price_tier, make_prediction
+from app.helpers import fmt_inr, get_price_tier
 
 # ── App Setup ─────────────────────────────────────────────────────────────
 
@@ -129,15 +128,12 @@ async def predict_price(request: Request):
     if missing:
         raise HTTPException(status_code=422, detail=f"Missing fields: {missing}")
 
-    # Build input DataFrame
-    input_df = pd.DataFrame([body])
-
     # For now, return a simple estimate based on dataset averages
     # In production, load trained model with joblib.load()
     df = _load_cars_df()
     avg_price = float(df["Price"].mean()) if "Price" in df.columns else 500000
 
-    tier, badge = get_price_tier(avg_price)
+    tier, _badge = get_price_tier(avg_price)
 
     return {
         "predicted_price": avg_price,
