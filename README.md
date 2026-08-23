@@ -149,6 +149,119 @@ Log-transforming Price was the biggest improvement — boosting Linear Regressio
 
 ---
 
+## 🏗 Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  Streamlit Dashboard (9 pages)                  │
+│  Dashboard │ Explorer │ EDA │ Model Lab │ Predictor │ Admin     │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    FastAPI REST API                             │
+│  /api/v1/predict │ /api/v1/cars/stats │ /api/v1/cars/brands    │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              ML Pipeline (8 models)                             │
+│  LinearReg │ Ridge │ XGBoost │ GradBoost │ SVR │ Lasso │ KNN   │
+│  Random Forest │ GridSearchCV tuning │ Log-transform target    │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              Indian Used Car Dataset (13K listings)              │
+│  36 brands │ 5 fuel types │ 39 engineered features             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔌 REST API
+
+The FastAPI server (`app/api_server.py`) exposes prediction and data endpoints:
+
+### Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/health` | Health check | No |
+| GET | `/api/v1/cars/stats` | Dataset statistics (count, price range) | Optional |
+| GET | `/api/v1/cars/brands` | List of available car brands | Optional |
+| GET | `/api/v1/cars/fuel-types` | List of fuel types | Optional |
+| POST | `/api/v1/predict` | Predict car price from inputs | Optional |
+
+### Authentication
+
+Set `PRICE_MY_CAR_API_KEY` env var to enable Bearer token auth:
+
+```bash
+# Enable auth
+export PRICE_MY_CAR_API_KEY=your-secret-key-here
+
+# Request with auth
+curl -H "Authorization: Bearer your-secret-key-here" http://localhost:8000/api/v1/cars/stats
+```
+
+### Rate Limiting
+
+All endpoints are rate-limited to **60 requests per minute** per IP (via slowapi).
+
+### Running the API Server
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the API server
+uvicorn app.api_server:app --host 0.0.0.0 --port 8000
+```
+
+---
+
+## 🔧 Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PRICE_MY_CAR_API_KEY` | (empty) | API key for Bearer token auth |
+| `API_HOST` | `0.0.0.0` | API server host |
+| `API_PORT` | `8000` | API server port |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run specific test file
+python -m pytest tests/test_helpers.py -v
+```
+
+**Test coverage:** 65 unit tests covering helper functions, formatting, predictions, and edge cases.
+
+---
+
+## 🚀 Deployment
+
+### Docker
+
+```bash
+docker-compose up -d
+```
+
+### Streamlit Cloud
+
+1. Push to GitHub
+2. Connect to [Streamlit Cloud](https://share.streamlit.io/)
+3. Set `requirements.txt` as dependency
+4. Deploy!
+
+---
+
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
