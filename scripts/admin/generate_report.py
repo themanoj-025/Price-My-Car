@@ -208,7 +208,7 @@ table = ax.table(
 table.auto_set_font_size(False)
 table.set_fontsize(9)
 table.scale(1, 1.4)
-for (row, col), cell in table.get_celld().items():
+for (row, _col), cell in table.get_celld().items():
     if row == 0:
         cell.set_facecolor("#2c3e50")
         cell.set_text_props(color="white", weight="bold")
