@@ -26,7 +26,15 @@ A production-ready ML application for predicting used car prices in the Indian m
 
 ---
 
-> 📸 **Screenshot placeholder:** Add a screenshot of the Price Predictor page with a confidence interval.
+## 📸 Screenshots
+
+> _To add screenshots: run `streamlit run app/streamlit_app.py`, capture your screen, save images to `docs/assets/`, and reference them below._
+>
+> **Suggested screenshots:**
+> - Price Predictor page with confidence interval
+> - EDA Deep-Dive with correlation heatmaps
+> - Model Lab comparing all 8 models
+> - Market Intelligence depreciation calculator
 
 ---
 
