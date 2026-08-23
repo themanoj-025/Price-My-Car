@@ -1,3 +1,9 @@
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+ignore = ["DTZ005", "BLE001", "E722", "SIM102", "SIM117"]
+
 [tool.black]
 line-length = 100
 target-version = ["py310"]
