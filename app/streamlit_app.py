@@ -263,9 +263,7 @@ def require_admin() -> bool:
         return False
     db = load_users_db()
     db_user = db["users"].get(user_id)
-    if not db_user or db_user.get("role") != "admin":
-        return False
-    return True
+    return not (not db_user or db_user.get("role") != "admin")
 
 
 def update_user_profile(user_id: str, full_name: str, email: str, avatar_color: str):
@@ -433,21 +431,21 @@ def apply_plotly_config(fig, height=None):
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(13,16,25,0.8)",
-        font=dict(family="DM Sans", color="#e8eaf0"),
+        font={"family": "DM Sans", "color": "#e8eaf0"},
         height=height or 350,
-        margin=dict(l=20, r=20, t=40, b=20),
+        margin={"l": 20, "r": 20, "t": 40, "b": 20},
         hovermode="x unified",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1,
-            font=dict(size=10),
-        ),
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+            "x": 1,
+            "font": {"size": 10},
+        },
     )
-    fig.update_xaxes(gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font=dict(size=11))
-    fig.update_yaxes(gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font=dict(size=11))
+    fig.update_xaxes(gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font={"size": 11})
+    fig.update_yaxes(gridcolor="rgba(255,255,255,0.05)", gridwidth=1, title_font={"size": 11})
     # Only apply marker styling to traces that support it (scatter, bar, etc.)
     for trace in fig.data:
         if trace.__class__.__name__ not in (
@@ -456,10 +454,10 @@ def apply_plotly_config(fig, height=None):
             "Histogram2d",
             "Histogram2dContour",
         ):
-            trace.update(marker=dict(line=dict(width=0)))
+            trace.update(marker={"line": {"width": 0}})
     fig.update_layout(showlegend=False)
-    fig.update_layout(legend=dict(font=dict(size=9)))
-    fig.update_layout(hoverlabel=dict(bgcolor="#1a1d24", font_size=12, font_family="DM Sans"))
+    fig.update_layout(legend={"font": {"size": 9}})
+    fig.update_layout(hoverlabel={"bgcolor": "#1a1d24", "font_size": 12, "font_family": "DM Sans"})
     return fig
 
 
@@ -1059,7 +1057,7 @@ def page_dataset_explorer():
                     go.Pie(
                         labels=fuel_counts.index,
                         values=fuel_counts.values,
-                        marker=dict(colors=[FUEL_COLORS.get(f, "#888") for f in fuel_counts.index]),
+                        marker={"colors": [FUEL_COLORS.get(f, "#888") for f in fuel_counts.index]},
                         textinfo="label+percent",
                         hole=0.5,
                     )
@@ -1126,7 +1124,7 @@ def page_eda_deepdive():
             )
             fig.add_vline(
                 x=df["Price"].median(),
-                line=dict(color="#e85d04", dash="dash"),
+                line={"color": "#e85d04", "dash": "dash"},
                 annotation_text=f"Median: {fmt_inr(df['Price'].median())}",
             )
             fig.update_layout(
@@ -1206,12 +1204,12 @@ def page_eda_deepdive():
                         mode="markers+text",
                         text=brand_stats["company"],
                         textposition="top center",
-                        marker=dict(
-                            size=np.sqrt(brand_stats["count"]) * 3,
-                            color=[TIER_COLORS.get(t, "#888") for t in brand_stats["tier"]],
-                            line=dict(color="white", width=1),
-                        ),
-                        textfont=dict(size=8),
+                        marker={
+                            "size": np.sqrt(brand_stats["count"]) * 3,
+                            "color": [TIER_COLORS.get(t, "#888") for t in brand_stats["tier"]],
+                            "line": {"color": "white", "width": 1},
+                        },
+                        textfont={"size": 8},
                     )
                 ]
             )
@@ -1261,7 +1259,7 @@ def page_eda_deepdive():
                 y=corr.columns,
                 text=np.round(corr.values, 3),
                 texttemplate="%{text}",
-                textfont=dict(size=12, color="white"),
+                textfont={"size": 12, "color": "white"},
                 colorscale="RdBu_r",
                 zmin=-1,
                 zmax=1,
@@ -1290,7 +1288,7 @@ def page_eda_deepdive():
                                 x=subset[dim_x],
                                 y=subset[dim_y],
                                 mode="markers",
-                                marker=dict(color=color, size=3, opacity=0.4),
+                                marker={"color": color, "size": 3, "opacity": 0.4},
                                 name=fuel,
                                 showlegend=(i == 0 and j == 1),
                             ),
@@ -1384,7 +1382,7 @@ def page_eda_deepdive():
                         x=df["car_age"],
                         y=df["kms_driven"],
                         mode="markers",
-                        marker=dict(color="#4895ef", size=4, opacity=0.4),
+                        marker={"color": "#4895ef", "size": 4, "opacity": 0.4},
                     )
                 ]
             )
@@ -1400,7 +1398,7 @@ def page_eda_deepdive():
                         x=df["car_age"],
                         y=capped,
                         mode="markers",
-                        marker=dict(color="#52b788", size=4, opacity=0.4),
+                        marker={"color": "#52b788", "size": 4, "opacity": 0.4},
                     )
                 ]
             )
@@ -1427,8 +1425,8 @@ def page_eda_deepdive():
                         x=med_by_year["year"],
                         y=med_by_year["Price"],
                         mode="lines+markers",
-                        line=dict(color="#e85d04", width=3),
-                        marker=dict(size=6, color="#e85d04"),
+                        line={"color": "#e85d04", "width": 3},
+                        marker={"size": 6, "color": "#e85d04"},
                     )
                 ]
             )
@@ -1497,8 +1495,8 @@ def page_eda_deepdive():
                                 x=trace_data["year"],
                                 y=trace_data["Price"],
                                 mode="lines+markers",
-                                marker=dict(color="#e85d04"),
-                                line=dict(color="#e85d04"),
+                                marker={"color": "#e85d04"},
+                                line={"color": "#e85d04"},
                             )
                         ],
                         name=str(yr),
@@ -1621,13 +1619,13 @@ def page_model_comparison():
                     mode="markers+text",
                     text=METRICS_DF["Model"],
                     textposition="top center",
-                    marker=dict(
-                        size=[20 if m == best["Model"] else 12 for m in METRICS_DF["Model"]],
-                        color=[
+                    marker={
+                        "size": [20 if m == best["Model"] else 12 for m in METRICS_DF["Model"]],
+                        "color": [
                             "#e85d04" if m == best["Model"] else "#4895ef"
                             for m in METRICS_DF["Model"]
                         ],
-                    ),
+                    },
                 )
             ]
         )
@@ -1681,12 +1679,12 @@ def page_model_comparison():
                 theta=categories + [categories[0]],
                 fill="toself",
                 name=model,
-                line=dict(color=radar_colors[idx]),
+                line={"color": radar_colors[idx]},
                 opacity=0.7,
             )
         )
     fig4.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
+        polar={"radialaxis": {"visible": True, "range": [0, 1]}},
         title="Model Comparison Radar",
         height=500,
     )
@@ -1695,7 +1693,7 @@ def page_model_comparison():
     # Hyperparameter tuning results
     st.markdown("### 🔧 Hyperparameter Tuning Results")
     if gs_results:
-        tune_tabs = st.tabs([k.replace("_", " ").title() for k in gs_results.keys()])
+        tune_tabs = st.tabs([k.replace("_", " ").title() for k in gs_results])
         for i, (name, results) in enumerate(gs_results.items()):
             with tune_tabs[i]:
                 params = results.get("params", [])
@@ -1837,14 +1835,14 @@ def page_residual_analysis():
                 x=pred_orig,
                 y=residuals,
                 mode="markers",
-                marker=dict(
-                    color=residuals,
-                    colorscale="RdYlBu_r",
-                    size=5,
-                    cmin=-500000,
-                    cmax=500000,
-                    opacity=0.5,
-                ),
+                marker={
+                    "color": residuals,
+                    "colorscale": "RdYlBu_r",
+                    "size": 5,
+                    "cmin": -500000,
+                    "cmax": 500000,
+                    "opacity": 0.5,
+                },
                 text=[
                     f"Actual: ₹{a:,.0f}<br>Pred: ₹{p:,.0f}<br>Err: {e:.1f}%"
                     for a, p, e in zip(y_test_orig, pred_orig, pct_errors)
@@ -1853,7 +1851,7 @@ def page_residual_analysis():
             )
         ]
     )
-    fig.add_hline(y=0, line=dict(color="#e85d04", dash="dash"))
+    fig.add_hline(y=0, line={"color": "#e85d04", "dash": "dash"})
     fig.update_layout(
         title="Residuals vs Predicted",
         xaxis_title="Predicted Price (₹)",
@@ -1867,11 +1865,11 @@ def page_residual_analysis():
         fig2 = go.Figure(data=[go.Histogram(x=residuals, nbinsx=50, marker_color="#4895ef")])
         fig2.add_vline(
             x=residuals.mean(),
-            line=dict(color="#e85d04", dash="dash"),
+            line={"color": "#e85d04", "dash": "dash"},
             annotation_text=f"μ={residuals.mean():,.0f}",
         )
-        fig2.add_vline(x=residuals.mean() + residuals.std(), line=dict(color="#52b788", dash="dot"))
-        fig2.add_vline(x=residuals.mean() - residuals.std(), line=dict(color="#52b788", dash="dot"))
+        fig2.add_vline(x=residuals.mean() + residuals.std(), line={"color": "#52b788", "dash": "dot"})
+        fig2.add_vline(x=residuals.mean() - residuals.std(), line={"color": "#52b788", "dash": "dot"})
         fig2.update_layout(
             title=f"Residual Distribution (μ±σ: ₹{residuals.std():,.0f})", height=350
         )
@@ -1886,7 +1884,7 @@ def page_residual_analysis():
                     x=theoretical,
                     y=sorted_res,
                     mode="markers",
-                    marker=dict(color="#52b788", size=4, opacity=0.4),
+                    marker={"color": "#52b788", "size": 4, "opacity": 0.4},
                 )
             ]
         )
@@ -1897,7 +1895,7 @@ def page_residual_analysis():
                 x=[min_v, max_v],
                 y=[min_v, max_v],
                 mode="lines",
-                line=dict(color="#e85d04", dash="dash"),
+                line={"color": "#e85d04", "dash": "dash"},
                 name="Ideal",
             )
         )
@@ -1960,8 +1958,8 @@ def page_residual_analysis():
             y=actual_cov,
             mode="lines+markers",
             name="Actual Coverage",
-            line=dict(color="#e85d04", width=3),
-            marker=dict(size=8, color="#e85d04"),
+            line={"color": "#e85d04", "width": 3},
+            marker={"size": 8, "color": "#e85d04"},
         )
     )
     fig_cal.add_trace(
@@ -1970,7 +1968,7 @@ def page_residual_analysis():
             y=[0, 100],
             mode="lines",
             name="Ideal",
-            line=dict(color="#52b788", dash="dash"),
+            line={"color": "#52b788", "dash": "dash"},
         )
     )
     fig_cal.update_layout(
@@ -2006,11 +2004,11 @@ def page_residual_analysis():
                     x=pp_data["X_test"][:, 0],
                     y=residuals,
                     mode="markers",
-                    marker=dict(color="#9b5de5", size=4, opacity=0.4),
+                    marker={"color": "#9b5de5", "size": 4, "opacity": 0.4},
                 )
             ]
         )
-        fig4.add_hline(y=0, line=dict(color="#e85d04", dash="dash"))
+        fig4.add_hline(y=0, line={"color": "#e85d04", "dash": "dash"})
         fig4.update_layout(
             title="Error vs Car Age",
             xaxis_title="Car Age (scaled)",
@@ -2025,11 +2023,11 @@ def page_residual_analysis():
                     x=pp_data["X_test"][:, 1],
                     y=residuals,
                     mode="markers",
-                    marker=dict(color="#f48c06", size=4, opacity=0.4),
+                    marker={"color": "#f48c06", "size": 4, "opacity": 0.4},
                 )
             ]
         )
-        fig5.add_hline(y=0, line=dict(color="#e85d04", dash="dash"))
+        fig5.add_hline(y=0, line={"color": "#e85d04", "dash": "dash"})
         fig5.update_layout(
             title="Error vs KMs Driven",
             xaxis_title="KMs Driven (scaled)",
@@ -2123,7 +2121,7 @@ def page_price_predictor():
                     index=(
                         list(models.keys()).index(
                             st.session_state.last_pred_inputs.get(
-                                f"model{suffix}", list(models.keys())[0]
+                                f"model{suffix}", next(iter(models.keys()))
                             )
                         )
                         if st.session_state.last_pred_inputs.get(f"model{suffix}") in models
@@ -2169,7 +2167,7 @@ def page_price_predictor():
             fuel = st.session_state.last_pred_inputs.get(f"fuel{suffix}", fuel_types[0])
             kms = st.session_state.last_pred_inputs.get(f"kms{suffix}", 50000)
             model_choice = st.session_state.last_pred_inputs.get(
-                f"model{suffix}", list(models.keys())[0]
+                f"model{suffix}", next(iter(models.keys()))
             )
             compare_all = st.session_state.get(f"all{suffix}", False)
 
@@ -2236,8 +2234,8 @@ def page_price_predictor():
                             x=[f"Year {y}" if y > 0 else "Now" for y in years_future],
                             y=dep_values,
                             mode="lines+markers",
-                            line=dict(color="#e85d04", width=3),
-                            marker=dict(size=8, color="#e85d04"),
+                            line={"color": "#e85d04", "width": 3},
+                            marker={"size": 8, "color": "#e85d04"},
                             fill="tozeroy",
                             fillcolor="rgba(232,93,4,0.1)",
                         )
@@ -2348,9 +2346,9 @@ def page_price_predictor():
                                 y=waterfall_vals,
                                 text=[fmt_inr(v) for v in waterfall_vals],
                                 connector={"line": {"color": "rgba(255,255,255,0.2)"}},
-                                increasing=dict(marker_color="#52b788"),
-                                decreasing=dict(marker_color="#e85d04"),
-                                totals=dict(marker_color="#4895ef"),
+                                increasing={"marker_color": "#52b788"},
+                                decreasing={"marker_color": "#e85d04"},
+                                totals={"marker_color": "#4895ef"},
                             )
                         ]
                     )
@@ -2442,7 +2440,7 @@ def page_price_predictor():
                 yr = st.session_state.last_pred_inputs.get(f"year{s}", 2018)
                 fl = st.session_state.last_pred_inputs.get(f"fuel{s}", fuel_types[0])
                 km = st.session_state.last_pred_inputs.get(f"kms{s}", 50000)
-                mdl = st.session_state.last_pred_inputs.get(f"model{s}", list(models.keys())[0])
+                mdl = st.session_state.last_pred_inputs.get(f"model{s}", next(iter(models.keys())))
                 inp_df = pd.DataFrame(
                     [
                         {
@@ -2650,8 +2648,8 @@ def page_market_intelligence():
                     y=y,
                     mode="markers+lines",
                     name="Historical",
-                    marker=dict(color="#4895ef", size=6),
-                    line=dict(color="#4895ef", width=2),
+                    marker={"color": "#4895ef", "size": 6},
+                    line={"color": "#4895ef", "width": 2},
                 )
             )
             fig.add_trace(
@@ -2660,8 +2658,8 @@ def page_market_intelligence():
                     y=future_prices,
                     mode="markers+lines",
                     name="Forecast",
-                    marker=dict(color="#e85d04", size=8, symbol="star"),
-                    line=dict(color="#e85d04", width=2, dash="dot"),
+                    marker={"color": "#e85d04", "size": 8, "symbol": "star"},
+                    line={"color": "#e85d04", "width": 2, "dash": "dot"},
                 )
             )
             fig.update_layout(
@@ -2687,7 +2685,7 @@ def page_market_intelligence():
                 colorscale="Hot",
                 text=np.round(heatmap_data.values / 1e5, 1),
                 texttemplate="%{text}L",
-                textfont=dict(size=8),
+                textfont={"size": 8},
             )
         )
         fig2.update_layout(title="Brand × Year Price Heatmap (in lakhs)", height=500)
@@ -2736,8 +2734,8 @@ def page_market_intelligence():
                     y=vals,
                     mode="lines+markers",
                     name=f"{car['comp']} ({car['year']})",
-                    line=dict(color=colors_dep[ci], width=3),
-                    marker=dict(size=6, color=colors_dep[ci]),
+                    line={"color": colors_dep[ci], "width": 3},
+                    marker={"size": 6, "color": colors_dep[ci]},
                 )
             )
         fig_dep.update_layout(
@@ -2797,8 +2795,8 @@ def page_market_intelligence():
                     name=tier,
                     text=tdata["company"],
                     textposition="top center",
-                    textfont=dict(size=8, color=color),
-                    marker=dict(size=12, color=color, line=dict(color="white", width=1)),
+                    textfont={"size": 8, "color": color},
+                    marker={"size": 12, "color": color, "line": {"color": "white", "width": 1}},
                 )
             )
     fig3.update_layout(
@@ -3136,8 +3134,8 @@ def show_price_history_simulation():
                     y=trend["mean"],
                     mode="lines+markers",
                     name="Avg Price",
-                    line=dict(color="#e85d04", width=3),
-                    marker=dict(size=8, color="#e85d04"),
+                    line={"color": "#e85d04", "width": 3},
+                    marker={"size": 8, "color": "#e85d04"},
                 )
             )
             fig.add_trace(
@@ -3146,7 +3144,7 @@ def show_price_history_simulation():
                     y=trend["min"],
                     mode="lines",
                     name="Min Price",
-                    line=dict(color="#52b788", width=1, dash="dot"),
+                    line={"color": "#52b788", "width": 1, "dash": "dot"},
                 )
             )
             fig.add_trace(
@@ -3155,7 +3153,7 @@ def show_price_history_simulation():
                     y=trend["max"],
                     mode="lines",
                     name="Max Price",
-                    line=dict(color="#4895ef", width=1, dash="dot"),
+                    line={"color": "#4895ef", "width": 1, "dash": "dot"},
                 )
             )
             fig.update_layout(
@@ -3629,7 +3627,7 @@ def render_profile_page():
                                 x=chart_df["date"],
                                 y=chart_df["predicted_price"],
                                 mode="lines+markers",
-                                line=dict(color="#e85d04"),
+                                line={"color": "#e85d04"},
                             )
                         ]
                     )
@@ -3724,15 +3722,15 @@ def render_admin_panel():
                         go.Pie(
                             labels=list(model_counts.keys()),
                             values=list(model_counts.values()),
-                            marker=dict(
-                                colors=[
+                            marker={
+                                "colors": [
                                     "#e85d04",
                                     "#4895ef",
                                     "#52b788",
                                     "#9b5de5",
                                     "#f48c06",
                                 ]
-                            ),
+                            },
                             hole=0.4,
                         )
                     ]
