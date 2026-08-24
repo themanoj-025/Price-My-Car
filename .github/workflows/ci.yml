@@ -138,3 +138,18 @@ jobs:
           pip install mypy
       - name: Type check with mypy
         run: mypy . --ignore-missing-imports
+
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+          cache: pip
+        with:
+          python-version: '3.12'
+      - name: Install tools
+        run: pip install pip-audit bandit
+      - name: pip-audit
+        run: pip-audit -r requirements.txt
+      - name: Bandit security scan
+        run: bandit -r src/ -ll
