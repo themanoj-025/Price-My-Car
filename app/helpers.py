@@ -14,7 +14,7 @@ CURRENT_YEAR = 2025
 # =========================================================================
 # Formatting
 # =========================================================================
-def fmt_inr(val):
+def fmt_inr(val: float) -> str:
     """Format a number as Indian Rupees with compact notation."""
     if val >= 1e7:
         return f"₹{val / 1e7:.2f}Cr"
@@ -23,7 +23,7 @@ def fmt_inr(val):
     return f"₹{val:,.0f}"
 
 
-def get_price_tier(price):
+def get_price_tier(price: float) -> tuple[str, str]:
     """Classify a price into a market tier."""
     if price >= 2_000_000:
         return "Luxury", "badge-luxury"
@@ -34,13 +34,13 @@ def get_price_tier(price):
     return "Budget", "badge-budget"
 
 
-def price_tier_badge(price):
+def price_tier_badge(price: float) -> str:
     """Return an HTML <span> badge for the price tier."""
     tier, cls = get_price_tier(price)
     return f'<span class="{cls}">{tier}</span>'
 
 
-def get_company_tier(avg_price):
+def get_company_tier(avg_price: float) -> str:
     """Classify a brand by its average car price."""
     if avg_price >= 1_500_000:
         return "Luxury"
@@ -51,7 +51,7 @@ def get_company_tier(avg_price):
     return "Budget"
 
 
-def get_fuel_simple(fuel_type):
+def get_fuel_simple(fuel_type: str) -> str:
     """Group rare fuel types into 'Alternative'."""
     return "Alternative" if fuel_type in ["CNG", "LPG", "Electric"] else fuel_type
 
@@ -59,12 +59,12 @@ def get_fuel_simple(fuel_type):
 # =========================================================================
 # Data helpers
 # =========================================================================
-def get_car_name_options(df, company):
+def get_car_name_options(df: pd.DataFrame, company: str) -> list[str]:
     """Return sorted unique car names for a given company."""
     return sorted(df[df["company"] == company]["name"].unique())
 
 
-def get_filtered_data(df, companies, fuels, year_r, price_r, kms_r):
+def get_filtered_data(df: pd.DataFrame, companies: list[str], fuels: list[str], year_r: tuple[int, int], price_r: tuple[float, float], kms_r: tuple[int, int]) -> pd.DataFrame:
     """Apply multi-column filters to the car DataFrame."""
     mask = df["company"].isin(companies) & df["fuel_type"].isin(fuels)
     if year_r:
@@ -166,21 +166,21 @@ TIER_COLORS = {
 # =========================================================================
 # Prediction & model helpers
 # =========================================================================
-def make_prediction(model, input_df, preprocessor):
+def make_prediction(model: object, input_df: pd.DataFrame, preprocessor: object) -> float:
     """Run a model prediction and invert the log-transform."""
     X = preprocessor.transform(input_df)
     pred_log = model.predict(X)[0]
     return float(np.expm1(pred_log))
 
 
-def compute_deal_score(predicted, actual, rarity=1.0):
+def compute_deal_score(predicted: float, actual: float, rarity: float = 1.0) -> int:
     """Deal Score System — score 1-100."""
     diff = (predicted - actual) / predicted
     score = max(0, min(100, (diff * 50 + 50) * rarity))
     return round(score)
 
 
-def ensemble_prediction(models, input_df, preprocessor):
+def ensemble_prediction(models: dict, input_df: pd.DataFrame, preprocessor: object) -> tuple[float | None, float | None, str]:
     """Ensemble of top-3 models with variance indicator."""
     top3 = ["Linear Regression", "XGBoost", "Gradient Boosting"]
     preds = []
@@ -195,7 +195,7 @@ def ensemble_prediction(models, input_df, preprocessor):
     return mean_pred, spread, color
 
 
-def shap_lite_approximation(model, input_df, preprocessor, feature_names):
+def shap_lite_approximation(model: object, input_df: pd.DataFrame, preprocessor: object, feature_names: list[str]) -> list[tuple[str, float]]:
     """SHAP-lite: approximate top-8 feature contributions."""
     X = preprocessor.transform(input_df)
     if hasattr(model, "coef_"):
@@ -220,7 +220,7 @@ def shap_lite_approximation(model, input_df, preprocessor, feature_names):
 # =========================================================================
 # Reporting helpers
 # =========================================================================
-def generate_data_quality_report(df, df_original):
+def generate_data_quality_report(df: pd.DataFrame, df_original: pd.DataFrame) -> list[tuple[str, str]]:
     """Auto-generate mini data quality report items."""
     dupes = len(df_original) - len(df)
     nulls = int(df.isnull().sum().sum())
@@ -235,7 +235,7 @@ def generate_data_quality_report(df, df_original):
     ]
 
 
-def generate_natural_language_explanation(contributions, base_price, final_price):
+def generate_natural_language_explanation(contributions: list[tuple[str, float]], base_price: float, final_price: float) -> str:
     """Smart Price Explainer — natural language summary."""
     explanation = f"This car is priced at **{fmt_inr(final_price)}**"
     if not contributions:

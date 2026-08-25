@@ -72,7 +72,7 @@ def load_users_db() -> dict:
         return json.load(f)
 
 
-def save_users_db(db: dict):
+def save_users_db(db: dict) -> None:
     db["meta"]["last_updated"] = datetime.now().isoformat()
     with open(USERS_DB_PATH, "w") as f:
         json.dump(db, f, indent=2)
@@ -205,7 +205,7 @@ def login_user(db: dict, username: str, password: str) -> tuple:
     return True, "Login successful!", user
 
 
-def save_prediction_to_history(user_id: str, prediction: dict):
+def save_prediction_to_history(user_id: str, prediction: dict) -> None:
     db = load_users_db()
     if user_id in db["users"]:
         db["users"][user_id]["prediction_history"].append(prediction)
@@ -213,14 +213,14 @@ def save_prediction_to_history(user_id: str, prediction: dict):
         save_users_db(db)
 
 
-def update_user_preferences(user_id: str, prefs: dict):
+def update_user_preferences(user_id: str, prefs: dict) -> None:
     db = load_users_db()
     if user_id in db["users"]:
         db["users"][user_id]["preferences"].update(prefs)
         save_users_db(db)
 
 
-def track_page_visit(user_id: str, page_name: str):
+def track_page_visit(user_id: str, page_name: str) -> None:
     db = load_users_db()
     if user_id in db["users"]:
         visits = db["users"][user_id].get("page_visits", {})
@@ -229,7 +229,7 @@ def track_page_visit(user_id: str, page_name: str):
         save_users_db(db)
 
 
-def save_comparison(user_id: str, name: str, car_a: dict, car_b: dict):
+def save_comparison(user_id: str, name: str, car_a: dict, car_b: dict) -> None:
     db = load_users_db()
     if user_id in db["users"]:
         comp = {
@@ -243,7 +243,7 @@ def save_comparison(user_id: str, name: str, car_a: dict, car_b: dict):
         save_users_db(db)
 
 
-def delete_user(user_id: str):
+def delete_user(user_id: str) -> None:
     db = load_users_db()
     if user_id in db["users"]:
         del db["users"][user_id]
@@ -266,7 +266,7 @@ def require_admin() -> bool:
     return not (not db_user or db_user.get("role") != "admin")
 
 
-def update_user_profile(user_id: str, full_name: str, email: str, avatar_color: str):
+def update_user_profile(user_id: str, full_name: str, email: str, avatar_color: str) -> None:
     db = load_users_db()
     if user_id in db["users"]:
         db["users"][user_id]["full_name"] = full_name
@@ -289,7 +289,7 @@ st.set_page_config(
 # =========================================================================
 # Custom CSS Injection
 # =========================================================================
-def inject_custom_css():
+def inject_custom_css() -> None:
     st.markdown(
         """
     <style>
@@ -426,7 +426,7 @@ def inject_custom_css():
 # =========================================================================
 # Plotly Config Helper
 # =========================================================================
-def apply_plotly_config(fig, height=None):
+def apply_plotly_config(fig: object, height: int | None = None) -> object:
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
@@ -461,7 +461,7 @@ def apply_plotly_config(fig, height=None):
     return fig
 
 
-def show_chart(fig, height=None):
+def show_chart(fig: object, height: int | None = None) -> None:
     fig = apply_plotly_config(fig, height)
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
@@ -469,7 +469,7 @@ def show_chart(fig, height=None):
 # =========================================================================
 # Session State Init (Section 0.3 — PROMPT.txt)
 # =========================================================================
-def init_session_state():
+def init_session_state() -> None:
     defaults = {
         "page": "🏠 Dashboard Home",
         "last_prediction": {},
@@ -506,7 +506,7 @@ def init_session_state():
 # Cache Functions
 # =========================================================================
 @st.cache_data(show_spinner="📦 Loading car dataset...")
-def load_data():
+def load_data() -> pd.DataFrame:
     df = pd.read_csv("data/Cleaned_Car_data.csv", index_col=0)
     df["car_age"] = CURRENT_YEAR - df["year"]
     df["price_tier"] = pd.cut(
@@ -518,12 +518,12 @@ def load_data():
 
 
 @st.cache_resource(show_spinner="🧠 Loading preprocessor...")
-def load_preprocessor():
+def load_preprocessor() -> object:
     return joblib.load("ml_ready/preprocessor.pkl")
 
 
 @st.cache_resource(show_spinner="🤖 Loading ML models...")
-def load_models():
+def load_models() -> dict[str, object]:
     models = {}
     model_dir = "ml_ready/models"
     model_map = {
@@ -543,7 +543,7 @@ def load_models():
 
 
 @st.cache_resource(show_spinner="📊 Loading model results...")
-def load_gs_results():
+def load_gs_results() -> dict[str, object]:
     results = {}
     for fname in [
         "gradient_boosting_gs_results.json",
@@ -558,7 +558,7 @@ def load_gs_results():
 
 
 @st.cache_data(ttl=3600, show_spinner="📐 Loading preprocessed data...")
-def load_preprocessed():
+def load_preprocessed() -> dict[str, object]:
     return {
         "X_train": np.load("ml_ready/X_train.npy"),
         "X_test": np.load("ml_ready/X_test.npy"),
@@ -578,7 +578,7 @@ def load_preprocessed():
 
 
 @st.cache_data(ttl=3600)
-def get_filtered_data(df, companies, fuels, year_r, price_r, kms_r):
+def get_filtered_data(df: pd.DataFrame, companies: list[str], fuels: list[str], year_r: tuple[int, int], price_r: tuple[float, float], kms_r: tuple[int, int]) -> pd.DataFrame:
     return _get_filtered_data_raw(df, companies, fuels, year_r, price_r, kms_r)
 
 
@@ -649,7 +649,7 @@ fuel_types = sorted(df["fuel_type"].unique())
 # =========================================================================
 # Sidebar
 # =========================================================================
-def render_sidebar():
+def render_sidebar() -> None:
     user = st.session_state.get("user", {})
     first_name = user.get("full_name", "User").split()[0] if user.get("full_name") else "User"
     avatar_color = user.get("avatar_color", "#e85d04")
@@ -770,7 +770,7 @@ def render_sidebar():
 # =========================================================================
 # PAGE 1: Dashboard Home
 # =========================================================================
-def page_dashboard_home():
+def page_dashboard_home() -> None:
     st.markdown(
         '<p class="hero-text">AutoIntel — Used Car Price Intelligence</p>',
         unsafe_allow_html=True,
@@ -915,7 +915,7 @@ def page_dashboard_home():
 # =========================================================================
 # PAGE 2: Dataset Explorer
 # =========================================================================
-def page_dataset_explorer():
+def page_dataset_explorer() -> None:
     st.markdown("## 📊 Dataset Explorer")
     st.markdown(
         '<p style="color:#8892a0">Filter, browse, and analyze the car dataset</p>',
@@ -1091,7 +1091,7 @@ def page_dataset_explorer():
 # =========================================================================
 # PAGE 3: EDA Deep-Dive
 # =========================================================================
-def page_eda_deepdive():
+def page_eda_deepdive() -> None:
     st.markdown("## 🔍 EDA Deep-Dive")
     st.markdown(
         '<p style="color:#8892a0">Comprehensive exploratory data analysis with 5 tabs</p>',
@@ -1526,7 +1526,7 @@ def page_eda_deepdive():
 # =========================================================================
 # PAGE 4: Model Comparison Lab
 # =========================================================================
-def page_model_comparison():
+def page_model_comparison() -> None:
     st.markdown("## 🤖 Model Comparison Lab")
     st.markdown(
         '<p style="color:#8892a0">Compare 8 ML models across multiple dimensions</p>',
@@ -1798,7 +1798,7 @@ def page_model_comparison():
 # =========================================================================
 # PAGE 5: Residual Analysis
 # =========================================================================
-def page_residual_analysis():
+def page_residual_analysis() -> None:
     st.markdown("## 🧪 Residual Analysis")
     st.markdown(
         '<p style="color:#8892a0">Deep-dive into prediction errors for any trained model</p>',
@@ -2040,7 +2040,7 @@ def page_residual_analysis():
 # =========================================================================
 # PAGE 6: Price Predictor (with all enhanced features)
 # =========================================================================
-def page_price_predictor():
+def page_price_predictor() -> None:
     st.markdown("## 🔮 Price Predictor")
     st.markdown(
         '<p style="color:#8892a0">Get instant price estimates with explainability</p>',
@@ -2622,7 +2622,7 @@ def page_price_predictor():
 # =========================================================================
 # PAGE 7: Market Intelligence
 # =========================================================================
-def page_market_intelligence():
+def page_market_intelligence() -> None:
     st.markdown("## 📈 Market Intelligence")
     st.markdown(
         '<p style="color:#8892a0">Price trends, market heatmaps, and value analysis</p>',
@@ -2856,7 +2856,7 @@ def page_market_intelligence():
 # =========================================================================
 # PAGE 8: Pipeline Inspector
 # =========================================================================
-def page_pipeline_inspector():
+def page_pipeline_inspector() -> None:
     st.markdown("## ⚙️ Pipeline Inspector")
     st.markdown(
         '<p style="color:#8892a0">Technical deep-dive into the ML pipeline for portfolio showcase</p>',
@@ -3094,11 +3094,11 @@ def page_pipeline_inspector():
 # Data Quality Report (Feature E)
 # =========================================================================
 @st.cache_data(ttl=3600)
-def load_original_data_for_quality():
+def load_original_data_for_quality() -> pd.DataFrame:
     return pd.read_csv("Cleaned_Car_data.csv", index_col=0)
 
 
-def show_data_quality_report():
+def show_data_quality_report() -> None:
     df_orig = load_original_data_for_quality()
     report = generate_data_quality_report(df, df_orig)
     html = '<div class="glass-card" style="padding:12px;font-size:0.85rem"><strong>📋 Data Quality Report</strong><br>'
@@ -3111,7 +3111,7 @@ def show_data_quality_report():
 # =========================================================================
 # Price History Simulation (Feature J)
 # =========================================================================
-def show_price_history_simulation():
+def show_price_history_simulation() -> None:
     """When was the best time to buy?"""
     st.markdown("### ⏳ Price History Simulation")
     ph_cols = st.columns(2)
@@ -3184,7 +3184,7 @@ page = st.session_state.page
 # =========================================================================
 
 
-def render_login_page():
+def render_login_page() -> None:
     """Full-page centered login form with glass-morphism card."""
     st.markdown(
         """
@@ -3288,7 +3288,7 @@ def render_login_page():
     st.markdown("</div></div>", unsafe_allow_html=True)
 
 
-def render_signup_page():
+def render_signup_page() -> None:
     """Signup page with password strength meter and real-time validation."""
     st.markdown(
         """
@@ -3425,7 +3425,7 @@ def render_signup_page():
     st.markdown("</div></div>", unsafe_allow_html=True)
 
 
-def render_forgot_password_page():
+def render_forgot_password_page() -> None:
     """Simple forgot password page (cosmetic — no actual email sending)."""
     st.markdown(
         """
@@ -3464,7 +3464,7 @@ def render_forgot_password_page():
 # =========================================================================
 # PAGE 9: My Profile (Section 0.6 — PROMPT.txt)
 # =========================================================================
-def render_profile_page():
+def render_profile_page() -> None:
     """User profile page with 6 tabs."""
     user = st.session_state.get("user", {})
     uid = user.get("user_id", "")
@@ -3670,7 +3670,7 @@ def render_profile_page():
 # =========================================================================
 # Admin Panel (Section 0.7 — PROMPT.txt)
 # =========================================================================
-def render_admin_panel():
+def render_admin_panel() -> None:
     """Admin-only panel with users, analytics, and settings tabs."""
     st.markdown("## 🛡️ Admin Panel")
     db = load_users_db()
