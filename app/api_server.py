@@ -11,10 +11,16 @@ Auth:
     When unset, all endpoints are open (backward compatible).
 """
 
+import json
+import logging
 import os
 import secrets
 import sys
+import threading
+import uuid
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 from fastapi import Depends, FastAPI, HTTPException, Request, Security
@@ -29,6 +35,52 @@ from slowapi.util import get_remote_address
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.helpers import fmt_inr, get_price_tier
+
+# ── Structured Logging ─────────────────────────────────────────────────────
+
+class StructuredFormatter(logging.Formatter):
+    """JSON structured log formatter for production log aggregation."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        log_entry: dict[str, Any] = {
+            "timestamp": datetime.fromtimestamp(record.created, tz=UTC).isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+
+        # Include extra fields
+        for key in ("method", "path", "status_code", "duration_ms", "client_ip"):
+            val = getattr(record, key, None)
+            if val is not None:
+                log_entry[key] = val
+
+        # Include exception info if present
+        if record.exc_info and record.exc_info[1] is not None:
+            log_entry["exception"] = {
+                "type": type(record.exc_info[1]).__name__,
+                "message": str(record.exc_info[1]),
+            }
+
+        return json.dumps(log_entry, ensure_ascii=False, default=str)
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("autointel-api")
+
+# Add structured JSON file handler
+try:
+    log_dir = Path(__file__).resolve().parent.parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    file_handler = logging.FileHandler(log_dir / "api.log", encoding="utf-8")
+    file_handler.setFormatter(StructuredFormatter())
+    logger.addHandler(file_handler)
+except OSError:
+    pass  # Non-fatal if logs dir not writable
 
 # ── App Setup ─────────────────────────────────────────────────────────────
 
