@@ -41,3 +41,10 @@ nbconvert>=7.17.1
 # setuptools: CVE-2025-47273 (path traversal) — fixed in 78.1.1
 msgpack>=1.2.1
 setuptools>=84.0.0
+
+# API observability
+fastapi>=0.100.0
+uvicorn>=0.23.0
+slowapi>=0.1.9
+python-multipart>=0.0.6
+prometheus-client>=0.21.0

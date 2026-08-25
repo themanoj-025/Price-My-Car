@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from fastapi import Depends, FastAPI, HTTPException, Request, Security
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -35,6 +35,13 @@ from slowapi.util import get_remote_address
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.helpers import fmt_inr, get_price_tier
+
+try:
+    from prometheus_client import Counter, Histogram, generate_latest
+
+    _PROM_AVAILABLE = True
+except ImportError:
+    _PROM_AVAILABLE = False
 
 # ── Structured Logging ─────────────────────────────────────────────────────
 
@@ -82,6 +89,20 @@ try:
 except OSError:
     pass  # Non-fatal if logs dir not writable
 
+if _PROM_AVAILABLE:
+    PMC_REQUEST_COUNT = Counter(
+        "pricecar_requests_total",
+        "Total HTTP requests",
+        ["method", "endpoint", "status"],
+    )
+    PMC_REQUEST_LATENCY = Histogram(
+        "pricecar_request_duration_seconds",
+        "HTTP request latency in seconds",
+        ["method", "endpoint"],
+        buckets=[0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0],
+    )
+    PMC_PREDICTIONS = Counter("pricecar_predictions_total", "Price predictions made")
+
 # ── App Setup ─────────────────────────────────────────────────────────────
 
 app = FastAPI(
@@ -107,6 +128,22 @@ app = FastAPI(
         },
     ],
 )
+
+@app.middleware("http")
+async def track_metrics(request, call_next):
+    import time as _time
+    request.state.start_time = _time.time()
+    response = await call_next(request)
+    if _PROM_AVAILABLE:
+        path = request.url.path
+        PMC_REQUEST_COUNT.labels(
+            method=request.method, endpoint=path, status=response.status_code
+        ).inc()
+        if hasattr(request.state, "start_time"):
+            PMC_REQUEST_LATENCY.labels(method=request.method, endpoint=path).observe(
+                _time.time() - request.state.start_time
+            )
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -212,6 +249,8 @@ async def predict_price(request: Request):
     if missing:
         raise HTTPException(status_code=422, detail=f"Missing fields: {missing}")
 
+    if _PROM_AVAILABLE:
+        PMC_PREDICTIONS.inc()
     # For now, return a simple estimate based on dataset averages
     # In production, load trained model with joblib.load()
     df = _load_cars_df()
@@ -226,6 +265,14 @@ async def predict_price(request: Request):
         "inputs": body,
         "note": "Prediction uses dataset average. Train a model for accurate predictions.",
     }
+
+
+@app.get("/metrics", tags=["health"])
+async def metrics():
+    """Prometheus metrics endpoint."""
+    if not _PROM_AVAILABLE:
+        return {"status": "prometheus_client not installed"}
+    return Response(content=generate_latest(), media_type="text/plain")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────
