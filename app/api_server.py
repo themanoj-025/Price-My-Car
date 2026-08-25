@@ -129,7 +129,7 @@ async def predict_price(request: Request):
     """
     try:
         body = await request.json()
-    except Exception:
+    except (json.JSONDecodeError, ValueError):
         raise HTTPException(status_code=400, detail="Invalid JSON body")
 
     # Validate required fields
