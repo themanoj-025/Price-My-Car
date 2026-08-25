@@ -32,7 +32,29 @@ from app.helpers import fmt_inr, get_price_tier
 
 # ── App Setup ─────────────────────────────────────────────────────────────
 
-app = FastAPI(title="AutoIntel API", version="1.0.0")
+app = FastAPI(
+    title="AutoIntel API",
+    description="Car price prediction and dataset analytics API.\n\n"
+    "Provides used-car price estimation, dataset statistics, brand/fuel-type listings, "
+    "and dataset quality reporting.",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {
+            "name": "health",
+            "description": "Service health check",
+        },
+        {
+            "name": "analytics",
+            "description": "Dataset statistics and metadata (brands, fuel types, summary stats)",
+        },
+        {
+            "name": "predictions",
+            "description": "Car price prediction based on vehicle attributes",
+        },
+    ],
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -83,13 +105,13 @@ def _load_cars_df() -> pd.DataFrame:
 # ── Endpoints ─────────────────────────────────────────────────────────────
 
 
-@app.get("/health")
+@app.get("/health", tags=["health"])
 async def health():
     """Health check endpoint."""
     return {"status": "ok", "service": "autointel-api"}
 
 
-@app.get("/api/v1/cars/stats", dependencies=[Depends(verify_api_key)])
+@app.get("/api/v1/cars/stats", dependencies=[Depends(verify_api_key)], tags=["analytics"])
 async def car_stats():
     """Return summary statistics of the car dataset."""
     df = _load_cars_df()
@@ -104,7 +126,7 @@ async def car_stats():
     }
 
 
-@app.get("/api/v1/cars/brands", dependencies=[Depends(verify_api_key)])
+@app.get("/api/v1/cars/brands", dependencies=[Depends(verify_api_key)], tags=["analytics"])
 async def car_brands():
     """Return list of available car brands."""
     df = _load_cars_df()
@@ -112,7 +134,7 @@ async def car_brands():
     return {"brands": brands}
 
 
-@app.get("/api/v1/cars/fuel-types", dependencies=[Depends(verify_api_key)])
+@app.get("/api/v1/cars/fuel-types", dependencies=[Depends(verify_api_key)], tags=["analytics"])
 async def fuel_types():
     """Return list of available fuel types."""
     df = _load_cars_df()
@@ -120,7 +142,7 @@ async def fuel_types():
     return {"fuel_types": types}
 
 
-@app.post("/api/v1/predict", dependencies=[Depends(verify_api_key)])
+@app.post("/api/v1/predict", dependencies=[Depends(verify_api_key)], tags=["predictions"])
 async def predict_price(request: Request):
     """Predict car price based on inputs.
 
