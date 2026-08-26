@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from fastapi import Depends, FastAPI, HTTPException, Request, Response, Security
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -161,6 +161,9 @@ app.add_middleware(SlowAPIMiddleware)
 
 security = HTTPBearer(auto_error=False)
 
+# ── API v1 Router ──────────────────────────────────────────────────────
+v1_router = APIRouter(prefix="/api/v1")
+
 # ── Auth ──────────────────────────────────────────────────────────────────
 
 
@@ -200,7 +203,7 @@ async def health():
     return {"status": "ok", "service": "autointel-api"}
 
 
-@app.get("/api/v1/cars/stats", dependencies=[Depends(verify_api_key)], tags=["analytics"])
+@v1_router.get("/cars/stats", dependencies=[Depends(verify_api_key)], tags=["analytics"])
 async def car_stats():
     """Return summary statistics of the car dataset."""
     df = _load_cars_df()
@@ -215,7 +218,7 @@ async def car_stats():
     }
 
 
-@app.get("/api/v1/cars/brands", dependencies=[Depends(verify_api_key)], tags=["analytics"])
+@v1_router.get("/cars/brands", dependencies=[Depends(verify_api_key)], tags=["analytics"])
 async def car_brands():
     """Return list of available car brands."""
     df = _load_cars_df()
@@ -223,7 +226,7 @@ async def car_brands():
     return {"brands": brands}
 
 
-@app.get("/api/v1/cars/fuel-types", dependencies=[Depends(verify_api_key)], tags=["analytics"])
+@v1_router.get("/cars/fuel-types", dependencies=[Depends(verify_api_key)], tags=["analytics"])
 async def fuel_types():
     """Return list of available fuel types."""
     df = _load_cars_df()
@@ -231,7 +234,7 @@ async def fuel_types():
     return {"fuel_types": types}
 
 
-@app.post("/api/v1/predict", dependencies=[Depends(verify_api_key)], tags=["predictions"])
+@v1_router.post("/predict", dependencies=[Depends(verify_api_key)], tags=["predictions"])
 async def predict_price(request: Request):
     """Predict car price based on inputs.
 
@@ -251,6 +254,7 @@ async def predict_price(request: Request):
 
     if _PROM_AVAILABLE:
         PMC_PREDICTIONS.inc()
+
     # For now, return a simple estimate based on dataset averages
     # In production, load trained model with joblib.load()
     df = _load_cars_df()
@@ -265,6 +269,9 @@ async def predict_price(request: Request):
         "inputs": body,
         "note": "Prediction uses dataset average. Train a model for accurate predictions.",
     }
+
+
+app.include_router(v1_router)
 
 
 @app.get("/metrics", tags=["health"])
