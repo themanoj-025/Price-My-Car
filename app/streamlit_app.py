@@ -3061,7 +3061,7 @@ def page_pipeline_inspector() -> None:
         try:
             with open("requirements.txt") as f:
                 st.code(f.read(), language="text")
-        except:
+        except OSError:
             st.info("requirements.txt not found")
         st.markdown(
             '<div class="glass-card" style="font-size:0.85rem">'
