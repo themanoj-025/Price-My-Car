@@ -564,7 +564,7 @@ def page_price_predictor() -> None:
                     )
             else:
                 st.error(f"CSV must contain columns: {', '.join(required)}")
-        except Exception as e:
+        except (ValueError, KeyError) as e:
             st.error(f"Error processing file: {e}")
 
     # Model Drift Simulator (Feature G)

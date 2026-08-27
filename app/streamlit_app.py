@@ -448,7 +448,7 @@ try:
     gs_results = load_gs_results()
     if not models:
         demo_mode = True
-except Exception as e:
+except (ValueError, KeyError) as e:
     st.error(f"⚠️ Could not load ML artifacts: {e}. Running in demo mode with synthetic data.")
     demo_mode = True
 
