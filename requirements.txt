@@ -45,6 +45,6 @@ setuptools>=84.0.0
 # API observability
 fastapi>=0.100.0
 uvicorn>=0.52.4
-slowapi>=0.1.9
+slowapi>=0.1.10
 python-multipart>=0.0.32
 prometheus-client>=0.21.0
