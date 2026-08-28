@@ -26,7 +26,7 @@ import streamlit as st
 # importable regardless of CWD or launch method (streamlit run app/streamlit_app.py).
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.auth_db import (  # noqa: F401 — re-exported for page modules
+from app.auth_db import (
     USERS_DB_PATH,
     AVATAR_COLORS,
     create_user,
@@ -46,6 +46,16 @@ from app.auth_db import (  # noqa: F401 — re-exported for page modules
     username_exists,
     verify_password,
 )
+
+# Re-exported for page modules imported below
+_ = [
+    USERS_DB_PATH, AVATAR_COLORS, create_user, delete_user, email_exists,
+    get_user_by_username, hash_password, load_users_db, login_user,
+    require_admin, save_comparison, save_prediction_to_history, save_users_db,
+    track_page_visit, update_user_preferences, update_user_profile,
+    username_exists, verify_password,
+]
+
 from app.chart_utils import apply_plotly_config, show_chart
 from app.helpers import (
     FUEL_COLORS,
