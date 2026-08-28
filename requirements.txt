@@ -43,7 +43,7 @@ msgpack>=1.2.1
 setuptools>=84.0.0
 
 # API observability
-fastapi>=0.100.0
+fastapi>=0.141.1
 uvicorn>=0.52.4
 slowapi>=0.1.9
 python-multipart>=0.0.32
