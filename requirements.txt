@@ -47,4 +47,4 @@ fastapi>=0.100.0
 uvicorn>=0.52.4
 slowapi>=0.1.9
 python-multipart>=0.0.32
-prometheus-client>=0.21.0
+prometheus-client>=0.26.0
