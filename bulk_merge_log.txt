@@ -1,6 +1,0 @@
-Price-My-Car - PR #87 - Merged
-Price-My-Car - PR #86 - Merged
-Price-My-Car - PR #85 - Merge Failed: X Pull request themanoj-025/Price-My-Car#85 is not mergeable: the merge commit cannot be cleanly created. To have the pull request merged after all the requirements have been met, add the `--auto` flag. Run the following to resolve the merge conflicts locally:   gh pr checkout 85 && git fetch origin main && git merge origin/main
-Price-My-Car - PR #84 - Merge Failed: X Pull request themanoj-025/Price-My-Car#84 is not mergeable: the merge commit cannot be cleanly created. To have the pull request merged after all the requirements have been met, add the `--auto` flag. Run the following to resolve the merge conflicts locally:   gh pr checkout 84 && git fetch origin main && git merge origin/main
-Price-My-Car - PR #83 - Merge Failed: X Pull request themanoj-025/Price-My-Car#83 is not mergeable: the merge commit cannot be cleanly created. To have the pull request merged after all the requirements have been met, add the `--auto` flag. Run the following to resolve the merge conflicts locally:   gh pr checkout 83 && git fetch origin main && git merge origin/main
-Price-My-Car - PR #82 - Merged
