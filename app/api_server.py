@@ -130,7 +130,7 @@ app = FastAPI(
 )
 
 @app.middleware("http")
-async def track_metrics(request, call_next):
+async def track_metrics(request, call_next) -> Response:
     import time as _time
     request.state.start_time = _time.time()
     response = await call_next(request)
@@ -202,13 +202,13 @@ def _load_cars_df() -> pd.DataFrame:
 
 
 @app.get("/health", tags=["health"])
-async def health():
+async def health() -> dict[str, object]:
     """Health check endpoint."""
     return {"status": "ok", "service": "autointel-api"}
 
 
 @v1_router.get("/cars/stats", dependencies=[Depends(verify_api_key)], tags=["analytics"])
-async def car_stats():
+async def car_stats() -> dict[str, object]:
     """Return summary statistics of the car dataset."""
     df = _load_cars_df()
     return {
@@ -223,7 +223,7 @@ async def car_stats():
 
 
 @v1_router.get("/cars/brands", dependencies=[Depends(verify_api_key)], tags=["analytics"])
-async def car_brands():
+async def car_brands() -> dict[str, object]:
     """Return list of available car brands."""
     df = _load_cars_df()
     brands = sorted(df["Brand"].unique().tolist()) if "Brand" in df.columns else []
@@ -231,7 +231,7 @@ async def car_brands():
 
 
 @v1_router.get("/cars/fuel-types", dependencies=[Depends(verify_api_key)], tags=["analytics"])
-async def fuel_types():
+async def fuel_types() -> dict[str, object]:
     """Return list of available fuel types."""
     df = _load_cars_df()
     types = sorted(df["Fuel_Type"].unique().tolist()) if "Fuel_Type" in df.columns else []
@@ -239,7 +239,7 @@ async def fuel_types():
 
 
 @v1_router.post("/predict", dependencies=[Depends(verify_api_key)], tags=["predictions"])
-async def predict_price(request: Request):
+async def predict_price(request: Request) -> dict[str, object]:
     """Predict car price based on inputs.
 
     Body JSON fields:
@@ -279,7 +279,7 @@ app.include_router(v1_router)
 
 
 @app.get("/metrics", tags=["health"])
-async def metrics():
+async def metrics() -> Response:
     """Prometheus metrics endpoint."""
     if not _PROM_AVAILABLE:
         return {"status": "prometheus_client not installed"}
