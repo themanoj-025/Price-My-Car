@@ -9,13 +9,11 @@ import streamlit as st
 from app.auth_db import (
     create_user,
     email_exists,
-    hash_password,
     load_users_db,
     login_user,
-    save_users_db,
     username_exists,
-    verify_password,
 )
+
 
 def render_login_page() -> None:
     """Full-page centered login form with glass-morphism card."""

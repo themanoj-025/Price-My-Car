@@ -6,27 +6,12 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from plotly.subplots import make_subplots
 
+from app.chart_utils import show_chart
 from app.helpers import (
-    FUEL_COLORS,
-    METRICS_DF,
-    MODEL_METRICS,
-    TIER_COLORS,
-    compute_deal_score,
-    ensemble_prediction,
     fmt_inr,
     generate_data_quality_report,
-    generate_natural_language_explanation,
-    get_car_name_options,
-    get_company_tier,
-    get_fuel_simple,
-    get_price_tier,
-    make_prediction,
-    shap_lite_approximation,
 )
-from app.helpers import get_filtered_data as _get_filtered_data_raw
-from app.chart_utils import show_chart
 
 
 def page_pipeline_inspector() -> None:

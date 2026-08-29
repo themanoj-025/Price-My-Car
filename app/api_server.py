@@ -16,8 +16,6 @@ import logging
 import os
 import secrets
 import sys
-import threading
-import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any

@@ -29,7 +29,7 @@ def load_users_db() -> dict:
         }
         save_users_db(db)
         return db
-    with open(USERS_DB_PATH, "r") as f:
+    with open(USERS_DB_PATH) as f:
         return json.load(f)
 
 

@@ -2,7 +2,23 @@
 line-length = 120
 
 [tool.ruff.lint]
-ignore = ["DTZ005", "BLE001", "E722", "SIM102", "SIM117", "B008"]  # B008: idiomatic FastAPI Security() in defaults
+select = ["E", "F", "W", "B", "BLE", "UP", "SIM", "C4", "RUF", "PLC", "PIE", "I"]
+ignore = [
+    "DTZ005",  # datetime.now() without tz
+    "BLE001",  # blind except — defensive coding
+    "E722",    # bare except
+    "SIM102",  # collapsible if
+    "SIM117",  # multiple with-statements
+    "B008",    # FastAPI Depends() in defaults
+    "E501",    # line too long
+    "UP031",   # printf formatting
+    "RUF012",  # mutable class default
+    "PLC0415", # import-outside-top-level — lazy imports
+    "F821",    # undefined name — false positives from annotations
+    "RUF001",  # ambiguous unicode — intentional
+    "Q301",    # single vs double quotes
+    "Q000",    # inline quotes
+]
 
 [tool.black]
 line-length = 100

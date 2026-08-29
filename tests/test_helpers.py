@@ -2,8 +2,6 @@
 
 import numpy as np
 import pandas as pd
-import pytest
-
 
 # ── Formatting Helpers ──────────────────────────────────────────────────────
 
@@ -227,9 +225,9 @@ class TestShapLiteApproximation:
     """Tests for SHAP-lite approximation."""
 
     def test_linear_model(self) -> None:
-        from app.helpers import shap_lite_approximation
-
         from sklearn.linear_model import LinearRegression
+
+        from app.helpers import shap_lite_approximation
 
         X = np.array([[1, 2], [3, 4], [5, 6]])
         y = np.array([1, 2, 3])
