@@ -15,7 +15,7 @@ from app.auth_db import (
     verify_password,
 )
 from app.chart_utils import show_chart
-from app.helpers import fmt_inr
+
 
 def render_profile_page() -> None:
     """User profile page with 6 tabs."""

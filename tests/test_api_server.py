@@ -7,6 +7,8 @@ Tests both open access and API key auth modes.
 
 import asyncio
 import os
+import sys
+from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
@@ -16,13 +18,9 @@ from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.testclient import TestClient
 
-import sys
-from pathlib import Path
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.api_server import app, verify_api_key
-
 
 # ── Fixtures ──────────────────────────────────────────────────────────────
 

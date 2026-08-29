@@ -7,8 +7,6 @@ but exercises real HTTP routing and middleware.
 
 from __future__ import annotations
 
-import asyncio
-import json
 import os
 from unittest.mock import patch
 
@@ -17,8 +15,7 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api_server import app, verify_api_key
-
+from app.api_server import app
 
 # ── Fixtures ──────────────────────────────────────────────────────────────
 

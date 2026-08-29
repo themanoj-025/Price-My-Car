@@ -4,7 +4,6 @@ import pandas as pd
 import pytest
 
 from app.helpers import (
-    compute_deal_score,
     ensemble_prediction,
     generate_data_quality_report,
     generate_natural_language_explanation,
@@ -13,7 +12,6 @@ from app.helpers import (
     make_prediction,
     shap_lite_approximation,
 )
-
 
 # ─── Fixtures ───────────────────────────────────────────────────────
 

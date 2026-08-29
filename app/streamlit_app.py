@@ -10,13 +10,9 @@ This file is the thin orchestrator — page logic lives in ``app/pages/``.
 import json
 import os
 import sys
-import time
 import uuid
 import warnings
-from datetime import datetime, timedelta
-from pathlib import Path
 
-import bcrypt
 import joblib
 import numpy as np
 import pandas as pd
@@ -27,8 +23,8 @@ import streamlit as st
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.auth_db import (
-    USERS_DB_PATH,
     AVATAR_COLORS,
+    USERS_DB_PATH,
     create_user,
     delete_user,
     email_exists,
@@ -56,24 +52,6 @@ _ = [
     username_exists, verify_password,
 ]
 
-from app.chart_utils import apply_plotly_config, show_chart
-from app.helpers import (
-    FUEL_COLORS,
-    METRICS_DF,
-    MODEL_METRICS,
-    TIER_COLORS,
-    compute_deal_score,
-    ensemble_prediction,
-    fmt_inr,
-    generate_data_quality_report,
-    generate_natural_language_explanation,
-    get_car_name_options,
-    get_company_tier,
-    get_fuel_simple,
-    get_price_tier,
-    make_prediction,
-    shap_lite_approximation,
-)
 
 warnings.filterwarnings("ignore")
 CURRENT_YEAR = 2025
@@ -505,15 +483,35 @@ fuel_types = sorted(df["fuel_type"].unique())
 # =========================================================================
 from app.pages import (  # noqa: E402
     admin as _admin_mod,
+)
+from app.pages import (
     auth as _auth_mod,
+)
+from app.pages import (
     dashboard as _dash_mod,
+)
+from app.pages import (
     dataset_explorer as _de_mod,
+)
+from app.pages import (
     eda as _eda_mod,
+)
+from app.pages import (
     market as _market_mod,
+)
+from app.pages import (
     model_lab as _mlab_mod,
+)
+from app.pages import (
     pipeline as _pipe_mod,
+)
+from app.pages import (
     predictor as _pred_mod,
+)
+from app.pages import (
     profile as _profile_mod,
+)
+from app.pages import (
     residuals as _res_mod,
 )
 

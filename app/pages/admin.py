@@ -8,7 +8,7 @@ import streamlit as st
 
 from app.auth_db import USERS_DB_PATH, load_users_db, save_users_db
 from app.chart_utils import show_chart
-from app.helpers import fmt_inr
+
 
 def render_admin_panel() -> None:
     """Admin-only panel with users, analytics, and settings tabs."""

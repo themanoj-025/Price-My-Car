@@ -5,8 +5,6 @@ Tests Plotly chart configuration and helper functions.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 
 class TestApplyPlotlyConfig:
     """Test Plotly chart configuration application."""
