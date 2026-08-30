@@ -53,19 +53,19 @@ def mock_preprocessor():
 class TestGetCarNameOptions:
     """Tests for get_car_name_options function."""
 
-    def test_returns_sorted_names(self, sample_df):
+    def test_returns_sorted_names(self, sample_df) -> None:
         result = get_car_name_options(sample_df, "Maruti")
         assert result == ["Alto", "Swift"]
 
-    def test_returns_empty_for_unknown_company(self, sample_df):
+    def test_returns_empty_for_unknown_company(self, sample_df) -> None:
         result = get_car_name_options(sample_df, "Toyota")
         assert result == []
 
-    def test_single_car_company(self, sample_df):
+    def test_single_car_company(self, sample_df) -> None:
         result = get_car_name_options(sample_df, "Honda")
         assert result == ["City"]
 
-    def test_returns_list_type(self, sample_df):
+    def test_returns_list_type(self, sample_df) -> None:
         result = get_car_name_options(sample_df, "Hyundai")
         assert isinstance(result, list)
 
@@ -76,7 +76,7 @@ class TestGetCarNameOptions:
 class TestGetFilteredData:
     """Tests for get_filtered_data function."""
 
-    def test_filters_by_company(self, sample_df):
+    def test_filters_by_company(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti"],
@@ -88,7 +88,7 @@ class TestGetFilteredData:
         assert len(result) == 2
         assert all(result["company"] == "Maruti")
 
-    def test_filters_by_fuel_type(self, sample_df):
+    def test_filters_by_fuel_type(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti", "Hyundai", "Honda"],
@@ -100,7 +100,7 @@ class TestGetFilteredData:
         assert len(result) == 2
         assert all(result["fuel_type"] == "Diesel")
 
-    def test_filters_by_year_range(self, sample_df):
+    def test_filters_by_year_range(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti", "Hyundai", "Honda"],
@@ -112,7 +112,7 @@ class TestGetFilteredData:
         assert len(result) == 3
         assert all(result["year"] >= 2020)
 
-    def test_filters_by_price_range(self, sample_df):
+    def test_filters_by_price_range(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti", "Hyundai", "Honda"],
@@ -125,7 +125,7 @@ class TestGetFilteredData:
         assert all(result["Price"] >= 400000)
         assert all(result["Price"] <= 900000)
 
-    def test_filters_by_kms_range(self, sample_df):
+    def test_filters_by_kms_range(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti", "Hyundai", "Honda"],
@@ -138,7 +138,7 @@ class TestGetFilteredData:
         assert all(result["kms_driven"] >= 5000)
         assert all(result["kms_driven"] <= 20000)
 
-    def test_returns_dataframe(self, sample_df):
+    def test_returns_dataframe(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti"],
@@ -149,7 +149,7 @@ class TestGetFilteredData:
         )
         assert isinstance(result, pd.DataFrame)
 
-    def test_no_filters_returns_all(self, sample_df):
+    def test_no_filters_returns_all(self, sample_df) -> None:
         result = get_filtered_data(
             sample_df,
             companies=["Maruti", "Hyundai", "Honda"],
@@ -167,18 +167,18 @@ class TestGetFilteredData:
 class TestMakePrediction:
     """Tests for make_prediction function."""
 
-    def test_returns_float(self, mock_model, mock_preprocessor):
+    def test_returns_float(self, mock_model, mock_preprocessor) -> None:
         input_df = pd.DataFrame({"feature": [1]})
         result = make_prediction(mock_model, input_df, mock_preprocessor)
         assert isinstance(result, float)
 
-    def test_inverts_log_transform(self, mock_model, mock_preprocessor):
+    def test_inverts_log_transform(self, mock_model, mock_preprocessor) -> None:
         input_df = pd.DataFrame({"feature": [1]})
         result = make_prediction(mock_model, input_df, mock_preprocessor)
         # mock_model returns 13.0, expm1(13.0) ≈ 442413
         assert result == pytest.approx(442413, rel=1e-3)
 
-    def test_positive_prediction(self, mock_model, mock_preprocessor):
+    def test_positive_prediction(self, mock_model, mock_preprocessor) -> None:
         input_df = pd.DataFrame({"feature": [1]})
         result = make_prediction(mock_model, input_df, mock_preprocessor)
         assert result > 0
@@ -190,7 +190,7 @@ class TestMakePrediction:
 class TestEnsemblePrediction:
     """Tests for ensemble_prediction function."""
 
-    def test_returns_tuple(self, mock_preprocessor):
+    def test_returns_tuple(self, mock_preprocessor) -> None:
         input_df = pd.DataFrame({"feature": [1]})
         models = {}
         mean, spread, color = ensemble_prediction(models, input_df, mock_preprocessor)
@@ -238,7 +238,7 @@ class TestEnsemblePrediction:
 class TestShapLiteApproximation:
     """Tests for shap_lite_approximation function."""
 
-    def test_with_linear_model(self, mock_preprocessor):
+    def test_with_linear_model(self, mock_preprocessor) -> None:
         class LinearModel:
             coef_ = np.array([1.0, 2.0, 3.0])
 
@@ -248,7 +248,7 @@ class TestShapLiteApproximation:
         assert len(result) <= 8
         assert all(isinstance(item, tuple) for item in result)
 
-    def test_with_tree_model(self, mock_preprocessor):
+    def test_with_tree_model(self, mock_preprocessor) -> None:
         class TreeModel:
             feature_importances_ = np.array([0.5, 0.3, 0.2])
 
@@ -257,7 +257,7 @@ class TestShapLiteApproximation:
         result = shap_lite_approximation(TreeModel(), input_df, mock_preprocessor, feature_names)
         assert len(result) <= 8
 
-    def test_returns_empty_for_unknown_model(self, mock_preprocessor):
+    def test_returns_empty_for_unknown_model(self, mock_preprocessor) -> None:
         class UnknownModel:
             pass
 
@@ -273,7 +273,7 @@ class TestShapLiteApproximation:
 class TestGenerateDataQualityReport:
     """Tests for generate_data_quality_report function."""
 
-    def test_returns_list_of_tuples(self):
+    def test_returns_list_of_tuples(self) -> None:
         df = pd.DataFrame({
             "kms_driven": [1000, 2000, 3000],
             "fuel_type": ["Petrol", "Diesel", "Petrol"],
@@ -284,7 +284,7 @@ class TestGenerateDataQualityReport:
         assert all(isinstance(item, tuple) for item in result)
         assert len(result) == 4
 
-    def test_counts_duplicates(self):
+    def test_counts_duplicates(self) -> None:
         df = pd.DataFrame({
             "kms_driven": [1000, 2000],
             "fuel_type": ["Petrol", "Diesel"],
@@ -297,7 +297,7 @@ class TestGenerateDataQualityReport:
         # Should report 2 duplicates removed
         assert "2 duplicates removed" in result[1][1]
 
-    def test_counts_alternative_fuels(self):
+    def test_counts_alternative_fuels(self) -> None:
         df = pd.DataFrame({
             "kms_driven": [1000, 2000, 3000],
             "fuel_type": ["Petrol", "Diesel", "CNG"],
@@ -314,29 +314,29 @@ class TestGenerateDataQualityReport:
 class TestGenerateNaturalLanguageExplanation:
     """Tests for generate_natural_language_explanation function."""
 
-    def test_returns_string(self):
+    def test_returns_string(self) -> None:
         result = generate_natural_language_explanation([], 500000, 600000)
         assert isinstance(result, str)
 
-    def test_empty_contributions(self):
+    def test_empty_contributions(self) -> None:
         result = generate_natural_language_explanation([], 500000, 600000)
         assert "This car is priced at" in result
         assert "." in result
 
-    def test_with_positive_contributions(self):
+    def test_with_positive_contributions(self) -> None:
         contributions = [("Year", 50000), ("Brand", 30000)]
         result = generate_natural_language_explanation(contributions, 500000, 600000)
         assert "Year" in result
         assert "Brand" in result
         assert "adds" in result
 
-    def test_with_negative_contributions(self):
+    def test_with_negative_contributions(self) -> None:
         contributions = [("Kms Driven", -20000), ("Age", -10000)]
         result = generate_natural_language_explanation(contributions, 500000, 450000)
         assert "Kms Driven" in result
         assert "reduces" in result
 
-    def test_mixed_contributions(self):
+    def test_mixed_contributions(self) -> None:
         contributions = [("Year", 50000), ("Kms Driven", -20000)]
         result = generate_natural_language_explanation(contributions, 500000, 550000)
         assert "because" in result

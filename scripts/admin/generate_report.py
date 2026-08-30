@@ -289,11 +289,11 @@ print("[3] Statistics computed.")
 
 
 # === 4. Generate HTML Report ===
-def img_html(filename, alt=""):
+def img_html(filename, alt="") -> str:
     return f'<img src="images/{filename}" alt="{alt}" style="max-width:100%; margin:10px 0; border:1px solid #ddd; border-radius:4px;" />'
 
 
-def fmt_price(val):
+def fmt_price(val) -> str:
     if val >= 10000000:
         return f"\u20b9{val / 10000000:.1f} Cr"
     elif val >= 100000:
