@@ -100,26 +100,26 @@ def sample_input_batch():
 class TestModelLoading:
     """Verify pre-trained models load correctly."""
 
-    def test_all_models_load(self, all_models):
+    def test_all_models_load(self, all_models) -> None:
         """At least 6 models should load without error."""
         assert len(all_models) >= 6
 
-    def test_expected_model_names(self, all_models):
+    def test_expected_model_names(self, all_models) -> None:
         """Check that core model names are present."""
         must_have = {"Linear Regression", "Lasso", "Ridge", "KNN", "Random Forest", "SVR"}
         assert must_have.issubset(set(all_models.keys())), \
             f"Missing: {must_have - set(all_models.keys())}"
 
-    def test_preprocessor_loads(self, preprocessor):
+    def test_preprocessor_loads(self, preprocessor) -> None:
         """Preprocessor should be callable."""
         assert hasattr(preprocessor, "transform")
 
-    def test_feature_names_loads(self, feature_names):
+    def test_feature_names_loads(self, feature_names) -> None:
         """Feature names should be a non-empty list."""
         assert isinstance(feature_names, (list, np.ndarray))
         assert len(feature_names) > 0
 
-    def test_models_have_predict(self, all_models):
+    def test_models_have_predict(self, all_models) -> None:
         """Every model should have a predict method."""
         for name, model in all_models.items():
             assert hasattr(model, "predict"), f"{name} missing predict()"
@@ -131,28 +131,28 @@ class TestModelLoading:
 class TestPreprocessor:
     """Verify the preprocessor transforms data correctly."""
 
-    def test_transform_shape(self, preprocessor, sample_input):
+    def test_transform_shape(self, preprocessor, sample_input) -> None:
         """Transformed output should have correct shape."""
         X = preprocessor.transform(sample_input)
         assert X.shape[0] == 1
         assert X.shape[1] > 0
 
-    def test_transform_batch(self, preprocessor, sample_input_batch):
+    def test_transform_batch(self, preprocessor, sample_input_batch) -> None:
         """Batch transform should preserve row count."""
         X = preprocessor.transform(sample_input_batch)
         assert X.shape[0] == 5
 
-    def test_transform_no_nan(self, preprocessor, sample_input):
+    def test_transform_no_nan(self, preprocessor, sample_input) -> None:
         """Transformed output should have no NaN values."""
         X = preprocessor.transform(sample_input)
         assert not np.isnan(X).any()
 
-    def test_transform_numeric_output(self, preprocessor, sample_input):
+    def test_transform_numeric_output(self, preprocessor, sample_input) -> None:
         """Transformed output should be numeric."""
         X = preprocessor.transform(sample_input)
         assert np.issubdtype(X.dtype, np.number)
 
-    def test_preprocessor_expects_correct_columns(self, preprocessor):
+    def test_preprocessor_expects_correct_columns(self, preprocessor) -> None:
         """Preprocessor should expect car_age, kms_driven, company, fuel_type_simple."""
         expected_cols = {"car_age", "kms_driven", "company", "fuel_type_simple"}
         actual_cols = set()
@@ -171,7 +171,7 @@ class TestPreprocessor:
 class TestSinglePrediction:
     """Test making predictions with individual models."""
 
-    def test_prediction_returns_positive(self, all_models, preprocessor, sample_input):
+    def test_prediction_returns_positive(self, all_models, preprocessor, sample_input) -> None:
         """All models should return positive price predictions."""
         for name, model in all_models.items():
             X = preprocessor.transform(sample_input)
@@ -179,7 +179,7 @@ class TestSinglePrediction:
             pred_price = float(np.expm1(pred_log))
             assert pred_price > 0, f"{name} returned non-positive: {pred_price}"
 
-    def test_prediction_within_reasonable_range(self, all_models, preprocessor, sample_input):
+    def test_prediction_within_reasonable_range(self, all_models, preprocessor, sample_input) -> None:
         """Predictions should be within a reasonable car price range."""
         for name, model in all_models.items():
             X = preprocessor.transform(sample_input)
@@ -188,7 +188,7 @@ class TestSinglePrediction:
             # Car prices should be between 50K and 50L INR
             assert 50_000 < pred_price < 50_00_000, f"{name} prediction out of range: {pred_price}"
 
-    def test_log_transform_inversion(self, all_models, preprocessor, sample_input):
+    def test_log_transform_inversion(self, all_models, preprocessor, sample_input) -> None:
         """Verify log1p/expm1 roundtrip consistency."""
         from app.helpers import make_prediction
 
@@ -196,7 +196,7 @@ class TestSinglePrediction:
             price = make_prediction(model, sample_input, preprocessor)
             assert price > 0, f"{name}: log transform inversion failed"
 
-    def test_predictions_differ_across_models(self, all_models, preprocessor, sample_input):
+    def test_predictions_differ_across_models(self, all_models, preprocessor, sample_input) -> None:
         """Different models should produce different predictions."""
         predictions = []
         X = preprocessor.transform(sample_input)
@@ -213,7 +213,7 @@ class TestSinglePrediction:
 class TestBatchPrediction:
     """Test batch predictions with multiple inputs."""
 
-    def test_batch_predictions_all_positive(self, all_models, preprocessor, sample_input_batch):
+    def test_batch_predictions_all_positive(self, all_models, preprocessor, sample_input_batch) -> None:
         """Batch predictions should all be positive."""
         from app.helpers import make_prediction
 
@@ -224,7 +224,7 @@ class TestBatchPrediction:
                 prices.append(make_prediction(model, df, preprocessor))
             assert all(p > 0 for p in prices), f"{name} has non-positive batch predictions"
 
-    def test_newer_cars_more_expensive(self, all_models, preprocessor):
+    def test_newer_cars_more_expensive(self, all_models, preprocessor) -> None:
         """All else equal, a newer car should be predicted as more expensive."""
         from app.helpers import make_prediction
 
@@ -236,7 +236,7 @@ class TestBatchPrediction:
             new_price = make_prediction(model, new_car, preprocessor)
             assert new_price > old_price * 0.5, f"{name}: newer car not more expensive ({new_price} vs {old_price})"
 
-    def test_higher_km_less_expensive(self, all_models, preprocessor):
+    def test_higher_km_less_expensive(self, all_models, preprocessor) -> None:
         """More kms driven should generally reduce predicted price."""
         from app.helpers import make_prediction
 
@@ -255,7 +255,7 @@ class TestBatchPrediction:
 class TestEnsemble:
     """Test the ensemble prediction function."""
 
-    def test_ensemble_returns_valid_result(self, all_models, preprocessor, sample_input):
+    def test_ensemble_returns_valid_result(self, all_models, preprocessor, sample_input) -> None:
         """Ensemble should return (mean, spread, color)."""
         from app.helpers import ensemble_prediction
 
@@ -265,7 +265,7 @@ class TestEnsemble:
         assert spread >= 0
         assert color in ("green", "yellow", "red")
 
-    def test_ensemble_within_tolerance(self, all_models, preprocessor, sample_input):
+    def test_ensemble_within_tolerance(self, all_models, preprocessor, sample_input) -> None:
         """Ensemble spread should be within a reasonable tolerance."""
         from app.helpers import ensemble_prediction
 
@@ -273,7 +273,7 @@ class TestEnsemble:
         assert mean_pred > 0
         assert spread < 50  # Models should agree within 50%
 
-    def test_ensemble_empty_models_returns_none(self, preprocessor, sample_input):
+    def test_ensemble_empty_models_returns_none(self, preprocessor, sample_input) -> None:
         """Ensemble with no models returns (None, None, 'red')."""
         from app.helpers import ensemble_prediction
 
@@ -282,7 +282,7 @@ class TestEnsemble:
         assert spread is None
         assert color == "red"
 
-    def test_ensemble_single_model(self, preprocessor, sample_input):
+    def test_ensemble_single_model(self, preprocessor, sample_input) -> None:
         """Ensemble with a single model should still work."""
         from app.helpers import ensemble_prediction
 
@@ -300,28 +300,28 @@ class TestEnsemble:
 class TestDealScore:
     """Test the deal score computation."""
 
-    def test_perfect_match(self):
+    def test_perfect_match(self) -> None:
         """When predicted == actual, score should be ~50."""
         from app.helpers import compute_deal_score
 
         score = compute_deal_score(500000, 500000)
         assert score == 50
 
-    def test_undervalued_high_score(self):
+    def test_undervalued_high_score(self) -> None:
         """When actual < predicted (good deal), score should be > 50."""
         from app.helpers import compute_deal_score
 
         score = compute_deal_score(500000, 300000)
         assert score > 50
 
-    def test_overvalued_low_score(self):
+    def test_overvalued_low_score(self) -> None:
         """When actual > predicted (bad deal), score should be < 50."""
         from app.helpers import compute_deal_score
 
         score = compute_deal_score(500000, 700000)
         assert score < 50
 
-    def test_score_clamped_0_100(self):
+    def test_score_clamped_0_100(self) -> None:
         """Score should always be between 0 and 100."""
         from app.helpers import compute_deal_score
 
@@ -330,7 +330,7 @@ class TestDealScore:
                 score = compute_deal_score(predicted, actual)
                 assert 0 <= score <= 100, f"Score {score} out of range for ({predicted}, {actual})"
 
-    def test_rarity_multiplier(self):
+    def test_rarity_multiplier(self) -> None:
         """Higher rarity should amplify the score."""
         from app.helpers import compute_deal_score
 
@@ -345,7 +345,7 @@ class TestDealScore:
 class TestShapLite:
     """Test the SHAP-lite feature importance approximation."""
 
-    def test_returns_list_of_tuples(self, all_models, preprocessor, sample_input, feature_names):
+    def test_returns_list_of_tuples(self, all_models, preprocessor, sample_input, feature_names) -> None:
         """Should return list of (feature_name, contribution) tuples."""
         from app.helpers import shap_lite_approximation
 
@@ -358,7 +358,7 @@ class TestShapLite:
                 assert isinstance(item[0], str)
                 assert isinstance(item[1], float)
 
-    def test_max_8_features(self, all_models, preprocessor, sample_input, feature_names):
+    def test_max_8_features(self, all_models, preprocessor, sample_input, feature_names) -> None:
         """Should return at most 8 features."""
         from app.helpers import shap_lite_approximation
 
@@ -366,7 +366,7 @@ class TestShapLite:
             result = shap_lite_approximation(model, sample_input, preprocessor, feature_names)
             assert len(result) <= 8, f"{name} returned {len(result)} features (>8)"
 
-    def test_sorted_by_abs_contribution(self, all_models, preprocessor, sample_input, feature_names):
+    def test_sorted_by_abs_contribution(self, all_models, preprocessor, sample_input, feature_names) -> None:
         """Results should be sorted by absolute contribution (descending)."""
         from app.helpers import shap_lite_approximation
 
@@ -377,7 +377,7 @@ class TestShapLite:
                 assert abs_vals == sorted(abs_vals, reverse=True), \
                     f"{name}: not sorted by absolute contribution"
 
-    def test_linear_model_uses_coefs(self, preprocessor, sample_input, feature_names):
+    def test_linear_model_uses_coefs(self, preprocessor, sample_input, feature_names) -> None:
         """Linear models should use coef_ for SHAP-lite."""
         from app.helpers import shap_lite_approximation
 
@@ -392,25 +392,25 @@ class TestShapLite:
 class TestTrainingData:
     """Verify training data properties."""
 
-    def test_training_data_nonempty(self, train_data):
+    def test_training_data_nonempty(self, train_data) -> None:
         """Training data should have rows."""
         assert len(train_data) > 0
 
-    def test_training_data_has_key_columns(self, train_data):
+    def test_training_data_has_key_columns(self, train_data) -> None:
         """Training data should have numeric features and Price."""
         assert "car_age" in train_data.columns
         assert "kms_driven" in train_data.columns
         assert "Price" in train_data.columns
 
-    def test_training_data_price_positive(self, train_data):
+    def test_training_data_price_positive(self, train_data) -> None:
         """All prices should be positive."""
         assert (train_data["Price"] > 0).all()
 
-    def test_training_data_no_nulls_in_numeric(self, train_data):
+    def test_training_data_no_nulls_in_numeric(self, train_data) -> None:
         """Key numeric columns should have no nulls."""
         for col in ["car_age", "kms_driven", "Price"]:
             assert train_data[col].isna().sum() == 0, f"Nulls in {col}"
 
-    def test_training_data_shape(self, train_data):
+    def test_training_data_shape(self, train_data) -> None:
         """Training data should have a reasonable number of rows."""
         assert len(train_data) > 1000, f"Only {len(train_data)} rows"

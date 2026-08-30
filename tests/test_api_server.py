@@ -53,14 +53,14 @@ def sample_df():
 # ── Health Endpoint ───────────────────────────────────────────────────────
 
 class TestHealthEndpoint:
-    def test_health_returns_ok(self, client):
+    def test_health_returns_ok(self, client) -> None:
         response = client.get("/health")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
         assert data["service"] == "autointel-api"
 
-    def test_health_is_get(self, client):
+    def test_health_is_get(self, client) -> None:
         response = client.get("/health")
         assert response.status_code == 200
 
@@ -69,7 +69,7 @@ class TestHealthEndpoint:
 
 class TestCarStats:
     @patch("app.api_server._load_cars_df")
-    def test_stats_returns_correct_counts(self, mock_load, client, sample_df):
+    def test_stats_returns_correct_counts(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/stats")
         assert response.status_code == 200
@@ -80,7 +80,7 @@ class TestCarStats:
         assert data["price_range"]["max"] == 1200000.0
 
     @patch("app.api_server._load_cars_df")
-    def test_stats_price_mean(self, mock_load, client, sample_df):
+    def test_stats_price_mean(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/stats")
         data = response.json()
@@ -88,7 +88,7 @@ class TestCarStats:
         assert abs(data["price_range"]["mean"] - expected_mean) < 0.01
 
     @patch("app.api_server._load_cars_df")
-    def test_stats_missing_brand_column(self, mock_load, client):
+    def test_stats_missing_brand_column(self, mock_load, client) -> None:
         df = pd.DataFrame({"Price": [100, 200], "name": ["A", "B"]})
         mock_load.return_value = df
         response = client.get("/api/v1/cars/stats")
@@ -97,7 +97,7 @@ class TestCarStats:
         assert data["brands"] == 0
 
     @patch("app.api_server._load_cars_df")
-    def test_stats_empty_dataset(self, mock_load, client):
+    def test_stats_empty_dataset(self, mock_load, client) -> None:
         # Empty DF → mean() returns NaN which isn't JSON-serializable,
         # so the API will 500. Verify the endpoint handles this gracefully
         # or that empty DFs are not served in production.
@@ -113,7 +113,7 @@ class TestCarStats:
 
 class TestCarBrands:
     @patch("app.api_server._load_cars_df")
-    def test_brands_returns_sorted_list(self, mock_load, client, sample_df):
+    def test_brands_returns_sorted_list(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/brands")
         assert response.status_code == 200
@@ -121,7 +121,7 @@ class TestCarBrands:
         assert data["brands"] == ["Hyundai", "Maruti", "Toyota"]
 
     @patch("app.api_server._load_cars_df")
-    def test_brands_missing_column(self, mock_load, client):
+    def test_brands_missing_column(self, mock_load, client) -> None:
         df = pd.DataFrame({"name": ["A"]})
         mock_load.return_value = df
         response = client.get("/api/v1/cars/brands")
@@ -133,7 +133,7 @@ class TestCarBrands:
 
 class TestFuelTypes:
     @patch("app.api_server._load_cars_df")
-    def test_fuel_types_returns_sorted(self, mock_load, client, sample_df):
+    def test_fuel_types_returns_sorted(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/fuel-types")
         assert response.status_code == 200
@@ -141,7 +141,7 @@ class TestFuelTypes:
         assert data["fuel_types"] == ["Diesel", "Petrol"]
 
     @patch("app.api_server._load_cars_df")
-    def test_fuel_types_missing_column(self, mock_load, client):
+    def test_fuel_types_missing_column(self, mock_load, client) -> None:
         df = pd.DataFrame({"name": ["A"]})
         mock_load.return_value = df
         response = client.get("/api/v1/cars/fuel-types")
@@ -153,7 +153,7 @@ class TestFuelTypes:
 
 class TestPredictEndpoint:
     @patch("app.api_server._load_cars_df")
-    def test_predict_returns_estimated_price(self, mock_load, client, sample_df):
+    def test_predict_returns_estimated_price(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         body = {
             "brand": "Maruti",
@@ -173,7 +173,7 @@ class TestPredictEndpoint:
         assert data["inputs"]["brand"] == "Maruti"
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_validates_required_fields(self, mock_load, client, sample_df):
+    def test_predict_validates_required_fields(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         # Missing fields
         response = client.post("/api/v1/predict", json={"brand": "Maruti"})
@@ -181,13 +181,13 @@ class TestPredictEndpoint:
         assert "Missing fields" in response.json()["detail"]
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_empty_body(self, mock_load, client, sample_df):
+    def test_predict_empty_body(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.post("/api/v1/predict", json={})
         assert response.status_code == 422
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_includes_all_inputs(self, mock_load, client, sample_df):
+    def test_predict_includes_all_inputs(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         body = {
             "brand": "Hyundai",
@@ -207,7 +207,7 @@ class TestPredictEndpoint:
 
 class TestAPIKeyAuth:
     @patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": ""})
-    def test_no_key_configured_allows_open_access(self):
+    def test_no_key_configured_allows_open_access(self) -> None:
         """When PRICE_MY_CAR_API_KEY is empty, all endpoints are open."""
         client = TestClient(app)
         response = client.get("/api/v1/cars/stats")
@@ -216,7 +216,7 @@ class TestAPIKeyAuth:
         assert response.status_code != 403
 
     @patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": ""})
-    def test_no_key_allows_health(self):
+    def test_no_key_allows_health(self) -> None:
         client = TestClient(app)
         response = client.get("/health")
         assert response.status_code == 200
@@ -225,7 +225,7 @@ class TestAPIKeyAuth:
 # ── verify_api_key Direct Tests ───────────────────────────────────────────
 
 class TestVerifyAPIKey:
-    def test_returns_credentials_when_no_env_key(self):
+    def test_returns_credentials_when_no_env_key(self) -> None:
         """verify_api_key returns credentials when no env key is set."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": ""}):
             creds = HTTPAuthorizationCredentials(
@@ -234,7 +234,7 @@ class TestVerifyAPIKey:
             result = asyncio.run(verify_api_key(credentials=creds))
             assert result.credentials == "some-token"
 
-    def test_rejects_wrong_key(self):
+    def test_rejects_wrong_key(self) -> None:
         """verify_api_key raises 403 when wrong key is provided."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "correct-key"}):
             creds = HTTPAuthorizationCredentials(
@@ -244,14 +244,14 @@ class TestVerifyAPIKey:
                 asyncio.run(verify_api_key(credentials=creds))
             assert exc_info.value.status_code == 403
 
-    def test_rejects_missing_credentials(self):
+    def test_rejects_missing_credentials(self) -> None:
         """verify_api_key raises 401 when key is required but no creds."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "some-key"}):
             with pytest.raises(HTTPException) as exc_info:
                 asyncio.run(verify_api_key(credentials=None))
             assert exc_info.value.status_code == 401
 
-    def test_accepts_correct_key(self):
+    def test_accepts_correct_key(self) -> None:
         """verify_api_key passes through when correct key is provided."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "my-secret"}):
             creds = HTTPAuthorizationCredentials(
@@ -260,7 +260,7 @@ class TestVerifyAPIKey:
             result = asyncio.run(verify_api_key(credentials=creds))
             assert result.credentials == "my-secret"
 
-    def test_returns_none_when_no_key_configured(self):
+    def test_returns_none_when_no_key_configured(self) -> None:
         """verify_api_key returns None credentials when no env key."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": ""}):
             result = asyncio.run(verify_api_key(credentials=None))
@@ -270,7 +270,7 @@ class TestVerifyAPIKey:
 # ── Data Loading Edge Cases ───────────────────────────────────────────────
 
 class TestDataLoading:
-    def test_load_cars_missing_file_returns_503(self, client):
+    def test_load_cars_missing_file_returns_503(self, client) -> None:
         """When dataset file doesn't exist, returns 503."""
         with patch("app.api_server._load_cars_df") as mock_load:
             mock_load.side_effect = HTTPException(
@@ -280,7 +280,7 @@ class TestDataLoading:
             assert response.status_code == 503
 
     @patch("app.api_server._load_cars_df")
-    def test_load_cars_large_dataset(self, mock_load, client):
+    def test_load_cars_large_dataset(self, mock_load, client) -> None:
         """Test with larger dataset to verify performance."""
         df = pd.DataFrame(
             {
@@ -301,7 +301,7 @@ class TestDataLoading:
 
 class TestResponseFormat:
     @patch("app.api_server._load_cars_df")
-    def test_stats_response_structure(self, mock_load, client, sample_df):
+    def test_stats_response_structure(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/stats")
         data = response.json()
@@ -313,7 +313,7 @@ class TestResponseFormat:
         assert "mean" in data["price_range"]
 
     @patch("app.api_server._load_cars_df")
-    def test_brands_response_structure(self, mock_load, client, sample_df):
+    def test_brands_response_structure(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/brands")
         data = response.json()
@@ -321,7 +321,7 @@ class TestResponseFormat:
         assert isinstance(data["brands"], list)
 
     @patch("app.api_server._load_cars_df")
-    def test_fuel_types_response_structure(self, mock_load, client, sample_df):
+    def test_fuel_types_response_structure(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/cars/fuel-types")
         data = response.json()
@@ -329,7 +329,7 @@ class TestResponseFormat:
         assert isinstance(data["fuel_types"], list)
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_response_structure(self, mock_load, client, sample_df):
+    def test_predict_response_structure(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         body = {
             "brand": "Maruti",
@@ -351,18 +351,18 @@ class TestResponseFormat:
 # ── HTTP Method Validation ────────────────────────────────────────────────
 
 class TestHTTPMethods:
-    def test_health_only_accepts_get(self, client):
+    def test_health_only_accepts_get(self, client) -> None:
         response = client.post("/health")
         assert response.status_code == 405
 
     @patch("app.api_server._load_cars_df")
-    def test_stats_only_accepts_get(self, mock_load, client, sample_df):
+    def test_stats_only_accepts_get(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.post("/api/v1/cars/stats")
         assert response.status_code == 405
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_only_accepts_post(self, mock_load, client, sample_df):
+    def test_predict_only_accepts_post(self, mock_load, client, sample_df) -> None:
         mock_load.return_value = sample_df
         response = client.get("/api/v1/predict")
         assert response.status_code == 405
@@ -372,7 +372,7 @@ class TestHTTPMethods:
 
 class TestEdgeCases:
     @patch("app.api_server._load_cars_df")
-    def test_predict_with_special_characters_in_brand(self, mock_load, client):
+    def test_predict_with_special_characters_in_brand(self, mock_load, client) -> None:
         """Brand name with special characters should be handled."""
         df = pd.DataFrame(
             {
@@ -394,7 +394,7 @@ class TestEdgeCases:
         assert response.status_code == 200
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_with_zero_km(self, mock_load, client, sample_df):
+    def test_predict_with_zero_km(self, mock_load, client, sample_df) -> None:
         """Zero km driven should be accepted."""
         mock_load.return_value = sample_df
         body = {
@@ -409,7 +409,7 @@ class TestEdgeCases:
         assert response.status_code == 200
 
     @patch("app.api_server._load_cars_df")
-    def test_predict_with_very_old_car(self, mock_load, client, sample_df):
+    def test_predict_with_very_old_car(self, mock_load, client, sample_df) -> None:
         """Very old car year should be accepted."""
         mock_load.return_value = sample_df
         body = {
