@@ -179,3 +179,40 @@ jobs:
         run: pip-audit -r requirements.txt
       - name: Bandit security scan
         run: bandit -r src/ -ll
+
+  docker-cache:
+    name: Docker image build + layer cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image (cached)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          load: true
+          tags: autointel:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  dive:
+    name: Docker image size audit (dive)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: dive-audit:latest
+          cache-from: type=gha
+      - name: Install dive
+        run: |
+          wget -q https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+          sudo dpkg -i dive_0.12.0_linux_amd64.deb
+      - name: Run dive (efficiency check)
+        run: |
+          CI=true dive dive-audit:latest --ci-image-size-threshold=1024 --ci-wasted-bytes-threshold=51200000
