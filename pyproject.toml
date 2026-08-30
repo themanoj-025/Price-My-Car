@@ -29,8 +29,13 @@ profile = "black"
 line_length = 100
 
 [tool.pytest.ini_options]
+addopts = "-m 'not slow'"
 minversion = "7.0"
 testpaths = ["tests"]
+
+markers = [
+    "slow: integration tests (database, HTTP, ML models) — excluded from default run; use pytest -m slow"
+]
 
 [tool.mypy]
 python_version = "3.11"

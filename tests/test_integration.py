@@ -17,6 +17,8 @@ from fastapi.testclient import TestClient
 
 from app.api_server import app
 
+
+pytestmark = pytest.mark.slow
 # ── Fixtures ──────────────────────────────────────────────────────────────
 
 
@@ -131,6 +133,8 @@ class TestCarStatsWorkflow:
         """When dataset is missing, returns 503."""
         with patch("app.api_server._load_cars_df") as mock_load:
             from fastapi import HTTPException
+
+
             mock_load.side_effect = HTTPException(status_code=503, detail="Dataset not found")
             response = client.get("/api/v1/cars/stats")
             assert response.status_code == 503
