@@ -17,7 +17,7 @@ from app.helpers import (
 
 
 @pytest.fixture
-def sample_df():
+def sample_df() -> None:
     """Sample car DataFrame for testing."""
     return pd.DataFrame({
         "company": ["Maruti", "Maruti", "Hyundai", "Hyundai", "Honda"],
@@ -30,19 +30,19 @@ def sample_df():
 
 
 @pytest.fixture
-def mock_model():
+def mock_model() -> None:
     """Mock model that returns fixed predictions."""
     class MockModel:
-        def predict(self, X):
+        def predict(self, X) -> None:
             return np.array([13.0])  # log(442413) ≈ 13.0
     return MockModel()
 
 
 @pytest.fixture
-def mock_preprocessor():
+def mock_preprocessor() -> None:
     """Mock preprocessor that passes through data."""
     class MockPreprocessor:
-        def transform(self, X):
+        def transform(self, X) -> None:
             return X.values
     return MockPreprocessor()
 
@@ -198,9 +198,9 @@ class TestEnsemblePrediction:
         assert spread is None
         assert color == "red"
 
-    def test_with_models(self, mock_preprocessor):
+    def test_with_models(self, mock_preprocessor) -> None:
         class MockModel:
-            def predict(self, X):
+            def predict(self, X) -> None:
                 return np.array([13.0])
 
         input_df = pd.DataFrame({"feature": [1]})
@@ -214,13 +214,13 @@ class TestEnsemblePrediction:
         assert spread is not None
         assert color == "green"  # all same predictions = 0% spread
 
-    def test_spread_color_coding(self, mock_preprocessor):
+    def test_spread_color_coding(self, mock_preprocessor) -> None:
         class FastModel:
-            def predict(self, X):
+            def predict(self, X) -> None:
                 return np.array([13.0])
 
         class SlowModel:
-            def predict(self, X):
+            def predict(self, X) -> None:
                 return np.array([15.0])  # big difference
 
         input_df = pd.DataFrame({"feature": [1]})

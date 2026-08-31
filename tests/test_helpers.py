@@ -234,7 +234,7 @@ class TestShapLiteApproximation:
         model = LinearRegression().fit(X, y)
 
         class MockPreprocessor:
-            def transform(self, X):
+            def transform(self, X) -> None:
                 return np.array([[1, 2]])
 
         result = shap_lite_approximation(model, pd.DataFrame({"a": [1]}), MockPreprocessor(), ["feat1", "feat2"])

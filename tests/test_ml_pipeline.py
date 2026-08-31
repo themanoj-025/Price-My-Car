@@ -22,19 +22,19 @@ ML_READY = Path(__file__).resolve().parent.parent / "ml_ready"
 
 
 @pytest.fixture(scope="module")
-def preprocessor():
+def preprocessor() -> None:
     """Load the real preprocessor from disk."""
     return joblib.load(ML_READY / "preprocessor.pkl")
 
 
 @pytest.fixture(scope="module")
-def feature_names():
+def feature_names() -> None:
     """Load the real feature names from disk."""
     return joblib.load(ML_READY / "feature_names.pkl")
 
 
 @pytest.fixture(scope="module")
-def all_models():
+def all_models() -> None:
     """Load all loadable pre-trained models from disk.
 
     Gradient boosting may fail to load if ``_loss`` C extension is missing
@@ -63,13 +63,13 @@ def all_models():
 
 
 @pytest.fixture(scope="module")
-def train_data():
+def train_data() -> None:
     """Load the real training data."""
     return pd.read_csv(ML_READY / "train_data.csv")
 
 
 @pytest.fixture
-def sample_input():
+def sample_input() -> None:
     """A realistic single-row input matching the preprocessor schema.
 
     The preprocessor expects: car_age, kms_driven, company, fuel_type_simple.
@@ -83,7 +83,7 @@ def sample_input():
 
 
 @pytest.fixture
-def sample_input_batch():
+def sample_input_batch() -> None:
     """Batch of 5 different car inputs."""
     return pd.DataFrame([
         {"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"},
