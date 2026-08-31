@@ -16,8 +16,6 @@ ignore = [
     "PLC0415", # import-outside-top-level — lazy imports
     "F821",    # undefined name — false positives from annotations
     "RUF001",  # ambiguous unicode — intentional
-    "Q301",    # single vs double quotes
-    "Q000",    # inline quotes
 ]
 
 [tool.black]
