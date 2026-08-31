@@ -15,7 +15,6 @@ import streamlit as st
 from app.chart_utils import show_chart
 from app.helpers import (
     MODEL_METRICS,
-    fmt_inr,
     get_fuel_simple,
     make_prediction,
 )

@@ -1,7 +1,6 @@
 """Tests for shared context module."""
 
 import pandas as pd
-import pytest
 
 from app.pages.shared import SharedContext
 

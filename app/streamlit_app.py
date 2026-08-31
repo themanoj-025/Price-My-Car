@@ -481,7 +481,7 @@ fuel_types = sorted(df["fuel_type"].unique())
 # =========================================================================
 # Import page modules & inject shared globals
 # =========================================================================
-from app.pages import (  # noqa: E402
+from app.pages import (
     admin as _admin_mod,
 )
 from app.pages import (

@@ -216,7 +216,7 @@ class TestEnsemblePrediction:
         from app.helpers import ensemble_prediction
 
         input_df = pd.DataFrame({"feature": [1]})
-        mean_pred, spread, color = ensemble_prediction({}, input_df, None)
+        mean_pred, _spread, color = ensemble_prediction({}, input_df, None)
         assert mean_pred is None
         assert color == "red"
 

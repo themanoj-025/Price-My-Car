@@ -200,10 +200,10 @@ class TestSinglePrediction:
         """Different models should produce different predictions."""
         predictions = []
         X = preprocessor.transform(sample_input)
-        for name, model in all_models.items():
+        for _name, model in all_models.items():
             pred_log = model.predict(X)[0]
             predictions.append(float(np.expm1(pred_log)))
-        unique = set(round(p, 0) for p in predictions)
+        unique = {round(p, 0) for p in predictions}
         assert len(unique) > 1, f"All models produced identical predictions: {predictions[0]}"
 
 
@@ -269,7 +269,7 @@ class TestEnsemble:
         """Ensemble spread should be within a reasonable tolerance."""
         from app.helpers import ensemble_prediction
 
-        mean_pred, spread, color = ensemble_prediction(all_models, sample_input, preprocessor)
+        mean_pred, spread, _color = ensemble_prediction(all_models, sample_input, preprocessor)
         assert mean_pred > 0
         assert spread < 50  # Models should agree within 50%
 
@@ -287,7 +287,7 @@ class TestEnsemble:
         from app.helpers import ensemble_prediction
 
         lr = joblib.load(ML_READY / "models/linear_regression.pkl")
-        mean_pred, spread, color = ensemble_prediction(
+        mean_pred, _spread, _color = ensemble_prediction(
             {"Linear Regression": lr}, sample_input, preprocessor
         )
         assert mean_pred is not None
@@ -349,7 +349,7 @@ class TestShapLite:
         """Should return list of (feature_name, contribution) tuples."""
         from app.helpers import shap_lite_approximation
 
-        for name, model in all_models.items():
+        for _name, model in all_models.items():
             result = shap_lite_approximation(model, sample_input, preprocessor, feature_names)
             assert isinstance(result, list)
             for item in result:

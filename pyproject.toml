@@ -16,6 +16,10 @@ ignore = [
     "PLC0415", # import-outside-top-level — lazy imports
     "F821",    # undefined name — false positives from annotations
     "RUF001",  # ambiguous unicode — intentional
+    "E402",    # module-import-not-at-top — Streamlit page lazy imports
+    "B904",    # raise-without-from — FastAPI error handling
+    "PLC0206", # dict-without-items — iteration pattern
+    "SIM105",  # suppressible-exception — legacy pattern
 ]
 
 [tool.black]
