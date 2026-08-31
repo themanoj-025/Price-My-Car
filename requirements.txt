@@ -39,7 +39,7 @@ nbconvert>=7.17.1
 # Pinned transitive deps with security advisories
 # msgpack: GHSA-6v7p-g79w-8964 (HIGH, OOB read) — fixed in 1.2.1
 # setuptools: CVE-2025-47273 (path traversal) — fixed in 78.1.1
-msgpack>=1.2.1
+msgpack>=1.2.2
 setuptools>=84.0.0
 
 # API observability
