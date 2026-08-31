@@ -163,7 +163,7 @@ def page_model_comparison() -> None:
         fig4.add_trace(
             go.Scatterpolar(
                 r=vals,
-                theta=categories + [categories[0]],
+                theta=[*categories, categories[0]],
                 fill="toself",
                 name=model,
                 line={"color": radar_colors[idx]},

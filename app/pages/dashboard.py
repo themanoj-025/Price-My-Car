@@ -34,7 +34,7 @@ def page_dashboard_home() -> None:
         ("Price Range", "₹20K – ₹1Cr", "Min to max"),
         ("Features Eng.", "39", "After encoding & scaling"),
     ]
-    for col, kpi in zip([k1, k2, k3, k4, k5], kpi_data):
+    for col, kpi in zip([k1, k2, k3, k4, k5], kpi_data, strict=False):
         if len(kpi) == 4:
             label, val, delta, help_text = kpi
             col.metric(label, val, delta=delta, help=help_text)
@@ -80,7 +80,7 @@ def page_dashboard_home() -> None:
             "#52b788",
         ),
     ]
-    for col, (title, desc, color) in zip([c1, c2, c3], insights):
+    for col, (title, desc, color) in zip([c1, c2, c3], insights, strict=False):
         with col:
             st.markdown(
                 f'<div class="glass-card"><h3 style="color:{color};font-size:1.1rem;margin:0">{title}</h3>'
@@ -101,7 +101,7 @@ def page_dashboard_home() -> None:
         "Dashboard",
     ]
     cols = st.columns(len(stages))
-    for i, (col, stage) in enumerate(zip(cols, stages)):
+    for i, (col, stage) in enumerate(zip(cols, stages, strict=False)):
         with col:
             st.markdown(
                 f'<div style="text-align:center;padding:8px;background:{"rgba(232,93,4,0.1)" if i == len(stages) - 1 else "rgba(255,255,255,0.03)"};'

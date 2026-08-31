@@ -10,7 +10,6 @@ import streamlit as st
 from app.chart_utils import show_chart
 from app.helpers import (
     METRICS_DF,
-    MODEL_METRICS,
     compute_deal_score,
     ensemble_prediction,
     fmt_inr,
@@ -316,7 +315,7 @@ def page_price_predictor() -> None:
                     names = [c[0][:20] for c in contribs[:5]]
                     vals = [c[1] for c in contribs[:5]]
                     base = pred - sum(vals)
-                    waterfall_vals = [base] + vals
+                    waterfall_vals = [base, *vals]
                     waterfall_names = ["Base"] + [f"{n}" for n in names]
                     ["#5a6270"] + ["#52b788" if v > 0 else "#e85d04" for v in vals]
                     fig2 = go.Figure(

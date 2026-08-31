@@ -4,14 +4,13 @@ from unittest.mock import MagicMock
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from app.helpers import (
     CURRENT_YEAR,
     fmt_inr,
+    get_company_tier,
     get_fuel_simple,
     get_price_tier,
-    get_company_tier,
     make_prediction,
     price_tier_badge,
 )

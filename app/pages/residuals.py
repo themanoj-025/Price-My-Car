@@ -60,7 +60,7 @@ def page_residual_analysis() -> None:
                 },
                 text=[
                     f"Actual: ₹{a:,.0f}<br>Pred: ₹{p:,.0f}<br>Err: {e:.1f}%"
-                    for a, p, e in zip(y_test_orig, pred_orig, pct_errors)
+                    for a, p, e in zip(y_test_orig, pred_orig, pct_errors, strict=False)
                 ],
                 hovertemplate="%{text}<extra></extra>",
             )

@@ -228,7 +228,7 @@ class TestEnsemblePrediction:
             "Linear Regression": FastModel(),
             "XGBoost": SlowModel(),
         }
-        mean, spread, color = ensemble_prediction(models, input_df, mock_preprocessor)
+        _mean, _spread, color = ensemble_prediction(models, input_df, mock_preprocessor)
         assert color == "red"  # spread > 20%
 
 

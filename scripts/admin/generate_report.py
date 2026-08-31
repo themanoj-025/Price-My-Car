@@ -100,7 +100,7 @@ ax.set_yticks(range(len(top_companies)))
 ax.set_yticklabels(top_companies.index)
 ax.set_xlabel("Average Price (in lakhs)")
 ax.set_title("Top 15 Car Companies by Average Price")
-for i, (v, c) in enumerate(zip(top_companies["avg_price"] / 1e5, top_companies["count"])):
+for i, (v, c) in enumerate(zip(top_companies["avg_price"] / 1e5, top_companies["count"], strict=False)):
     ax.text(v + 0.5, i, f"n={c}", va="center", fontsize=9)
 fig.tight_layout()
 save_plot(fig, "top_companies_price.png")

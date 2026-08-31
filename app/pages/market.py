@@ -89,7 +89,7 @@ def page_market_intelligence() -> None:
     st.markdown("### 💰 Depreciation Calculator")
     dc1, dc2, dc3 = st.columns(3)
     cars_for_dep = []
-    for ci, (col, default_comp) in enumerate(zip([dc1, dc2, dc3], ["Maruti", "Hyundai", "BMW"])):
+    for ci, (col, default_comp) in enumerate(zip([dc1, dc2, dc3], ["Maruti", "Hyundai", "BMW"], strict=False)):
         with col:
             dc_comp = st.selectbox(
                 f"Car {ci + 1} Brand",

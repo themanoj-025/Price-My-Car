@@ -33,7 +33,7 @@ def page_pipeline_inspector() -> None:
         ("Dashboard", "Streamlit app", "#e85d04"),
     ]
     cols = st.columns(8)
-    for i, (col, (stage, desc, color)) in enumerate(zip(cols, pipeline_stages)):
+    for i, (col, (stage, desc, color)) in enumerate(zip(cols, pipeline_stages, strict=False)):
         with col:
             st.markdown(
                 f'<div style="text-align:center;padding:10px 4px;background:rgba(255,255,255,0.03);'
@@ -91,10 +91,7 @@ def page_pipeline_inspector() -> None:
         st.markdown("### 📐 Log Transform Deep-Dive")
         log_lambda = st.slider("Box-Cox λ value", -2.0, 2.0, 0.0, 0.1, key="boxcox_slider")
         prices = df["Price"].values + 1
-        if log_lambda == 0:
-            transformed = np.log(prices)
-        else:
-            transformed = (prices**log_lambda - 1) / log_lambda
+        transformed = np.log(prices) if log_lambda == 0 else (prices ** log_lambda - 1) / log_lambda
         skew_val = pd.Series(transformed).skew()
         st.markdown(
             f'<div class="glass-card" style="text-align:center">'
@@ -121,7 +118,7 @@ def page_pipeline_inspector() -> None:
         ("All Values in Range", "✅", "#52b788", "No out-of-bound values"),
         ("Types Correct", "✅", "#52b788", "All dtypes verified"),
     ]
-    for col, (label, icon, color, desc) in zip(prof_cols, checks):
+    for col, (label, icon, color, desc) in zip(prof_cols, checks, strict=False):
         col.markdown(
             f'<div class="glass-card" style="text-align:center;border-top:3px solid {color}">'
             f'<div style="font-size:1.5rem">{icon}</div>'
@@ -199,7 +196,7 @@ def page_pipeline_inspector() -> None:
         ),
     ]
     mc_cols = st.columns(4)
-    for col, (name, r2, rmse, params, algo, note) in zip(mc_cols, model_cards):
+    for col, (name, r2, rmse, params, algo, note) in zip(mc_cols, model_cards, strict=False):
         with col:
             st.markdown(
                 f'<div class="glass-card" style="padding:16px">'

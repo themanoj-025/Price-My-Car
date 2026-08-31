@@ -17,7 +17,6 @@ from fastapi.testclient import TestClient
 
 from app.api_server import app
 
-
 pytestmark = pytest.mark.slow
 # ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -50,7 +49,6 @@ def large_df():
     n = 200
     brands = ["Maruti", "Hyundai", "Toyota", "Honda", "Tata", "Mahindra", "Kia", "MG"]
     fuels = ["Petrol", "Diesel", "CNG", "Electric"]
-    transmissions = ["Manual", "Automatic"]
     return pd.DataFrame({
         "Brand": np.random.choice(brands, n),
         "Price": np.random.uniform(200000, 5000000, n),
