@@ -29,7 +29,7 @@ streamlit>=1.62.0
 openpyxl>=3.1.5
 
 # VIF calculation (multicollinearity check in EDA)
-statsmodels>=0.14.6
+statsmodels>=0.15.0
 
 # Notebook utilities
 nbformat>=5.11.1
