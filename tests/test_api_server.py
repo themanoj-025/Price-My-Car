@@ -26,13 +26,13 @@ from app.api_server import app, verify_api_key
 # ── Fixtures ──────────────────────────────────────────────────────────────
 
 @pytest.fixture
-def client():
+def client() -> None:
     """Create a TestClient for the FastAPI app."""
     return TestClient(app)
 
 
 @pytest.fixture
-def sample_df():
+def sample_df() -> None:
     """Sample car dataset for mocking _load_cars_df."""
     return pd.DataFrame(
         {

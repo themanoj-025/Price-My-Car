@@ -22,13 +22,13 @@ pytestmark = pytest.mark.slow
 
 
 @pytest.fixture()
-def client():
+def client() -> None:
     """Create a TestClient for the FastAPI app."""
     return TestClient(app, raise_server_exceptions=False)
 
 
 @pytest.fixture()
-def sample_df():
+def sample_df() -> None:
     """Sample car dataset for mocking _load_cars_df."""
     return pd.DataFrame({
         "name": ["Swift VDI", "Wagon R", "Alto 800", "i20 Magna", "Innova"],
@@ -43,7 +43,7 @@ def sample_df():
 
 
 @pytest.fixture()
-def large_df():
+def large_df() -> None:
     """Larger dataset for edge case testing."""
     np.random.seed(42)
     n = 200

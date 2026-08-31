@@ -42,7 +42,7 @@ df["price_lakhs"] = df["Price"] / 1e5
 df["kms_10k"] = df["kms_driven"] / 1e4
 
 
-def save_plot(fig, filename):
+def save_plot(fig, filename) -> None:
     path = os.path.join(IMG_DIR, filename)
     fig.savefig(path, dpi=120, bbox_inches="tight")
     plt.close(fig)
