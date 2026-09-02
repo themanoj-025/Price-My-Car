@@ -36,6 +36,8 @@ minversion = "7.0"
 testpaths = ["tests"]
 
 markers = [
+    "unit: marks pure unit tests (deselect with '-m \"not unit\"')",
+    "integration: marks tests requiring external services (deselect with '-m \"not integration\"')",
     "slow: integration tests (database, HTTP, ML models) — excluded from default run; use pytest -m slow"
 ]
 

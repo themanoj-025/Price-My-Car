@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.unit
+
 """Tests for Price-My-Car chart_utils module.
 
 Tests Plotly chart configuration and helper functions.

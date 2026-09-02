@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.unit
+
 """Extended tests for helpers module — formatting, classification, prediction."""
 
 from unittest.mock import MagicMock
