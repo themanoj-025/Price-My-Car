@@ -18,6 +18,9 @@ from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.testclient import TestClient
 
+pytestmark = pytest.mark.integration
+
+
 pytestmark = pytest.mark.slow
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 

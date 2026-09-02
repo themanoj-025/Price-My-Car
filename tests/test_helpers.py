@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.unit
+
 """Tests for Price-My-Car: helpers and auth_db pure functions."""
 
 import numpy as np
