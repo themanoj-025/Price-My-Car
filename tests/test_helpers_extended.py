@@ -3,10 +3,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from app.helpers import (
-
 pytestmark = pytest.mark.unit
-
+from app.helpers import (
     ensemble_prediction,
     generate_data_quality_report,
     generate_natural_language_explanation,
