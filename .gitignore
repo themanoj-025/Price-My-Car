@@ -57,6 +57,9 @@ report_output/*.html
 !.vscode/settings.json
 .sixth/
 streamlit.log
+
+# Runtime logs (never commit)
+logs/*.log
 _*.py
 _*.txt
 
