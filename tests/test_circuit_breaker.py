@@ -96,4 +96,4 @@ class TestCircuitBreakerOpenError:
     def test_error_message(self) -> None:
         exc = CircuitBreakerOpenError("test breaker is OPEN")
         assert "test breaker is OPEN" in str(exc)
-        assert issubclass(exc, Exception)
+        assert isinstance(exc, Exception)
