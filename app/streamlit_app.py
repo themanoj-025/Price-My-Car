@@ -9,7 +9,6 @@ This file is the thin orchestrator — page logic lives in ``app/pages/``.
 
 import json
 import os
-import sys
 import uuid
 import warnings
 
@@ -17,10 +16,6 @@ import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
-
-# Ensure the repository root is on sys.path so the `app` package is
-# importable regardless of CWD or launch method (streamlit run app/streamlit_app.py).
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.auth_db import (
     AVATAR_COLORS,
