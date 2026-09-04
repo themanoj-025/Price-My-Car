@@ -73,10 +73,10 @@ sns.set_style("whitegrid")
 plt.rcParams['figure.figsize'] = (14, 6)
 plt.rcParams['font.size'] = 11
 
-print("All imports successful!")
-print(f"NumPy: {np.__version__}")
-print(f"Pandas: {pd.__version__}")
-print(f"XGBoost: {xgb.__version__}")
+logger.info("imports_successful")
+logger.info("numpy_version", version=np.__version__)
+logger.info("pandas_version", version=pd.__version__)
+logger.info("xgboost_version", version=xgb.__version__)
 """
     )
 )
@@ -105,14 +105,14 @@ y_train = np.load('ml_ready/y_train.npy')
 y_test = np.load('ml_ready/y_test.npy')
 feature_names = np.load('ml_ready/feature_names.npy', allow_pickle=True)
 
-print(f"X_train shape: {X_train.shape}")
-print(f"X_test shape:  {X_test.shape}")
-print(f"y_train shape: {y_train.shape}  (log1p-transformed)")
-print(f"y_test shape:  {y_test.shape}  (log1p-transformed)")
-print(f"Number of features: {len(feature_names)}")
+logger.info("x_train_shape", shape=str(X_train.shape))
+logger.info("x_test_shape", shape=str(X_test.shape))
+logger.info("y_train_shape", shape=str(y_train.shape))
+logger.info("y_test_shape", shape=str(y_test.shape))
+logger.info("feature_count", count=len(feature_names))
 print(f"\\nFirst 10 feature names: {feature_names[:10].tolist()}")
 print(f"\\ny_train range: {y_train.min():.4f} - {y_train.max():.4f}")
-print(f"Equivalent INR: Rs.{np.expm1(y_train.min()):,.0f} - Rs.{np.expm1(y_train.max()):,.0f}")
+logger.info("inr_range", min=round(float(np.expm1(y_train.min())), 0), max=round(float(np.expm1(y_train.max())), 0))
 """
     )
 )
@@ -228,18 +228,18 @@ display_df['CV R² Std'] = display_df['CV R² Std'].apply(lambda x: f'{x:.4f}')
 display_df['RMSE'] = display_df['RMSE'].apply(lambda x: f'Rs.{x:,.0f}')
 display_df['MAE'] = display_df['MAE'].apply(lambda x: f'Rs.{x:,.0f}')
 
-print("=== Model Performance Comparison (original INR scale) ===")
+logger.info("model_performance_comparison")
 print()
-print(display_df.to_string(index=True))
+logger.info("performance_table", table=display_df.to_string(index=True))
 
 # Highlight best performers
 print(f"\\n{'='*60}")
 best_test_r2 = results_df.loc[results_df['Test R²'].idxmax()]
 best_rmse = results_df.loc[results_df['RMSE'].idxmin()]
 best_mae = results_df.loc[results_df['MAE'].idxmin()]
-print(f"Best Test R²:  {best_test_r2['Model']} ({best_test_r2['Test R²']:.4f})")
-print(f"Lowest RMSE:   {best_rmse['Model']} (Rs.{best_rmse['RMSE']:,.0f})")
-print(f"Lowest MAE:    {best_mae['Model']} (Rs.{best_mae['MAE']:,.0f})")
+logger.info("best_test_r2", model=best_test_r2["Model"], r2=round(best_test_r2["Test R²"], 4))
+logger.info("lowest_rmse", model=best_rmse["Model"], rmse=round(best_rmse["RMSE"], 0))
+logger.info("lowest_mae", model=best_mae["Model"], mae=round(best_mae["MAE"], 0))
 """
     )
 )

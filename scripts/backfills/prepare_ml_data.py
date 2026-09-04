@@ -16,26 +16,26 @@ import warnings
 import joblib
 import numpy as np
 import pandas as pd
+import structlog
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 warnings.filterwarnings("ignore")
 
-print("=" * 60)
-print("CAR PRICE PREDICTION - ML DATA PREPARATION")
-print("=" * 60)
+logger = structlog.get_logger("prepare_ml_data")
+
+logger.info("car_price_prediction_data_preparation")
 
 # -- 1. Load Data ----------------------------------------------------------
 df = pd.read_csv("data/Cleaned_Car_data.csv", index_col=0)
-print(f"\n[1] Loaded dataset: {df.shape[0]} rows x {df.shape[1]} columns")
-print(f"    Columns: {df.columns.tolist()}")
+logger.info("dataset_loaded", rows=df.shape[0], cols=df.shape[1], columns=df.columns.tolist())
 
 # -- 2. Remove Duplicates --------------------------------------------------
 initial_count = len(df)
 df = df.drop_duplicates().reset_index(drop=True)
 dupes_removed = initial_count - len(df)
-print(f"\n[2] Removed {dupes_removed} duplicate rows ({len(df)} remaining)")
+logger.info("duplicates_removed", removed=dupes_removed, remaining=len(df))
 
 # -- 3. Feature Engineering ------------------------------------------------
 CURRENT_YEAR = 2025
@@ -50,32 +50,26 @@ df["fuel_type_simple"] = df["fuel_type"].replace(
 kms_upper = df["kms_driven"].quantile(0.99)
 kms_outliers = (df["kms_driven"] > kms_upper).sum()
 df["kms_driven"] = df["kms_driven"].clip(upper=kms_upper)
-print(f"\n[4] Capped {kms_outliers} kms_driven outliers at 99th percentile ({kms_upper:,.0f})")
+logger.info("outliers_capped", column="kms_driven", count=kms_outliers, upper=f"{kms_upper:,.0f}")
 
 # -- 5. Drop unnecessary columns ------------------------------------------
 df_ml = df.drop(columns=["name", "year", "fuel_type"])
 
 features = [c for c in df_ml.columns if c != "Price"]
-print(f"\n[5] Features after engineering: {features}")
+logger.info("features_engineered", features=features)
 
 # -- 6. Log-Transform Target (handle heavy right skew in Price) ---------------
 y_original = df_ml["Price"].copy()
 y_log = np.log1p(df_ml["Price"])  # log(1 + price) — handles zero values
 
-print("\n[6] Log-transformed Price:")
-print(f"    Original skewness: {y_original.skew():.2f}")
-print(f"    Log-transformed skewness: {y_log.skew():.2f}")
-print(f"    Original range: Rs.{y_original.min():,.0f} - Rs.{y_original.max():,.0f}")
-print(f"    Log range: {y_log.min():.4f} – {y_log.max():.4f}")
+logger.info("log_transformed_price", original_skew=round(y_original.skew(), 2), log_skew=round(y_log.skew(), 2), original_range=f"Rs.{y_original.min():,.0f} - Rs.{y_original.max():,.0f}", log_range=f"{y_log.min():.4f} - {y_log.max():.4f}")
 
 # -- 7. Train/Test Split --------------------------------------------------
 X = df_ml.drop(columns=["Price"])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y_log, test_size=0.2, random_state=42)
 
-print("\n[7] Train/test split:")
-print(f"    X_train: {X_train.shape}, y_train: {y_train.shape}")
-print(f"    X_test:  {X_test.shape}, y_test:  {y_test.shape}")
+logger.info("train_test_split", x_train_shape=str(X_train.shape), y_train_shape=str(y_train.shape), x_test_shape=str(X_test.shape), y_test_shape=str(y_test.shape))
 
 # -- 8. Preprocessing Pipeline --------------------------------------------
 categorical_features = ["company", "fuel_type_simple"]
@@ -100,10 +94,10 @@ cat_feature_names = preprocessor.named_transformers_["cat"].get_feature_names_ou
 )
 all_feature_names = numerical_features + list(cat_feature_names)
 
-print("\n[8] Preprocessing complete:")
-print(f"    X_train processed: {X_train_processed.shape}")
-print(f"    X_test processed:  {X_test_processed.shape}")
-print(f"    Feature count:     {len(all_feature_names)}")
+logger.info("preprocessing_complete")
+logger.info("x_train_processed", shape=str(X_train_processed.shape))
+logger.info("x_test_processed", shape=str(X_test_processed.shape))
+logger.info("feature_count", count=len(all_feature_names))
 
 # -- 9. Save Processed Data -----------------------------------------------
 os.makedirs("ml_ready", exist_ok=True)
@@ -129,50 +123,34 @@ joblib.dump(all_feature_names, "ml_ready/feature_names.pkl")
 y_original_train, y_original_test = train_test_split(y_original, test_size=0.2, random_state=42)
 np.save("ml_ready/y_train_original.npy", y_original_train.values)
 np.save("ml_ready/y_test_original.npy", y_original_test.values)
-print("    Also saved original (untransformed) Price to y_train_original.npy / y_test_original.npy")
+logger.info("saved_original_price")
 
-print("\n[9] Saved to 'ml_ready/' folder:")
-print(f"    |-- X_train.npy        ({X_train_processed.nbytes / 1e6:.1f} MB)")
-print("    |-- X_test.npy")
-print("    |-- y_train.npy        (log1p-transformed)")
-print("    |-- y_test.npy         (log1p-transformed)")
-print("    |-- y_train_original.npy (original Price for reference)")
-print("    |-- y_test_original.npy")
-print("    |-- feature_names.npy")
-print("    |-- train_data.csv")
-print("    |-- test_data.csv")
-print("    |-- preprocessor.pkl")
-print("    |-- feature_names.pkl")
+logger.info("files_saved", dir="ml_ready/", x_train_mb=round(X_train_processed.nbytes / 1e6, 1), files=["X_train.npy", "X_test.npy", "y_train.npy", "y_test.npy", "y_train_original.npy", "y_test_original.npy", "feature_names.npy", "train_data.csv", "test_data.csv"])
+logger.info("saved_preprocessor")
+logger.info("saved_feature_names")
 
 # -- 10. Summary -----------------------------------------------------------
-print(f"\n{'=' * 60}")
-print("SUMMARY")
-print(f"{'=' * 60}")
-print(f"  Original rows:      {initial_count}")
-print(f"  Duplicates removed: {dupes_removed}")
-print(f"  Final rows:         {len(df)}")
-print(f"  Features:           {len(all_feature_names)}")
-print(f"  Train samples:      {len(y_train)}")
-print(f"  Test samples:       {len(y_test)}")
-print("  Target:             Price (log1p-transformed regression)")
-print(f"  Original skewness:  {y_original.skew():.2f} -> log skewness: {y_log.skew():.2f}")
-print()
-print("  Predict with:       np.expm1(prediction) to get original INR price")
-print()
-print("  Ready for ML algorithms like:")
-print("    - Linear Regression / Ridge / Lasso")
-print("    - Random Forest / Gradient Boosting / XGBoost")
-print("    - Neural Networks")
-print(f"{'=' * 60}")
+logger.info("data_preparation_summary")
+logger.info("original_rows", count=initial_count)
+logger.info("duplicates_removed", count=dupes_removed)
+logger.info("final_rows", count=len(df))
+logger.info("features", count=len(all_feature_names))
+logger.info("train_samples", count=len(y_train))
+logger.info("test_samples", count=len(y_test))
+logger.info("target", description="Price log1p-transformed regression")
+logger.info("skewness", original=round(y_original.skew(), 2), log=round(y_log.skew(), 2))
+logger.info("predict_hint")
+logger.info("ml_algorithms_ready")
+logger.info("linear_models")
+logger.info("tree_models")
+logger.info("neural_networks")
 
 # -- 11. Sanity Check -----------------------------------------------------
-print("\n[11] Quick validation:")
-print(f"    X_train mean (should be ~0): {X_train_processed.mean(axis=0)[:5].round(3)}")
-print(f"    X_train std  (should be ~1): {X_train_processed.std(axis=0)[:5].round(3)}")
-print(f"    y_train (log) range: {y_train.min():.4f} - {y_train.max():.4f}")
-print(f"    y_train (log) mean:  {y_train.mean():.4f}")
-print(
-    f"    Inverse check: expm1({y_train.mean():.4f}) = Rs.{np.expm1(y_train.mean()):,.0f} (original price scale)"
-)
-print(f"    Missing values in processed data: {np.isnan(X_train_processed).sum()}")
-print("\nDone! ML-ready data successfully prepared.")
+logger.info("quick_validation")
+logger.info("x_train_mean", values=str(X_train_processed.mean(axis=0)[:5].round(3)))
+logger.info("x_train_std", values=str(X_train_processed.std(axis=0)[:5].round(3)))
+logger.info("y_train_log_range", min=round(y_train.min(), 4), max=round(y_train.max(), 4))
+logger.info("y_train_log_mean", mean=round(y_train.mean(), 4))
+logger.info("inverse_check", expm1_mean=round(float(np.expm1(y_train.mean())), 0))
+logger.info("missing_values", count=int(np.isnan(X_train_processed).sum()))
+logger.info("data_preparation_complete")

@@ -33,7 +33,7 @@ df_original = df.copy()
 df = df.drop_duplicates().reset_index(drop=True)
 CURRENT_YEAR = 2025
 
-print(f"[1] Data loaded: {df_original.shape[0]} rows ({df.shape[0]} after dedup)")
+logger.info("data_loaded", rows=df_original.shape[0], after_dedup=df.shape[0])
 
 # Feature engineering
 df["car_age"] = CURRENT_YEAR - df["year"]
@@ -216,7 +216,7 @@ ax.set_title("Top 10 Most Expensive Cars", fontsize=14, pad=20)
 fig.tight_layout()
 save_plot(fig, "top10_expensive.png")
 
-print("[2] All visualizations generated.")
+logger.info("visualizations_generated")
 
 # === 3. Compute Statistics ===
 stats = {}
@@ -285,7 +285,7 @@ stats["missing_values"] = int(df.isnull().sum().sum())
 stats["n_train"] = int(stats["total_rows_clean"] * 0.8)
 stats["n_test"] = stats["total_rows_clean"] - stats["n_train"]
 
-print("[3] Statistics computed.")
+logger.info("statistics_computed")
 
 
 # === 4. Generate HTML Report ===
@@ -675,14 +675,13 @@ report_path = os.path.join(REPORT_DIR, "car_price_eda_report.html")
 with open(report_path, "w", encoding="utf-8") as f:
     f.write(report_html)
 
-print(f"\n[4] HTML report saved to: {report_path}")
-print(f"    Visualizations in: {IMG_DIR}")
+logger.info("html_report_saved", path=str(report_path))
+logger.info("visualizations_dir", dir=str(IMG_DIR))
 
 # List generated images
-print("\n[5] Generated images:")
 for fname in sorted(os.listdir(IMG_DIR)):
     fpath = os.path.join(IMG_DIR, fname)
     size = os.path.getsize(fpath) / 1024
-    print(f"    |-- {fname} ({size:.0f} KB)")
+    logger.info("generated_image", file=fname, size_kb=round(size, 0))
 
-print("\nReport generation complete!")
+logger.info("report_generation_complete")
