@@ -65,6 +65,26 @@ class TestHealthEndpoint:
         response = client.get("/health")
         assert response.status_code == 200
 
+    # ── Readiness (canonical shared module) ────────────────────────────────
+
+    @patch("app.api_server._load_cars_df")
+    def test_ready_ok_when_dataset_available(self, mock_load, client) -> None:
+        mock_load.return_value = pd.DataFrame({"Brand": ["A"], "Price": [100]})
+
+        response = client.get("/health/ready")
+        assert response.status_code == 200
+        assert response.json()["status"] == "ready"
+
+    @patch("app.api_server._load_cars_df")
+    def test_ready_503_when_dataset_missing(self, mock_load, client) -> None:
+        mock_load.side_effect = HTTPException(status_code=503, detail="Dataset not found")
+
+        response = client.get("/health/ready")
+        assert response.status_code == 503
+        data = response.json()
+        assert data["status"] == "not_ready"
+        assert data["checks"][0]["status"] == "down"
+
 
 # ── Car Stats Endpoint ────────────────────────────────────────────────────
 

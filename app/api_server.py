@@ -32,6 +32,7 @@ from slowapi.util import get_remote_address
 # Ensure project root is on path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from app.health import create_health_router
 from app.helpers import fmt_inr, get_price_tier
 
 try:
@@ -274,6 +275,12 @@ async def predict_price(request: Request) -> dict[str, object]:
 
 
 app.include_router(v1_router)
+
+# Canonical readiness probes (app/health.py is synced from
+# shared/aegis_common/health.py):
+#   GET /health        — liveness (the bespoke /health above wins on path)
+#   GET /health/ready  — readiness, 503 while the car dataset is unavailable
+app.include_router(create_health_router(checks={"dataset": lambda: _load_cars_df()}))
 
 
 @app.get("/metrics", tags=["health"])
