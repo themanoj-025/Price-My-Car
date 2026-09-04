@@ -13,6 +13,7 @@ import warnings
 
 import joblib
 import numpy as np
+import structlog
 import xgboost as xgb
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -21,9 +22,9 @@ from sklearn.model_selection import GridSearchCV
 warnings.filterwarnings("ignore")
 np.random.seed(42)
 
-print("=" * 70)
-print("HYPERPARAMETER TUNING - GridSearchCV")
-print("=" * 70)
+logger = structlog.get_logger("tune_hyperparameters")
+
+logger.info("hyperparameter_tuning_started")
 
 # -- Load data (log-transformed) -------------------------------------------
 X_train = np.load("ml_ready/X_train.npy")
@@ -31,10 +32,7 @@ X_test = np.load("ml_ready/X_test.npy")
 y_train = np.load("ml_ready/y_train.npy")
 y_test = np.load("ml_ready/y_test.npy")
 
-print("\nLoaded log-transformed data:")
-print(f"  X_train: {X_train.shape}, y_train: {y_train.shape}")
-print(f"  X_test:  {X_test.shape}, y_test:  {y_test.shape}")
-print(f"  y_train range: {y_train.min():.4f} - {y_train.max():.4f}")
+logger.info("data_loaded", x_train_shape=str(X_train.shape), y_train_shape=str(y_train.shape), x_test_shape=str(X_test.shape), y_test_shape=str(y_test.shape), y_min=round(y_train.min(), 4), y_max=round(y_train.max(), 4))
 
 # =========================================================================
 # Define model-specific parameter grids
@@ -81,14 +79,10 @@ best_models = {}
 os.makedirs("ml_ready/models", exist_ok=True)
 
 for model_name, config in models_to_tune.items():
-    print(f"\n{'=' * 60}")
-    print(f"Tuning: {model_name}")
-    print(f"{'=' * 60}")
-
     n_combos = 1
     for v in config["param_grid"].values():
         n_combos *= len(v)
-    print(f"  Grid: {n_combos} combinations x 3-fold CV = {n_combos * 3} fits")
+    logger.info("tuning_model", model=model_name, combinations=n_combos, fits=n_combos * 3)
 
     start_time = time.time()
 
@@ -126,25 +120,15 @@ for model_name, config in models_to_tune.items():
     train_r2_log = r2_score(y_train, y_pred_train)
     cv_score = gs.best_score_  # This is CV mean R² in log-space
 
-    print(f"\n  [OK] Tuned in {elapsed:.1f}s")
-    print("\n  Best Parameters:")
-    for param, value in gs.best_params_.items():
-        print(f"    {param}: {value}")
-    print("\n  Log-space performance:")
-    print(f"    CV R² (log):         {cv_score:.4f}")
-    print(f"    Train R² (log):      {train_r2_log:.4f}")
-    print(f"    Test R² (log):       {test_r2_log:.4f}")
-    print("\n  Original-scale performance:")
-    print(f"    Train R² (original): {train_r2:.4f}")
-    print(f"    Test R² (original):  {test_r2:.4f}")
-    print(f"    RMSE (original):     INR {rmse:,.0f}")
-    print(f"    MAE (original):      INR {mae:,.0f}")
+    logger.info("tuning_done", model=model_name, elapsed_s=round(elapsed, 1), best_params=gs.best_params_)
+    logger.info("log_space_performance", cv_r2=round(cv_score, 4), train_r2=round(train_r2_log, 4), test_r2=round(test_r2_log, 4))
+    logger.info("original_scale_performance", train_r2=round(train_r2, 4), test_r2=round(test_r2, 4), rmse=round(rmse, 0), mae=round(mae, 0))
 
     # Save best model
     model_path = f"ml_ready/models/{model_name.lower().replace(' ', '_')}.pkl"
     joblib.dump(gs.best_estimator_, model_path)
     best_models[model_name] = gs.best_estimator_
-    print(f"\n  Saved: {model_path}")
+    logger.info("model_saved", model=model_name, path=model_path)
 
     tuning_results.append(
         {
@@ -175,24 +159,10 @@ for model_name, config in models_to_tune.items():
 # =========================================================================
 # Summary
 # =========================================================================
-print(f"\n{'=' * 70}")
-print("TUNING SUMMARY")
-print(f"{'=' * 70}")
-print(f"{'Model':<22} {'Test R² (orig)':<16} {'RMSE':<14} {'MAE':<14} {'Time (s)':<10}")
-print("-" * 76)
-
 for r in sorted(tuning_results, key=lambda x: x["Test R² (orig)"], reverse=True):
-    print(
-        f"{r['Model']:<22} {r['Test R² (orig)']:<16.4f} INR {r['RMSE (orig)']:<10,.0f} INR {r['MAE (orig)']:<10,.0f} {r['Tuning Time (s)']:<10.1f}"
-    )
+    logger.info("tuning_summary", model=r['Model'], test_r2_orig=round(r['Test R² (orig)'], 4), rmse=round(r['RMSE (orig)'], 0), mae=round(r['MAE (orig)'], 0), elapsed_s=r['Tuning Time (s)'])
 
-print(f"\n{'=' * 70}")
-print("BEST PARAMETERS (for use in training)")
-print(f"{'=' * 70}")
 for r in tuning_results:
-    print(f"\n{r['Model']}:")
-    for param, value in r["Best Params"].items():
-        print(f"  {param}: {value}")
+    logger.info("best_params", model=r['Model'], params=r['Best Params'])
 
-print("\nAll tuned models saved to ml_ready/models/")
-print("Done!")
+logger.info("all_tuned_models_saved", dir="ml_ready/models/")
