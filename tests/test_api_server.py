@@ -22,7 +22,6 @@ pytestmark = pytest.mark.integration
 
 
 pytestmark = pytest.mark.slow
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.api_server import app, verify_api_key
 
