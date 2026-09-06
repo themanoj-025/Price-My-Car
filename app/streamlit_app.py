@@ -431,7 +431,10 @@ try:
     gs_results = load_gs_results()
     if not models:
         demo_mode = True
-except (ValueError, KeyError) as e:
+except (OSError, ValueError, KeyError) as e:
+    # OSError covers FileNotFoundError (missing CSV / .pkl / models dir) and
+    # permission errors — without it the demo-mode fallback below can never
+    # trigger on the most common failure: artifacts simply not being present.
     st.error(f"⚠️ Could not load ML artifacts: {e}. Running in demo mode with synthetic data.")
     demo_mode = True
 
