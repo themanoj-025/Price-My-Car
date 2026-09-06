@@ -25,7 +25,7 @@ def page_dashboard_home() -> None:
     )
     st.markdown('<div class="gradient-divider"></div>', unsafe_allow_html=True)
 
-    # KPI metric cards with animated counters (JS via st.components.v1.html)
+    # KPI metric cards
     k1, k2, k3, k4, k5 = st.columns(5)
     kpi_data = [
         ("Total Records", f"{len(df):,}", "Raw dataset size"),
@@ -41,25 +41,6 @@ def page_dashboard_home() -> None:
         else:
             label, val, help_text = kpi
             col.metric(label, val, help=help_text)
-
-    # Animated counter JS for KPI metrics
-    kpi_html = "<script>"
-    kpi_html += 'document.querySelectorAll("[data-testid=stMetricValue]").forEach(el => {'
-    kpi_html += '  const target = el.textContent.replace(/[^0-9.,KLCr]/g, "").trim();'
-    kpi_html += "  if (!target) return;"
-    kpi_html += '  const numeric = parseFloat(target.replace(/,/g, "")) || 0;'
-    kpi_html += '  const suffix = target.replace(/[0-9.,]/g, "").trim();'
-    kpi_html += "  let current = 0;"
-    kpi_html += "  const step = Math.max(1, Math.floor(numeric / 40));"
-    kpi_html += "  const interval = setInterval(() => {"
-    kpi_html += "    current += step;"
-    kpi_html += "    if (current >= numeric) { current = numeric; clearInterval(interval); }"
-    kpi_html += '    const numStr = current.toLocaleString("en-IN");'
-    kpi_html += "    el.textContent = suffix ? `₹${numStr}${suffix}` : `$${numStr}`;"
-    kpi_html += "  }, 30);"
-    kpi_html += "});"
-    kpi_html += "</script>"
-    st.components.v1.html(kpi_html, height=0)
 
     # 3 insight cards
     c1, c2, c3 = st.columns(3)
