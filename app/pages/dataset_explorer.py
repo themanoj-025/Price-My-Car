@@ -15,7 +15,17 @@ from app.helpers import get_filtered_data as _get_filtered_data_raw
 @st.cache_data(ttl=3600)
 def get_filtered_data(df, companies, fuels, year_r, price_r, kms_r) -> pd.DataFrame:
     return _get_filtered_data_raw(df, companies, fuels, year_r, price_r, kms_r)
+# Shared state injected at runtime by streamlit_app.py via setattr
+# (module-level bindings exist so the names resolve statically; values are
+# overwritten before any page render).
+from typing import Any
+
 from app.chart_utils import show_chart
+
+df: Any = None
+companies: Any = None
+fuel_types: Any = None
+
 
 
 def page_dataset_explorer() -> None:

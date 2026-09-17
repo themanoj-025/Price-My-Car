@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+# Shared state injected at runtime by streamlit_app.py via setattr
+# (module-level bindings exist so the names resolve statically; values are
+# overwritten before any page render).
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -15,6 +20,14 @@ from app.helpers import (
     get_fuel_simple,
     make_prediction,
 )
+
+df: Any = None
+companies: Any = None
+models: Any = None
+fuel_types: Any = None
+CURRENT_YEAR: Any = None
+preprocessor: Any = None
+
 
 
 def page_market_intelligence() -> None:
