@@ -10,6 +10,10 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import os
+
+import structlog
+
+logger = structlog.get_logger("generate_report")
 import warnings
 from datetime import datetime
 

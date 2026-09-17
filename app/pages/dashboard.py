@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+# Shared state injected at runtime by streamlit_app.py via setattr
+# (module-level bindings exist so the names resolve statically; values are
+# overwritten before any page render).
+from typing import Any
+
 import pandas as pd
 import streamlit as st
 
@@ -11,6 +16,14 @@ from app.helpers import (
     get_price_tier,
     make_prediction,
 )
+
+companies: Any = None
+models: Any = None
+df: Any = None
+fuel_types: Any = None
+CURRENT_YEAR: Any = None
+preprocessor: Any = None
+
 
 
 def page_dashboard_home() -> None:
