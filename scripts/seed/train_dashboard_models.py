@@ -25,7 +25,8 @@ y_test = np.load("ml_ready/y_test.npy")
 
 logger.info("training_started", y_min=round(y_train.min(), 4), y_max=round(y_train.max(), 4))
 
-models = {}logger.info("training_gradient_boosting", lr=0.05, depth=5, n_estimators=200, subsample=0.8)
+models = {}
+logger.info("training_gradient_boosting", lr=0.05, depth=5, n_estimators=200, subsample=0.8)
 t0 = time.time()
 models["Gradient Boosting"] = GradientBoostingRegressor(
     n_estimators=200,
@@ -35,7 +36,8 @@ models["Gradient Boosting"] = GradientBoostingRegressor(
     subsample=0.8,
     random_state=42,
 ).fit(X_train, y_train)
-logger.info("gradient_boosting_done", elapsed_s=round(time.time() - t0, 1))logger.info("training_xgboost", lr=0.1, depth=3, n_estimators=300, subsample=0.8, colsample=0.8)
+logger.info("gradient_boosting_done", elapsed_s=round(time.time() - t0, 1))
+logger.info("training_xgboost", lr=0.1, depth=3, n_estimators=300, subsample=0.8, colsample=0.8)
 t0 = time.time()
 models["XGBoost"] = xgb.XGBRegressor(
     n_estimators=300,
@@ -46,7 +48,8 @@ models["XGBoost"] = xgb.XGBRegressor(
     random_state=42,
     verbosity=0,
 ).fit(X_train, y_train)
-logger.info("xgboost_done", elapsed_s=round(time.time() - t0, 1))logger.info("training_random_forest", depth=15, n_estimators=300, min_samples_leaf=2)
+logger.info("xgboost_done", elapsed_s=round(time.time() - t0, 1))
+logger.info("training_random_forest", depth=15, n_estimators=300, min_samples_leaf=2)
 t0 = time.time()
 models["Random Forest"] = RandomForestRegressor(
     n_estimators=300,
@@ -69,7 +72,9 @@ for name, model in models.items():
     r2 = r2_score(y_test_orig, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test_orig, y_pred))
     mae = mean_absolute_error(y_test_orig, y_pred)
-    logger.info("model_performance", model=name, r2=round(r2, 4), rmse=round(rmse, 0), mae=round(mae, 0))
+    logger.info(
+        "model_performance", model=name, r2=round(r2, 4), rmse=round(rmse, 0), mae=round(mae, 0)
+    )
 
 os.makedirs("ml_ready/models", exist_ok=True)
 for name, model in models.items():
