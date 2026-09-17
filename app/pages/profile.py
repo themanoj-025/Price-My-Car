@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from app.auth_db import (
+    delete_user,
     hash_password,
     load_users_db,
     save_users_db,

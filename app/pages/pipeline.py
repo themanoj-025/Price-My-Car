@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+# Shared state injected at runtime by streamlit_app.py via setattr
+# (module-level bindings exist so the names resolve statically; values are
+# overwritten before any page render).
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -12,6 +17,11 @@ from app.helpers import (
     fmt_inr,
     generate_data_quality_report,
 )
+
+df: Any = None
+CURRENT_YEAR: Any = None
+companies: Any = None
+
 
 
 def page_pipeline_inspector() -> None:

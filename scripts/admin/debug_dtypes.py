@@ -1,4 +1,7 @@
 import pandas as pd
+import structlog
+
+logger = structlog.get_logger("debug_dtypes")
 
 df = pd.read_csv("data/Cleaned_Car_data.csv", index_col=0)
 logger.info("dtypes")
