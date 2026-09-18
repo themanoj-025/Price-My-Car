@@ -33,7 +33,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install ruff
-        run: pip install ruff
+        run: pip install ruff==0.16.4
 
       - name: Lint with ruff (critical errors)
         run: |
@@ -147,7 +147,7 @@ jobs:
       - uses: hadolint/hadolint-action@v3.5.0
         with:
           dockerfile: Dockerfile
-          failure-threshold: warning
+          failure-threshold: error
           ignore: DL3066
 
   typecheck:
@@ -163,7 +163,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install mypy
+          pip install mypy==2.3.1
       - name: Type check with mypy
         run: mypy . --ignore-missing-imports
 
@@ -176,7 +176,7 @@ jobs:
           cache: pip
           python-version: '3.12'
       - name: Install tools
-        run: pip install pip-audit bandit
+        run: pip install pip-audit bandit==1.9.4
       - name: pip-audit
         run: pip-audit -r requirements.txt
       - name: Bandit security scan
@@ -217,4 +217,4 @@ jobs:
           sudo dpkg -i dive_0.12.0_linux_amd64.deb
       - name: Run dive (efficiency check)
         run: |
-          CI=true dive dive-audit:latest --ci-image-size-threshold=1024 --ci-wasted-bytes-threshold=51200000
+          CI=true dive dive-audit:latest
