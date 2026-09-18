@@ -1,0 +1,8 @@
+# dive CI thresholds (used when CI=true; replaces removed --ci-* CLI flags in dive v0.12)
+rules:
+  # If the efficiency is measured below X%, mark as failed (0-1).
+  lowestEfficiency: 0.9
+  # If the amount of wasted space is at least X, mark as failed.
+  highestWastedBytes: 50MB
+  # If wasted space makes up X% or more of the image, mark as failed.
+  highestUserWastedPercent: 0.5
