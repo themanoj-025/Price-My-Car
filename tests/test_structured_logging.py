@@ -232,9 +232,7 @@ class TestSetupLogger:
     def test_logger_has_file_handler(self) -> None:
         logger, tmpdir = self._make_logger("test-file-handler")
         try:
-            file_handlers = [
-                h for h in logger.handlers if isinstance(h, logging.handlers.RotatingFileHandler)
-            ]
+            file_handlers = [h for h in logger.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
             assert len(file_handlers) == 1
         finally:
             self._cleanup(logger, tmpdir)
@@ -245,8 +243,7 @@ class TestSetupLogger:
             stream_handlers = [
                 h
                 for h in logger.handlers
-                if isinstance(h, logging.StreamHandler)
-                and not isinstance(h, logging.handlers.RotatingFileHandler)
+                if isinstance(h, logging.StreamHandler) and not isinstance(h, logging.handlers.RotatingFileHandler)
             ]
             assert len(stream_handlers) == 1
         finally:

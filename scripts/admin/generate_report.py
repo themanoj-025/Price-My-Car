@@ -104,18 +104,14 @@ ax.set_yticks(range(len(top_companies)))
 ax.set_yticklabels(top_companies.index)
 ax.set_xlabel("Average Price (in lakhs)")
 ax.set_title("Top 15 Car Companies by Average Price")
-for i, (v, c) in enumerate(
-    zip(top_companies["avg_price"] / 1e5, top_companies["count"], strict=False)
-):
+for i, (v, c) in enumerate(zip(top_companies["avg_price"] / 1e5, top_companies["count"], strict=False)):
     ax.text(v + 0.5, i, f"n={c}", va="center", fontsize=9)
 fig.tight_layout()
 save_plot(fig, "top_companies_price.png")
 
 # === 2d. Price vs Car Age ===
 fig, ax = plt.subplots(figsize=(12, 6))
-scatter = ax.scatter(
-    df["car_age"], df["price_lakhs"], c=df["kms_10k"], alpha=0.4, s=15, cmap="viridis"
-)
+scatter = ax.scatter(df["car_age"], df["price_lakhs"], c=df["kms_10k"], alpha=0.4, s=15, cmap="viridis")
 ax.set_xlabel("Car Age (years)")
 ax.set_ylabel("Price (in lakhs)")
 ax.set_title("Price vs Car Age (colored by KMs driven)")
@@ -462,9 +458,7 @@ html_parts.append(
 """
 )
 for pct in [1, 5, 10, 25, 50, 75, 90, 95, 99]:
-    html_parts.append(
-        f"<tr><td>{pct}th</td><td>{fmt_price(stats['price_percentiles'][str(pct)])}</td></tr>\n"
-    )
+    html_parts.append(f"<tr><td>{pct}th</td><td>{fmt_price(stats['price_percentiles'][str(pct)])}</td></tr>\n")
 html_parts.append(
     f"""
             </table>
@@ -492,9 +486,7 @@ for fuel in ["Diesel", "Petrol", "CNG", "LPG", "Electric"]:
     count = stats["fuel_counts"].get(fuel, 0)
     pct = count / stats["total_rows_clean"] * 100
     avg_p = stats["avg_price_by_fuel"].get(fuel, 0)
-    html_parts.append(
-        f"<tr><td>{fuel}</td><td>{count:,}</td><td>{pct:.1f}%</td><td>{fmt_price(avg_p)}</td></tr>\n"
-    )
+    html_parts.append(f"<tr><td>{fuel}</td><td>{count:,}</td><td>{pct:.1f}%</td><td>{fmt_price(avg_p)}</td></tr>\n")
 html_parts.append(
     f"""
             </table>
@@ -519,9 +511,7 @@ html_parts.append(
 )
 for i, (company, count) in enumerate(stats["top10_companies"].items(), 1):
     pct = count / stats["total_rows_clean"] * 100
-    html_parts.append(
-        f"<tr><td>{i}</td><td>{company}</td><td>{count:,}</td><td>{pct:.1f}%</td></tr>\n"
-    )
+    html_parts.append(f"<tr><td>{i}</td><td>{company}</td><td>{count:,}</td><td>{pct:.1f}%</td></tr>\n")
 html_parts.append(
     f"""
             </table>

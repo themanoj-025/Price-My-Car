@@ -322,11 +322,7 @@ def render_sidebar() -> None:
     user = st.session_state.get("user", {})
     first_name = user.get("full_name", "User").split()[0] if user.get("full_name") else "User"
     avatar_color = user.get("avatar_color", "#e85d04")
-    initials = (
-        "".join(w[0].upper() for w in user.get("full_name", "U").split()[:2])
-        if user.get("full_name")
-        else "U"
-    )
+    initials = "".join(w[0].upper() for w in user.get("full_name", "U").split()[:2]) if user.get("full_name") else "U"
     role = user.get("role", "user")
     login_count = user.get("login_count", 1)
 
@@ -570,9 +566,7 @@ track_page_visit(
 render_sidebar()
 
 if demo_mode:
-    st.warning(
-        "⚠️ **Demo Mode** — ML model files not found. Using synthetic data and heuristic predictions."
-    )
+    st.warning("⚠️ **Demo Mode** — ML model files not found. Using synthetic data and heuristic predictions.")
 
 page_map = {
     "Dashboard": _dash_mod.page_dashboard_home,

@@ -72,9 +72,7 @@ for name, model in models.items():
     r2 = r2_score(y_test_orig, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test_orig, y_pred))
     mae = mean_absolute_error(y_test_orig, y_pred)
-    logger.info(
-        "model_performance", model=name, r2=round(r2, 4), rmse=round(rmse, 0), mae=round(mae, 0)
-    )
+    logger.info("model_performance", model=name, r2=round(r2, 4), rmse=round(rmse, 0), mae=round(mae, 0))
 
 os.makedirs("ml_ready/models", exist_ok=True)
 for name, model in models.items():

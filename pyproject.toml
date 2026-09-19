@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "price-my-car"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [tool.setuptools.packages.find]
 include = ["app*"]
@@ -55,7 +55,11 @@ markers = [
 ]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
+# app/health.py was reported as both "health" and "app.health" when pre-commit
+# passed the file directly; this makes directly-passed files resolve through
+# the package structure like crawled ones do.
+explicit_package_bases = true
 ignore_missing_imports = true
 warn_return_any = true
 warn_unused_configs = true

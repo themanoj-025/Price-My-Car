@@ -22,11 +22,7 @@ def render_profile_page() -> None:
     """User profile page with 6 tabs."""
     user = st.session_state.get("user", {})
     uid = user.get("user_id", "")
-    initials = (
-        "".join(w[0].upper() for w in user.get("full_name", "U").split()[:2])
-        if user.get("full_name")
-        else "U"
-    )
+    initials = "".join(w[0].upper() for w in user.get("full_name", "U").split()[:2]) if user.get("full_name") else "U"
     avatar_color = user.get("avatar_color", "#e85d04")
     role = user.get("role", "user")
     created = user.get("created_at", "")[:10]
@@ -80,11 +76,7 @@ def render_profile_page() -> None:
                     "#ff6b6b",
                 ]
                 for c in avatar_colors:
-                    selected = (
-                        "border:3px solid white"
-                        if c == avatar_color
-                        else "border:2px solid transparent"
-                    )
+                    selected = "border:3px solid white" if c == avatar_color else "border:2px solid transparent"
                     colors_html += f'<div style="width:30px;height:30px;border-radius:50%;background:{c};{selected};cursor:pointer" title="{c}"></div>'
                 colors_html += "</div>"
                 st.markdown(colors_html, unsafe_allow_html=True)
@@ -200,9 +192,7 @@ def render_profile_page() -> None:
         with tabs[4]:
             if saved_comps:
                 for comp in saved_comps:
-                    with st.expander(
-                        f"📋 {comp.get('name', 'Comparison')} ({comp.get('created_at', '')[:10]})"
-                    ):
+                    with st.expander(f"📋 {comp.get('name', 'Comparison')} ({comp.get('created_at', '')[:10]})"):
                         st.json(comp)
             else:
                 st.info("No saved comparisons yet.")

@@ -436,9 +436,7 @@ class TestAuthFlow:
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "my-secret"}):
             c = TestClient(app, raise_server_exceptions=False)
             with patch("app.api_server._load_cars_df") as mock_load:
-                mock_load.return_value = pd.DataFrame(
-                    {"Brand": ["A"], "Price": [100000], "Fuel_Type": ["Petrol"]}
-                )
+                mock_load.return_value = pd.DataFrame({"Brand": ["A"], "Price": [100000], "Fuel_Type": ["Petrol"]})
                 response = c.get(
                     "/api/v1/cars/stats",
                     headers={"Authorization": "Bearer my-secret"},

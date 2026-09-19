@@ -231,9 +231,7 @@ def shap_lite_approximation(
 # =========================================================================
 # Reporting helpers
 # =========================================================================
-def generate_data_quality_report(
-    df: pd.DataFrame, df_original: pd.DataFrame
-) -> list[tuple[str, str]]:
+def generate_data_quality_report(df: pd.DataFrame, df_original: pd.DataFrame) -> list[tuple[str, str]]:
     """Auto-generate mini data quality report items."""
     dupes = len(df_original) - len(df)
     nulls = int(df.isnull().sum().sum())

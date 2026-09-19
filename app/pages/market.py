@@ -79,9 +79,7 @@ def page_market_intelligence() -> None:
 
     with c2:
         # Market heatmap
-        heatmap_data = df.pivot_table(
-            values="Price", index="company", columns="year", aggfunc="median"
-        )
+        heatmap_data = df.pivot_table(values="Price", index="company", columns="year", aggfunc="median")
         heatmap_data = heatmap_data.loc[heatmap_data.count(axis=1) > 5, :]
         heatmap_data = heatmap_data.iloc[:15, :]
         fig2 = go.Figure(
@@ -101,9 +99,7 @@ def page_market_intelligence() -> None:
     st.markdown("### 💰 Depreciation Calculator")
     dc1, dc2, dc3 = st.columns(3)
     cars_for_dep = []
-    for ci, (col, default_comp) in enumerate(
-        zip([dc1, dc2, dc3], ["Maruti", "Hyundai", "BMW"], strict=False)
-    ):
+    for ci, (col, default_comp) in enumerate(zip([dc1, dc2, dc3], ["Maruti", "Hyundai", "BMW"], strict=False)):
         with col:
             dc_comp = st.selectbox(
                 f"Car {ci + 1} Brand",
@@ -112,9 +108,7 @@ def page_market_intelligence() -> None:
                 index=companies.index(default_comp) if default_comp in companies else 0,
             )
             dc_year = st.slider(f"Car {ci + 1} Year", 2000, 2024, 2018, key=f"dc_year_{ci}")
-            dc_kms = st.number_input(
-                f"Car {ci + 1} KMs", 0, 200000, 50000, key=f"dc_kms_{ci}", step=10000
-            )
+            dc_kms = st.number_input(f"Car {ci + 1} KMs", 0, 200000, 50000, key=f"dc_kms_{ci}", step=10000)
             dc_fuel = st.selectbox(f"Car {ci + 1} Fuel", fuel_types, key=f"dc_fuel_{ci}", index=0)
             cars_for_dep.append({"comp": dc_comp, "year": dc_year, "kms": dc_kms, "fuel": dc_fuel})
     if st.button("Compare Depreciation", key="dep_btn", use_container_width=True):
@@ -186,11 +180,7 @@ def page_market_intelligence() -> None:
 
     # Brand tier positioning
     st.markdown("### Brand Tier Positioning")
-    brand_stats2 = (
-        df.groupby("company")
-        .agg(avg_price=("Price", "mean"), count=("Price", "count"))
-        .reset_index()
-    )
+    brand_stats2 = df.groupby("company").agg(avg_price=("Price", "mean"), count=("Price", "count")).reset_index()
     brand_stats2["tier"] = brand_stats2["avg_price"].apply(get_company_tier)
     fig3 = go.Figure()
     for tier, color in TIER_COLORS.items():
@@ -226,9 +216,7 @@ def page_market_intelligence() -> None:
     with pa3:
         pa_year = st.number_input("Year", 2000, 2024, 2018, key="pa_year")
     with pa4:
-        pa_price = st.number_input(
-            "Asking Price (₹)", 10000, 5000000, 500000, step=50000, key="pa_price"
-        )
+        pa_price = st.number_input("Asking Price (₹)", 10000, 5000000, 500000, step=50000, key="pa_price")
     if st.button("Check Deal", key="pa_btn", use_container_width=True):
         inp = pd.DataFrame(
             [
