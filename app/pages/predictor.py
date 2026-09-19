@@ -53,9 +53,7 @@ def page_price_predictor() -> None:
 
     for car_idx in range(num_cars):
         suffix = f"_{car_idx}" if ab_mode else ""
-        label = (
-            f"### {'🚗 Car A' if car_idx == 0 else '🚙 Car B'}" if ab_mode else "### Car Details"
-        )
+        label = f"### {'🚗 Car A' if car_idx == 0 else '🚙 Car B'}" if ab_mode else "### Car Details"
 
         with st.container():
             st.markdown(label)
@@ -67,9 +65,7 @@ def page_price_predictor() -> None:
                     companies,
                     key=f"comp{suffix}",
                     index=(
-                        companies.index(
-                            st.session_state.last_pred_inputs.get(f"comp{suffix}", "Maruti")
-                        )
+                        companies.index(st.session_state.last_pred_inputs.get(f"comp{suffix}", "Maruti"))
                         if st.session_state.last_pred_inputs.get(f"comp{suffix}") in companies
                         else 0
                     ),
@@ -92,9 +88,7 @@ def page_price_predictor() -> None:
                     fuel_types,
                     key=f"fuel{suffix}",
                     index=(
-                        fuel_types.index(
-                            st.session_state.last_pred_inputs.get(f"fuel{suffix}", fuel_types[0])
-                        )
+                        fuel_types.index(st.session_state.last_pred_inputs.get(f"fuel{suffix}", fuel_types[0]))
                         if st.session_state.last_pred_inputs.get(f"fuel{suffix}") in fuel_types
                         else 0
                     ),
@@ -115,9 +109,7 @@ def page_price_predictor() -> None:
                     key=f"model{suffix}",
                     index=(
                         list(models.keys()).index(
-                            st.session_state.last_pred_inputs.get(
-                                f"model{suffix}", next(iter(models.keys()))
-                            )
+                            st.session_state.last_pred_inputs.get(f"model{suffix}", next(iter(models.keys())))
                         )
                         if st.session_state.last_pred_inputs.get(f"model{suffix}") in models
                         else 0
@@ -137,9 +129,7 @@ def page_price_predictor() -> None:
             car_age = CURRENT_YEAR - year
             warnings_list = []
             if kms < 1000 and car_age > 10:
-                warnings_list.append(
-                    "⚠️ Suspiciously low mileage for an older car — verify KMs driven"
-                )
+                warnings_list.append("⚠️ Suspiciously low mileage for an older car — verify KMs driven")
             if kms > 50000 and car_age < 3:
                 warnings_list.append("⚠️ High mileage for a relatively new car — verify")
             if fuel == "Electric" and year < 2015:
@@ -161,9 +151,7 @@ def page_price_predictor() -> None:
             year = st.session_state.last_pred_inputs.get(f"year{suffix}", 2018)
             fuel = st.session_state.last_pred_inputs.get(f"fuel{suffix}", fuel_types[0])
             kms = st.session_state.last_pred_inputs.get(f"kms{suffix}", 50000)
-            model_choice = st.session_state.last_pred_inputs.get(
-                f"model{suffix}", next(iter(models.keys()))
-            )
+            model_choice = st.session_state.last_pred_inputs.get(f"model{suffix}", next(iter(models.keys())))
             compare_all = st.session_state.get(f"all{suffix}", False)
 
             car_age = CURRENT_YEAR - year
@@ -180,9 +168,7 @@ def page_price_predictor() -> None:
             )
 
             header = (
-                f"### {'🚗 Car A' if car_idx == 0 else '🚙 Car B'} Result"
-                if ab_mode
-                else "### 📊 Prediction Result"
+                f"### {'🚗 Car A' if car_idx == 0 else '🚙 Car B'} Result" if ab_mode else "### 📊 Prediction Result"
             )
             st.markdown(header)
 
@@ -204,9 +190,7 @@ def page_price_predictor() -> None:
                 )
 
                 # Main result card
-                ci_pct = {"±10%": 0.1, "±15%": 0.15, "±20%": 0.2}.get(
-                    st.session_state.get(f"ci{suffix}", "±15%"), 0.15
-                )
+                ci_pct = {"±10%": 0.1, "±15%": 0.15, "±20%": 0.2}.get(st.session_state.get(f"ci{suffix}", "±15%"), 0.15)
                 ci_val = pred * ci_pct
                 st.markdown(
                     f'<div class="glass-card" style="text-align:center;padding:24px">'
@@ -255,15 +239,11 @@ def page_price_predictor() -> None:
                 )
 
                 # DEAL SCORE (Feature B) — speedometer gauge
-                similar_actuals = df[(df["company"] == company) & (df["fuel_type"] == fuel)][
-                    "Price"
-                ]
+                similar_actuals = df[(df["company"] == company) & (df["fuel_type"] == fuel)]["Price"]
                 if len(similar_actuals) > 0:
                     avg_actual = similar_actuals.mean()
                     score = compute_deal_score(pred, avg_actual)
-                    gauge_color = (
-                        "#52b788" if score > 60 else ("#f48c06" if score > 40 else "#e85d04")
-                    )
+                    gauge_color = "#52b788" if score > 60 else ("#f48c06" if score > 40 else "#e85d04")
                     fig_gauge = go.Figure(
                         go.Indicator(
                             mode="gauge+number",
@@ -364,9 +344,7 @@ def page_price_predictor() -> None:
                             {
                                 "Model": m_name,
                                 "Prediction": p,
-                                "R²": METRICS_DF[METRICS_DF["Model"] == m_name]["Test R²"].values[
-                                    0
-                                ],
+                                "R²": METRICS_DF[METRICS_DF["Model"] == m_name]["Test R²"].values[0],
                             }
                         )
                     preds_df = pd.DataFrame(all_preds)
@@ -375,18 +353,13 @@ def page_price_predictor() -> None:
                             go.Bar(
                                 x=preds_df["Model"],
                                 y=preds_df["Prediction"],
-                                marker_color=[
-                                    "#e85d04" if m == model_choice else "#4895ef"
-                                    for m in preds_df["Model"]
-                                ],
+                                marker_color=["#e85d04" if m == model_choice else "#4895ef" for m in preds_df["Model"]],
                                 text=[fmt_inr(p) for p in preds_df["Prediction"]],
                                 textposition="outside",
                             )
                         ]
                     )
-                    fig3.update_layout(
-                        title="All Models Comparison", xaxis_tickangle=-45, height=350
-                    )
+                    fig3.update_layout(title="All Models Comparison", xaxis_tickangle=-45, height=350)
                     show_chart(fig3, 350)
                     st.dataframe(
                         preds_df.style.format({"Prediction": lambda x: fmt_inr(x), "R²": "{:.4f}"}),
@@ -404,9 +377,7 @@ def page_price_predictor() -> None:
                     if len(similar) > 0:
                         similar = similar.copy()
                         similar["match_score"] = (
-                            100
-                            - np.abs(similar["car_age"] - car_age) * 10
-                            - np.abs(similar["kms_driven"] - kms) / 5000
+                            100 - np.abs(similar["car_age"] - car_age) * 10 - np.abs(similar["kms_driven"] - kms) / 5000
                         )
                         similar["match_score"] = similar["match_score"].clip(0, 100)
                         similar = similar.nlargest(5, "match_score")

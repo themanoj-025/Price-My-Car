@@ -101,9 +101,7 @@ preprocessor = ColumnTransformer(
 X_train_processed = preprocessor.fit_transform(X_train)
 X_test_processed = preprocessor.transform(X_test)
 
-cat_feature_names = preprocessor.named_transformers_["cat"].get_feature_names_out(
-    categorical_features
-)
+cat_feature_names = preprocessor.named_transformers_["cat"].get_feature_names_out(categorical_features)
 all_feature_names = numerical_features + list(cat_feature_names)
 
 logger.info("preprocessing_complete")

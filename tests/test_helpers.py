@@ -140,9 +140,7 @@ class TestGetCarNameOptions:
     def test_returns_sorted(self) -> None:
         from app.helpers import get_car_name_options
 
-        df = pd.DataFrame(
-            {"company": ["Toyota", "Toyota", "Honda"], "name": ["Camry", "Corolla", "Civic"]}
-        )
+        df = pd.DataFrame({"company": ["Toyota", "Toyota", "Honda"], "name": ["Camry", "Corolla", "Civic"]})
         result = get_car_name_options(df, "Toyota")
         assert result == ["Camry", "Corolla"]
 
@@ -177,9 +175,7 @@ class TestGetFilteredData:
                 "kms_driven": [10000, 20000],
             }
         )
-        result = get_filtered_data(
-            df, ["Toyota", "Honda"], ["Diesel"], (2020, 2022), (0, 1e7), (0, 1e6)
-        )
+        result = get_filtered_data(df, ["Toyota", "Honda"], ["Diesel"], (2020, 2022), (0, 1e7), (0, 1e6))
         assert len(result) == 1
         assert result.iloc[0]["company"] == "Honda"
 
@@ -249,9 +245,7 @@ class TestShapLiteApproximation:
             def transform(self, X) -> None:
                 return np.array([[1, 2]])
 
-        result = shap_lite_approximation(
-            model, pd.DataFrame({"a": [1]}), MockPreprocessor(), ["feat1", "feat2"]
-        )
+        result = shap_lite_approximation(model, pd.DataFrame({"a": [1]}), MockPreprocessor(), ["feat1", "feat2"])
         assert len(result) <= 8
         assert all(isinstance(item, tuple) for item in result)
 

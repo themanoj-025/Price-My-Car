@@ -40,9 +40,7 @@ def page_dataset_explorer() -> None:
     with st.expander("🔍 Filters", expanded=True):
         f1, f2, f3, f4 = st.columns(4)
         with f1:
-            sel_companies = st.multiselect(
-                "Company", companies, default=companies[:5], key="de_comp"
-            )
+            sel_companies = st.multiselect("Company", companies, default=companies[:5], key="de_comp")
         with f2:
             sel_fuels = st.multiselect("Fuel Type", fuel_types, default=fuel_types, key="de_fuel")
         with f3:
@@ -195,8 +193,6 @@ def page_dataset_explorer() -> None:
             show_chart(fig3, 300)
 
             yr_counts = filtered["year"].value_counts().sort_index()
-            fig4 = go.Figure(
-                data=[go.Bar(x=yr_counts.index, y=yr_counts.values, marker_color="#52b788")]
-            )
+            fig4 = go.Figure(data=[go.Bar(x=yr_counts.index, y=yr_counts.values, marker_color="#52b788")])
             fig4.update_layout(title="Year Distribution", xaxis_title="Year", yaxis_title="Count")
             show_chart(fig4, 300)

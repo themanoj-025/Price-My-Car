@@ -102,8 +102,7 @@ def page_eda_deepdive() -> None:
             med_prices = df.groupby("company")["Price"].median().sort_values(ascending=True)
             top20 = med_prices.tail(20)
             colors = [
-                TIER_COLORS.get(get_company_tier(df[df["company"] == c]["Price"].mean()), "#888")
-                for c in top20.index
+                TIER_COLORS.get(get_company_tier(df[df["company"] == c]["Price"].mean()), "#888") for c in top20.index
             ]
             fig = go.Figure(
                 data=[
@@ -124,11 +123,7 @@ def page_eda_deepdive() -> None:
             )
             show_chart(fig, 500)
         with c2:
-            brand_stats = (
-                df.groupby("company")
-                .agg(avg_price=("Price", "mean"), count=("Price", "count"))
-                .reset_index()
-            )
+            brand_stats = df.groupby("company").agg(avg_price=("Price", "mean"), count=("Price", "count")).reset_index()
             brand_stats["tier"] = brand_stats["avg_price"].apply(get_company_tier)
             fig2 = go.Figure(
                 data=[
@@ -248,16 +243,10 @@ def page_eda_deepdive() -> None:
             vif_df = df[["Price", "car_age", "kms_driven"]].dropna()
             vif_data = pd.DataFrame()
             vif_data["Feature"] = vif_df.columns
-            vif_data["VIF"] = [
-                variance_inflation_factor(vif_df.values, i) for i in range(vif_df.shape[1])
-            ]
+            vif_data["VIF"] = [variance_inflation_factor(vif_df.values, i) for i in range(vif_df.shape[1])]
             st.dataframe(
                 vif_data.style.applymap(
-                    lambda v: (
-                        "color:#e85d04"
-                        if v > 10
-                        else ("color:#f48c06" if v > 5 else "color:#52b788")
-                    ),
+                    lambda v: "color:#e85d04" if v > 10 else ("color:#f48c06" if v > 5 else "color:#52b788"),
                     subset=["VIF"],
                 ),
                 use_container_width=True,
@@ -280,9 +269,7 @@ def page_eda_deepdive() -> None:
                 }
             )
             st.dataframe(vif_data, use_container_width=True)
-            st.caption(
-                "VIF estimated via max pairwise R² (install statsmodels for exact calculation)."
-            )
+            st.caption("VIF estimated via max pairwise R² (install statsmodels for exact calculation).")
 
     with tabs[3]:
         st.markdown("### IQR-Based Outlier Detection")
@@ -320,9 +307,7 @@ def page_eda_deepdive() -> None:
                     )
                 ]
             )
-            fig.update_layout(
-                title="Before Capping", xaxis_title="Car Age", yaxis_title="KMs Driven"
-            )
+            fig.update_layout(title="Before Capping", xaxis_title="Car Age", yaxis_title="KMs Driven")
             show_chart(fig, 300)
         with c2:
             capped = df["kms_driven"].clip(upper=df["kms_driven"].quantile(0.99))

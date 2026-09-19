@@ -7,8 +7,8 @@
 bcrypt>=5.0.0
 
 pandas>=3.0.5
-# numpy 2.5.x requires Python >=3.12 and did not exist on the index at pin
-# time; CI runs 3.11, so floor at the newest 3.11-compatible release.
+# numpy 2.5.x requires Python >=3.12 — resolvable now that the whole CI
+# matrix runs 3.12, but floored at 2.4.6 to stay installable on 3.11 too.
 numpy>=2.4.6
 
 scipy>=1.18.1

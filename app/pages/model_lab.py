@@ -64,11 +64,7 @@ def page_model_comparison() -> None:
     # R² bar chart (shown in both modes)
     sorted_df = METRICS_DF.sort_values("Test R²")
     colors_r2 = [
-        (
-            "#52b788"
-            if i == len(sorted_df) - 1
-            else ("#4895ef" if i > len(sorted_df) - 4 else "#5a6270")
-        )
+        ("#52b788" if i == len(sorted_df) - 1 else ("#4895ef" if i > len(sorted_df) - 4 else "#5a6270"))
         for i in range(len(sorted_df))
     ]
     fig = go.Figure(
@@ -116,10 +112,7 @@ def page_model_comparison() -> None:
                     textposition="top center",
                     marker={
                         "size": [20 if m == best["Model"] else 12 for m in METRICS_DF["Model"]],
-                        "color": [
-                            "#e85d04" if m == best["Model"] else "#4895ef"
-                            for m in METRICS_DF["Model"]
-                        ],
+                        "color": ["#e85d04" if m == best["Model"] else "#4895ef" for m in METRICS_DF["Model"]],
                     },
                 )
             ]
@@ -223,9 +216,7 @@ def page_model_comparison() -> None:
                         unsafe_allow_html=True,
                     )
     else:
-        st.info(
-            "GridSearchCV results not available. Run `tune_hyperparameters.py` to generate them."
-        )
+        st.info("GridSearchCV results not available. Run `tune_hyperparameters.py` to generate them.")
 
     # Log Transform impact section (conditional on mode)
     st.markdown("### 📉 Log Transform Impact")
@@ -246,12 +237,8 @@ def page_model_comparison() -> None:
             fig5.update_layout(title="Linear Regression: Before vs After Log Transform", height=300)
             show_chart(fig5, 300)
         with c2:
-            fig6 = go.Figure(
-                data=[go.Histogram(x=np.log1p(df["Price"]), nbinsx=40, marker_color="#e85d04")]
-            )
-            fig6.update_layout(
-                title="Log-Transformed Price Distribution (skewness: -0.12)", height=300
-            )
+            fig6 = go.Figure(data=[go.Histogram(x=np.log1p(df["Price"]), nbinsx=40, marker_color="#e85d04")])
+            fig6.update_layout(title="Log-Transformed Price Distribution (skewness: -0.12)", height=300)
             show_chart(fig6, 300)
     else:
         st.markdown(
