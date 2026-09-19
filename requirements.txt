@@ -21,7 +21,7 @@ joblib>=1.6.0
 # Visualization
 matplotlib>=3.11.1
 seaborn>=0.13.2
-plotly>=6.9.0
+plotly>=7.1.0
 
 # Dashboard
 streamlit>=1.63.0
