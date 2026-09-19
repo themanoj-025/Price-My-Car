@@ -40,6 +40,7 @@ except ImportError:
 
 # ── Structured Logging ─────────────────────────────────────────────────────
 
+
 class StructuredFormatter(logging.Formatter):
     """JSON structured log formatter for production log aggregation."""
 
@@ -124,9 +125,11 @@ app = FastAPI(
     ],
 )
 
+
 @app.middleware("http")
 async def track_metrics(request, call_next) -> Response:
     import time as _time
+
     request.state.start_time = _time.time()
     response = await call_next(request)
     if _PROM_AVAILABLE:
@@ -139,6 +142,7 @@ async def track_metrics(request, call_next) -> Response:
                 _time.time() - request.state.start_time
             )
     return response
+
 
 _allowed_origins = os.environ.get(
     "PRICE_MY_CAR_CORS_ORIGINS", "http://localhost:8501,http://localhost:3000"

@@ -21,7 +21,6 @@ gs_results: Any = None
 df: Any = None
 
 
-
 def page_model_comparison() -> None:
     st.markdown("## 🤖 Model Comparison Lab")
     st.markdown(

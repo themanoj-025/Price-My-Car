@@ -62,14 +62,26 @@ logger.info("features_engineered", features=features)
 y_original = df_ml["Price"].copy()
 y_log = np.log1p(df_ml["Price"])  # log(1 + price) — handles zero values
 
-logger.info("log_transformed_price", original_skew=round(y_original.skew(), 2), log_skew=round(y_log.skew(), 2), original_range=f"Rs.{y_original.min():,.0f} - Rs.{y_original.max():,.0f}", log_range=f"{y_log.min():.4f} - {y_log.max():.4f}")
+logger.info(
+    "log_transformed_price",
+    original_skew=round(y_original.skew(), 2),
+    log_skew=round(y_log.skew(), 2),
+    original_range=f"Rs.{y_original.min():,.0f} - Rs.{y_original.max():,.0f}",
+    log_range=f"{y_log.min():.4f} - {y_log.max():.4f}",
+)
 
 # -- 7. Train/Test Split --------------------------------------------------
 X = df_ml.drop(columns=["Price"])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y_log, test_size=0.2, random_state=42)
 
-logger.info("train_test_split", x_train_shape=str(X_train.shape), y_train_shape=str(y_train.shape), x_test_shape=str(X_test.shape), y_test_shape=str(y_test.shape))
+logger.info(
+    "train_test_split",
+    x_train_shape=str(X_train.shape),
+    y_train_shape=str(y_train.shape),
+    x_test_shape=str(X_test.shape),
+    y_test_shape=str(y_test.shape),
+)
 
 # -- 8. Preprocessing Pipeline --------------------------------------------
 categorical_features = ["company", "fuel_type_simple"]
@@ -125,7 +137,22 @@ np.save("ml_ready/y_train_original.npy", y_original_train.values)
 np.save("ml_ready/y_test_original.npy", y_original_test.values)
 logger.info("saved_original_price")
 
-logger.info("files_saved", dir="ml_ready/", x_train_mb=round(X_train_processed.nbytes / 1e6, 1), files=["X_train.npy", "X_test.npy", "y_train.npy", "y_test.npy", "y_train_original.npy", "y_test_original.npy", "feature_names.npy", "train_data.csv", "test_data.csv"])
+logger.info(
+    "files_saved",
+    dir="ml_ready/",
+    x_train_mb=round(X_train_processed.nbytes / 1e6, 1),
+    files=[
+        "X_train.npy",
+        "X_test.npy",
+        "y_train.npy",
+        "y_test.npy",
+        "y_train_original.npy",
+        "y_test_original.npy",
+        "feature_names.npy",
+        "train_data.csv",
+        "test_data.csv",
+    ],
+)
 logger.info("saved_preprocessor")
 logger.info("saved_feature_names")
 

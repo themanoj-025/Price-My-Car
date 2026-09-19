@@ -140,7 +140,9 @@ class TestGetCarNameOptions:
     def test_returns_sorted(self) -> None:
         from app.helpers import get_car_name_options
 
-        df = pd.DataFrame({"company": ["Toyota", "Toyota", "Honda"], "name": ["Camry", "Corolla", "Civic"]})
+        df = pd.DataFrame(
+            {"company": ["Toyota", "Toyota", "Honda"], "name": ["Camry", "Corolla", "Civic"]}
+        )
         result = get_car_name_options(df, "Toyota")
         assert result == ["Camry", "Corolla"]
 
@@ -151,27 +153,33 @@ class TestGetFilteredData:
     def test_filter_by_company(self) -> None:
         from app.helpers import get_filtered_data
 
-        df = pd.DataFrame({
-            "company": ["Toyota", "Honda", "Toyota"],
-            "fuel_type": ["Petrol", "Diesel", "Petrol"],
-            "year": [2020, 2021, 2022],
-            "Price": [500000, 600000, 700000],
-            "kms_driven": [10000, 20000, 30000],
-        })
+        df = pd.DataFrame(
+            {
+                "company": ["Toyota", "Honda", "Toyota"],
+                "fuel_type": ["Petrol", "Diesel", "Petrol"],
+                "year": [2020, 2021, 2022],
+                "Price": [500000, 600000, 700000],
+                "kms_driven": [10000, 20000, 30000],
+            }
+        )
         result = get_filtered_data(df, ["Toyota"], ["Petrol"], (2020, 2022), (0, 1e7), (0, 1e6))
         assert len(result) == 2
 
     def test_filter_by_fuel(self) -> None:
         from app.helpers import get_filtered_data
 
-        df = pd.DataFrame({
-            "company": ["Toyota", "Honda"],
-            "fuel_type": ["Petrol", "Diesel"],
-            "year": [2020, 2021],
-            "Price": [500000, 600000],
-            "kms_driven": [10000, 20000],
-        })
-        result = get_filtered_data(df, ["Toyota", "Honda"], ["Diesel"], (2020, 2022), (0, 1e7), (0, 1e6))
+        df = pd.DataFrame(
+            {
+                "company": ["Toyota", "Honda"],
+                "fuel_type": ["Petrol", "Diesel"],
+                "year": [2020, 2021],
+                "Price": [500000, 600000],
+                "kms_driven": [10000, 20000],
+            }
+        )
+        result = get_filtered_data(
+            df, ["Toyota", "Honda"], ["Diesel"], (2020, 2022), (0, 1e7), (0, 1e6)
+        )
         assert len(result) == 1
         assert result.iloc[0]["company"] == "Honda"
 
@@ -241,7 +249,9 @@ class TestShapLiteApproximation:
             def transform(self, X) -> None:
                 return np.array([[1, 2]])
 
-        result = shap_lite_approximation(model, pd.DataFrame({"a": [1]}), MockPreprocessor(), ["feat1", "feat2"])
+        result = shap_lite_approximation(
+            model, pd.DataFrame({"a": [1]}), MockPreprocessor(), ["feat1", "feat2"]
+        )
         assert len(result) <= 8
         assert all(isinstance(item, tuple) for item in result)
 

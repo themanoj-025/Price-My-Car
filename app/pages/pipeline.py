@@ -23,7 +23,6 @@ CURRENT_YEAR: Any = None
 companies: Any = None
 
 
-
 def page_pipeline_inspector() -> None:
     st.markdown("## ⚙️ Pipeline Inspector")
     st.markdown(
@@ -101,7 +100,7 @@ def page_pipeline_inspector() -> None:
         st.markdown("### 📐 Log Transform Deep-Dive")
         log_lambda = st.slider("Box-Cox λ value", -2.0, 2.0, 0.0, 0.1, key="boxcox_slider")
         prices = df["Price"].values + 1
-        transformed = np.log(prices) if log_lambda == 0 else (prices ** log_lambda - 1) / log_lambda
+        transformed = np.log(prices) if log_lambda == 0 else (prices**log_lambda - 1) / log_lambda
         skew_val = pd.Series(transformed).skew()
         st.markdown(
             f'<div class="glass-card" style="text-align:center">'

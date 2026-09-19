@@ -45,12 +45,18 @@ def _clear_loggers() -> None:
 
 # ── JSONFormatter Tests ───────────────────────────────────────────────────
 
+
 class TestJSONFormatter:
     def test_formats_basic_log_record(self) -> None:
         formatter = JSONFormatter()
         record = logging.LogRecord(
-            name="test", level=logging.INFO, pathname="test.py",
-            lineno=1, msg="Hello world", args=(), exc_info=None,
+            name="test",
+            level=logging.INFO,
+            pathname="test.py",
+            lineno=1,
+            msg="Hello world",
+            args=(),
+            exc_info=None,
         )
         data = json.loads(formatter.format(record))
         assert data["level"] == "INFO"
@@ -61,8 +67,13 @@ class TestJSONFormatter:
     def test_includes_module_and_function(self) -> None:
         formatter = JSONFormatter()
         record = logging.LogRecord(
-            name="test", level=logging.WARNING, pathname="/app/module.py",
-            lineno=42, msg="Warning message", args=(), exc_info=None,
+            name="test",
+            level=logging.WARNING,
+            pathname="/app/module.py",
+            lineno=42,
+            msg="Warning message",
+            args=(),
+            exc_info=None,
         )
         record.module = "module"
         record.funcName = "my_function"
@@ -75,8 +86,13 @@ class TestJSONFormatter:
         formatter = JSONFormatter()
         request_id_var.set("abc-123")
         record = logging.LogRecord(
-            name="test", level=logging.INFO, pathname="test.py",
-            lineno=1, msg="With request ID", args=(), exc_info=None,
+            name="test",
+            level=logging.INFO,
+            pathname="test.py",
+            lineno=1,
+            msg="With request ID",
+            args=(),
+            exc_info=None,
         )
         data = json.loads(formatter.format(record))
         assert data["request_id"] == "abc-123"
@@ -85,8 +101,13 @@ class TestJSONFormatter:
         formatter = JSONFormatter()
         request_id_var.set(None)
         record = logging.LogRecord(
-            name="test", level=logging.INFO, pathname="test.py",
-            lineno=1, msg="No request ID", args=(), exc_info=None,
+            name="test",
+            level=logging.INFO,
+            pathname="test.py",
+            lineno=1,
+            msg="No request ID",
+            args=(),
+            exc_info=None,
         )
         data = json.loads(formatter.format(record))
         assert "request_id" not in data
@@ -97,11 +118,17 @@ class TestJSONFormatter:
             raise ValueError("test error")
         except ValueError:
             import sys
+
             exc_info = sys.exc_info()
 
         record = logging.LogRecord(
-            name="test", level=logging.ERROR, pathname="test.py",
-            lineno=1, msg="Error occurred", args=(), exc_info=exc_info,
+            name="test",
+            level=logging.ERROR,
+            pathname="test.py",
+            lineno=1,
+            msg="Error occurred",
+            args=(),
+            exc_info=exc_info,
         )
         data = json.loads(formatter.format(record))
         assert "exception" in data
@@ -112,8 +139,13 @@ class TestJSONFormatter:
     def test_no_exception_when_none(self) -> None:
         formatter = JSONFormatter()
         record = logging.LogRecord(
-            name="test", level=logging.INFO, pathname="test.py",
-            lineno=1, msg="No error", args=(), exc_info=None,
+            name="test",
+            level=logging.INFO,
+            pathname="test.py",
+            lineno=1,
+            msg="No error",
+            args=(),
+            exc_info=None,
         )
         data = json.loads(formatter.format(record))
         assert "exception" not in data
@@ -121,8 +153,13 @@ class TestJSONFormatter:
     def test_extra_fields_merged(self) -> None:
         formatter = JSONFormatter()
         record = logging.LogRecord(
-            name="test", level=logging.INFO, pathname="test.py",
-            lineno=1, msg="With extras", args=(), exc_info=None,
+            name="test",
+            level=logging.INFO,
+            pathname="test.py",
+            lineno=1,
+            msg="With extras",
+            args=(),
+            exc_info=None,
         )
         record.extra_fields = {"user_id": 42, "action": "login"}
         data = json.loads(formatter.format(record))
@@ -132,25 +169,41 @@ class TestJSONFormatter:
     def test_message_with_args(self) -> None:
         formatter = JSONFormatter()
         record = logging.LogRecord(
-            name="test", level=logging.INFO, pathname="test.py",
-            lineno=1, msg="User %s logged in from %s",
-            args=("alice", "192.168.1.1"), exc_info=None,
+            name="test",
+            level=logging.INFO,
+            pathname="test.py",
+            lineno=1,
+            msg="User %s logged in from %s",
+            args=("alice", "192.168.1.1"),
+            exc_info=None,
         )
         data = json.loads(formatter.format(record))
         assert data["message"] == "User alice logged in from 192.168.1.1"
 
     def test_valid_json_output(self) -> None:
         formatter = JSONFormatter()
-        for level in [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]:
+        for level in [
+            logging.DEBUG,
+            logging.INFO,
+            logging.WARNING,
+            logging.ERROR,
+            logging.CRITICAL,
+        ]:
             record = logging.LogRecord(
-                name="test", level=level, pathname="test.py",
-                lineno=1, msg=f"Level {level}", args=(), exc_info=None,
+                name="test",
+                level=level,
+                pathname="test.py",
+                lineno=1,
+                msg=f"Level {level}",
+                args=(),
+                exc_info=None,
             )
             data = json.loads(formatter.format(record))
             assert data["level"] == logging.getLevelName(level)
 
 
 # ── setup_logger Tests (use per-test temp dirs, no shared fixture) ─────────
+
 
 class TestSetupLogger:
     def _make_logger(self, name, **kwargs) -> tuple[object, ...]:
@@ -165,6 +218,7 @@ class TestSetupLogger:
             h.close()
             logger.removeHandler(h)
         import shutil
+
         shutil.rmtree(tmpdir, ignore_errors=True)
 
     def test_creates_logger_with_name(self) -> None:
@@ -178,7 +232,9 @@ class TestSetupLogger:
     def test_logger_has_file_handler(self) -> None:
         logger, tmpdir = self._make_logger("test-file-handler")
         try:
-            file_handlers = [h for h in logger.handlers if isinstance(h, logging.handlers.RotatingFileHandler)]
+            file_handlers = [
+                h for h in logger.handlers if isinstance(h, logging.handlers.RotatingFileHandler)
+            ]
             assert len(file_handlers) == 1
         finally:
             self._cleanup(logger, tmpdir)
@@ -186,8 +242,12 @@ class TestSetupLogger:
     def test_logger_has_console_handler(self) -> None:
         logger, tmpdir = self._make_logger("test-console-handler")
         try:
-            stream_handlers = [h for h in logger.handlers if isinstance(h, logging.StreamHandler)
-                               and not isinstance(h, logging.handlers.RotatingFileHandler)]
+            stream_handlers = [
+                h
+                for h in logger.handlers
+                if isinstance(h, logging.StreamHandler)
+                and not isinstance(h, logging.handlers.RotatingFileHandler)
+            ]
             assert len(stream_handlers) == 1
         finally:
             self._cleanup(logger, tmpdir)
@@ -279,6 +339,7 @@ class TestSetupLogger:
 
 # ── Request ID Tests ──────────────────────────────────────────────────────
 
+
 class TestRequestID:
     def test_set_request_id_generates_uuid(self) -> None:
         rid = set_request_id()
@@ -315,12 +376,15 @@ class TestRequestID:
                 h.close()
                 logger.removeHandler(h)
             import shutil
+
             shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 # ── Shutdown Tests ────────────────────────────────────────────────────────
 
+
 class TestShutdown:
     def test_shutdown_does_not_raise(self) -> None:
         from app.logging.structured_logging import shutdown
+
         shutdown()

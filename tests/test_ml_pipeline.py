@@ -74,24 +74,30 @@ def sample_input() -> None:
 
     The preprocessor expects: car_age, kms_driven, company, fuel_type_simple.
     """
-    return pd.DataFrame([{
-        "car_age": 4,
-        "kms_driven": 15000,
-        "company": "Maruti",
-        "fuel_type_simple": "Petrol",
-    }])
+    return pd.DataFrame(
+        [
+            {
+                "car_age": 4,
+                "kms_driven": 15000,
+                "company": "Maruti",
+                "fuel_type_simple": "Petrol",
+            }
+        ]
+    )
 
 
 @pytest.fixture
 def sample_input_batch() -> None:
     """Batch of 5 different car inputs."""
-    return pd.DataFrame([
-        {"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"},
-        {"car_age": 2, "kms_driven": 5000, "company": "Hyundai", "fuel_type_simple": "Diesel"},
-        {"car_age": 5, "kms_driven": 30000, "company": "Honda", "fuel_type_simple": "Petrol"},
-        {"car_age": 3, "kms_driven": 20000, "company": "Toyota", "fuel_type_simple": "Diesel"},
-        {"car_age": 1, "kms_driven": 2000, "company": "Tata", "fuel_type_simple": "Petrol"},
-    ])
+    return pd.DataFrame(
+        [
+            {"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"},
+            {"car_age": 2, "kms_driven": 5000, "company": "Hyundai", "fuel_type_simple": "Diesel"},
+            {"car_age": 5, "kms_driven": 30000, "company": "Honda", "fuel_type_simple": "Petrol"},
+            {"car_age": 3, "kms_driven": 20000, "company": "Toyota", "fuel_type_simple": "Diesel"},
+            {"car_age": 1, "kms_driven": 2000, "company": "Tata", "fuel_type_simple": "Petrol"},
+        ]
+    )
 
 
 # ── Model Loading Tests ──────────────────────────────────────────────────
@@ -107,8 +113,9 @@ class TestModelLoading:
     def test_expected_model_names(self, all_models) -> None:
         """Check that core model names are present."""
         must_have = {"Linear Regression", "Lasso", "Ridge", "KNN", "Random Forest", "SVR"}
-        assert must_have.issubset(set(all_models.keys())), \
-            f"Missing: {must_have - set(all_models.keys())}"
+        assert must_have.issubset(
+            set(all_models.keys())
+        ), f"Missing: {must_have - set(all_models.keys())}"
 
     def test_preprocessor_loads(self, preprocessor) -> None:
         """Preprocessor should be callable."""
@@ -161,8 +168,9 @@ class TestPreprocessor:
                 actual_cols.update(cols)
             else:
                 actual_cols.add(cols)
-        assert expected_cols.issubset(actual_cols), \
-            f"Missing columns: {expected_cols - actual_cols}"
+        assert expected_cols.issubset(
+            actual_cols
+        ), f"Missing columns: {expected_cols - actual_cols}"
 
 
 # ── Single-Model Prediction Tests ────────────────────────────────────────
@@ -179,7 +187,9 @@ class TestSinglePrediction:
             pred_price = float(np.expm1(pred_log))
             assert pred_price > 0, f"{name} returned non-positive: {pred_price}"
 
-    def test_prediction_within_reasonable_range(self, all_models, preprocessor, sample_input) -> None:
+    def test_prediction_within_reasonable_range(
+        self, all_models, preprocessor, sample_input
+    ) -> None:
         """Predictions should be within a reasonable car price range."""
         for name, model in all_models.items():
             X = preprocessor.transform(sample_input)
@@ -213,7 +223,9 @@ class TestSinglePrediction:
 class TestBatchPrediction:
     """Test batch predictions with multiple inputs."""
 
-    def test_batch_predictions_all_positive(self, all_models, preprocessor, sample_input_batch) -> None:
+    def test_batch_predictions_all_positive(
+        self, all_models, preprocessor, sample_input_batch
+    ) -> None:
         """Batch predictions should all be positive."""
         from app.helpers import make_prediction
 
@@ -228,20 +240,30 @@ class TestBatchPrediction:
         """All else equal, a newer car should be predicted as more expensive."""
         from app.helpers import make_prediction
 
-        old_car = pd.DataFrame([{"car_age": 9, "kms_driven": 50000, "company": "Maruti", "fuel_type_simple": "Petrol"}])
-        new_car = pd.DataFrame([{"car_age": 1, "kms_driven": 5000, "company": "Maruti", "fuel_type_simple": "Petrol"}])
+        old_car = pd.DataFrame(
+            [{"car_age": 9, "kms_driven": 50000, "company": "Maruti", "fuel_type_simple": "Petrol"}]
+        )
+        new_car = pd.DataFrame(
+            [{"car_age": 1, "kms_driven": 5000, "company": "Maruti", "fuel_type_simple": "Petrol"}]
+        )
 
         for name, model in all_models.items():
             old_price = make_prediction(model, old_car, preprocessor)
             new_price = make_prediction(model, new_car, preprocessor)
-            assert new_price > old_price * 0.5, f"{name}: newer car not more expensive ({new_price} vs {old_price})"
+            assert (
+                new_price > old_price * 0.5
+            ), f"{name}: newer car not more expensive ({new_price} vs {old_price})"
 
     def test_higher_km_less_expensive(self, all_models, preprocessor) -> None:
         """More kms driven should generally reduce predicted price."""
         from app.helpers import make_prediction
 
-        low_km = pd.DataFrame([{"car_age": 4, "kms_driven": 5000, "company": "Honda", "fuel_type_simple": "Petrol"}])
-        high_km = pd.DataFrame([{"car_age": 4, "kms_driven": 100000, "company": "Honda", "fuel_type_simple": "Petrol"}])
+        low_km = pd.DataFrame(
+            [{"car_age": 4, "kms_driven": 5000, "company": "Honda", "fuel_type_simple": "Petrol"}]
+        )
+        high_km = pd.DataFrame(
+            [{"car_age": 4, "kms_driven": 100000, "company": "Honda", "fuel_type_simple": "Petrol"}]
+        )
 
         for name, model in all_models.items():
             low_price = make_prediction(model, low_km, preprocessor)
@@ -345,7 +367,9 @@ class TestDealScore:
 class TestShapLite:
     """Test the SHAP-lite feature importance approximation."""
 
-    def test_returns_list_of_tuples(self, all_models, preprocessor, sample_input, feature_names) -> None:
+    def test_returns_list_of_tuples(
+        self, all_models, preprocessor, sample_input, feature_names
+    ) -> None:
         """Should return list of (feature_name, contribution) tuples."""
         from app.helpers import shap_lite_approximation
 
@@ -366,7 +390,9 @@ class TestShapLite:
             result = shap_lite_approximation(model, sample_input, preprocessor, feature_names)
             assert len(result) <= 8, f"{name} returned {len(result)} features (>8)"
 
-    def test_sorted_by_abs_contribution(self, all_models, preprocessor, sample_input, feature_names) -> None:
+    def test_sorted_by_abs_contribution(
+        self, all_models, preprocessor, sample_input, feature_names
+    ) -> None:
         """Results should be sorted by absolute contribution (descending)."""
         from app.helpers import shap_lite_approximation
 
@@ -374,8 +400,9 @@ class TestShapLite:
             result = shap_lite_approximation(model, sample_input, preprocessor, feature_names)
             if len(result) > 1:
                 abs_vals = [abs(v) for _, v in result]
-                assert abs_vals == sorted(abs_vals, reverse=True), \
-                    f"{name}: not sorted by absolute contribution"
+                assert abs_vals == sorted(
+                    abs_vals, reverse=True
+                ), f"{name}: not sorted by absolute contribution"
 
     def test_linear_model_uses_coefs(self, preprocessor, sample_input, feature_names) -> None:
         """Linear models should use coef_ for SHAP-lite."""
