@@ -25,7 +25,6 @@ df: Any = None
 companies: Any = None
 
 
-
 def page_eda_deepdive() -> None:
     st.markdown("## 🔍 EDA Deep-Dive")
     st.markdown(

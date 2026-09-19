@@ -22,7 +22,6 @@ models: Any = None
 df: Any = None
 
 
-
 def page_residual_analysis() -> None:
     st.markdown("## 🧪 Residual Analysis")
     st.markdown(
@@ -93,8 +92,12 @@ def page_residual_analysis() -> None:
             line={"color": "#e85d04", "dash": "dash"},
             annotation_text=f"μ={residuals.mean():,.0f}",
         )
-        fig2.add_vline(x=residuals.mean() + residuals.std(), line={"color": "#52b788", "dash": "dot"})
-        fig2.add_vline(x=residuals.mean() - residuals.std(), line={"color": "#52b788", "dash": "dot"})
+        fig2.add_vline(
+            x=residuals.mean() + residuals.std(), line={"color": "#52b788", "dash": "dot"}
+        )
+        fig2.add_vline(
+            x=residuals.mean() - residuals.std(), line={"color": "#52b788", "dash": "dot"}
+        )
         fig2.update_layout(
             title=f"Residual Distribution (μ±σ: ₹{residuals.std():,.0f})", height=350
         )

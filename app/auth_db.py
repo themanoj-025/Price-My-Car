@@ -16,6 +16,7 @@ import streamlit as st
 
 USERS_DB_PATH = Path("users_db.json")
 
+
 def load_users_db() -> dict:
     if not USERS_DB_PATH.exists():
         db = {
@@ -234,5 +235,3 @@ def update_user_profile(user_id: str, full_name: str, email: str, avatar_color: 
         db["users"][user_id]["email"] = email
         db["users"][user_id]["avatar_color"] = avatar_color
         save_users_db(db)
-
-

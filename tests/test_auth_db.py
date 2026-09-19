@@ -13,7 +13,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 @pytest.fixture
 def tmp_db(tmp_path: Path) -> Path:
     """Create a temporary users DB file."""

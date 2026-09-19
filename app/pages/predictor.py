@@ -35,7 +35,6 @@ CURRENT_YEAR: Any = None
 pp_data: Any = None
 
 
-
 def page_price_predictor() -> None:
     st.markdown("## 🔮 Price Predictor")
     st.markdown(
@@ -500,9 +499,9 @@ def page_price_predictor() -> None:
                 )
                 st.dataframe(pd.DataFrame(diff_data), use_container_width=True)
 
-
     # Bulk Prediction (Feature F)
     from app.pages.predictor_helpers import render_bulk_prediction, render_drift_simulator
+
     render_bulk_prediction(models, preprocessor)
 
     # Model Drift Simulator (Feature G)

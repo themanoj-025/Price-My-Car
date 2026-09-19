@@ -131,14 +131,16 @@ class TestMakePrediction:
         model.predict.return_value = np.array([np.log1p(3_50_000)])
         preprocessor = MagicMock()
         preprocessor.transform.return_value = np.array([[1, 2, 3, 4, 5, 6]])
-        df = pd.DataFrame({
-            "km_driven": [30000],
-            "fuel_type": ["Petrol"],
-            "seller_type": ["Dealer"],
-            "transmission": ["Manual"],
-            "owner": [1],
-            "age": [3],
-        })
+        df = pd.DataFrame(
+            {
+                "km_driven": [30000],
+                "fuel_type": ["Petrol"],
+                "seller_type": ["Dealer"],
+                "transmission": ["Manual"],
+                "owner": [1],
+                "age": [3],
+            }
+        )
         result = make_prediction(model, df, preprocessor)
         assert abs(result - 3_50_000) < 1
 

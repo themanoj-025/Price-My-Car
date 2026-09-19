@@ -32,7 +32,15 @@ X_test = np.load("ml_ready/X_test.npy")
 y_train = np.load("ml_ready/y_train.npy")
 y_test = np.load("ml_ready/y_test.npy")
 
-logger.info("data_loaded", x_train_shape=str(X_train.shape), y_train_shape=str(y_train.shape), x_test_shape=str(X_test.shape), y_test_shape=str(y_test.shape), y_min=round(y_train.min(), 4), y_max=round(y_train.max(), 4))
+logger.info(
+    "data_loaded",
+    x_train_shape=str(X_train.shape),
+    y_train_shape=str(y_train.shape),
+    x_test_shape=str(X_test.shape),
+    y_test_shape=str(y_test.shape),
+    y_min=round(y_train.min(), 4),
+    y_max=round(y_train.max(), 4),
+)
 
 # =========================================================================
 # Define model-specific parameter grids
@@ -120,9 +128,22 @@ for model_name, config in models_to_tune.items():
     train_r2_log = r2_score(y_train, y_pred_train)
     cv_score = gs.best_score_  # This is CV mean R² in log-space
 
-    logger.info("tuning_done", model=model_name, elapsed_s=round(elapsed, 1), best_params=gs.best_params_)
-    logger.info("log_space_performance", cv_r2=round(cv_score, 4), train_r2=round(train_r2_log, 4), test_r2=round(test_r2_log, 4))
-    logger.info("original_scale_performance", train_r2=round(train_r2, 4), test_r2=round(test_r2, 4), rmse=round(rmse, 0), mae=round(mae, 0))
+    logger.info(
+        "tuning_done", model=model_name, elapsed_s=round(elapsed, 1), best_params=gs.best_params_
+    )
+    logger.info(
+        "log_space_performance",
+        cv_r2=round(cv_score, 4),
+        train_r2=round(train_r2_log, 4),
+        test_r2=round(test_r2_log, 4),
+    )
+    logger.info(
+        "original_scale_performance",
+        train_r2=round(train_r2, 4),
+        test_r2=round(test_r2, 4),
+        rmse=round(rmse, 0),
+        mae=round(mae, 0),
+    )
 
     # Save best model
     model_path = f"ml_ready/models/{model_name.lower().replace(' ', '_')}.pkl"
@@ -160,9 +181,16 @@ for model_name, config in models_to_tune.items():
 # Summary
 # =========================================================================
 for r in sorted(tuning_results, key=lambda x: x["Test R² (orig)"], reverse=True):
-    logger.info("tuning_summary", model=r['Model'], test_r2_orig=round(r['Test R² (orig)'], 4), rmse=round(r['RMSE (orig)'], 0), mae=round(r['MAE (orig)'], 0), elapsed_s=r['Tuning Time (s)'])
+    logger.info(
+        "tuning_summary",
+        model=r["Model"],
+        test_r2_orig=round(r["Test R² (orig)"], 4),
+        rmse=round(r["RMSE (orig)"], 0),
+        mae=round(r["MAE (orig)"], 0),
+        elapsed_s=r["Tuning Time (s)"],
+    )
 
 for r in tuning_results:
-    logger.info("best_params", model=r['Model'], params=r['Best Params'])
+    logger.info("best_params", model=r["Model"], params=r["Best Params"])
 
 logger.info("all_tuned_models_saved", dir="ml_ready/models/")
