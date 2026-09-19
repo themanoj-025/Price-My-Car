@@ -40,9 +40,7 @@ def render_login_page() -> None:
         remaining_secs = int(15 * 60 - (time.time() - lock_time))
         remaining_min = remaining_secs // 60
         remaining_sec = remaining_secs % 60
-        st.warning(
-            f"⏳ Too many failed attempts. Please wait {remaining_min}m {remaining_sec}s before trying again."
-        )
+        st.warning(f"⏳ Too many failed attempts. Please wait {remaining_min}m {remaining_sec}s before trying again.")
 
     with st.form("login_form", clear_on_submit=False):
         username = st.text_input("Username", placeholder="Enter your username", key="login_user")
@@ -193,9 +191,7 @@ def render_signup_page() -> None:
                     unsafe_allow_html=True,
                 )
         agree = st.checkbox("I agree to terms", key="su_agree")
-        submitted = st.form_submit_button(
-            "🎉 Create Account", use_container_width=True, type="primary"
-        )
+        submitted = st.form_submit_button("🎉 Create Account", use_container_width=True, type="primary")
 
         if submitted:
             errors = []
@@ -274,15 +270,11 @@ def render_forgot_password_page() -> None:
 
     with st.form("forgot_form"):
         email = st.text_input("Email", placeholder="john@example.com", key="fp_email")
-        submitted = st.form_submit_button(
-            "📧 Send Reset Link", use_container_width=True, type="primary"
-        )
+        submitted = st.form_submit_button("📧 Send Reset Link", use_container_width=True, type="primary")
         if submitted:
             db = load_users_db()
             if email_exists(db, email):
-                st.success(
-                    "✅ If that email exists, a reset link was sent (demo project — no actual email sent)"
-                )
+                st.success("✅ If that email exists, a reset link was sent (demo project — no actual email sent)")
             else:
                 st.info("ℹ️ If that email exists, a reset link was sent")
 

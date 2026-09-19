@@ -128,9 +128,7 @@ for model_name, config in models_to_tune.items():
     train_r2_log = r2_score(y_train, y_pred_train)
     cv_score = gs.best_score_  # This is CV mean R² in log-space
 
-    logger.info(
-        "tuning_done", model=model_name, elapsed_s=round(elapsed, 1), best_params=gs.best_params_
-    )
+    logger.info("tuning_done", model=model_name, elapsed_s=round(elapsed, 1), best_params=gs.best_params_)
     logger.info(
         "log_space_performance",
         cv_r2=round(cv_score, 4),

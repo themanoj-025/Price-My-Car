@@ -134,9 +134,7 @@ async def track_metrics(request, call_next) -> Response:
     response = await call_next(request)
     if _PROM_AVAILABLE:
         path = request.url.path
-        PMC_REQUEST_COUNT.labels(
-            method=request.method, endpoint=path, status=response.status_code
-        ).inc()
+        PMC_REQUEST_COUNT.labels(method=request.method, endpoint=path, status=response.status_code).inc()
         if hasattr(request.state, "start_time"):
             PMC_REQUEST_LATENCY.labels(method=request.method, endpoint=path).observe(
                 _time.time() - request.state.start_time
@@ -144,9 +142,7 @@ async def track_metrics(request, call_next) -> Response:
     return response
 
 
-_allowed_origins = os.environ.get(
-    "PRICE_MY_CAR_CORS_ORIGINS", "http://localhost:8501,http://localhost:3000"
-).split(",")
+_allowed_origins = os.environ.get("PRICE_MY_CAR_CORS_ORIGINS", "http://localhost:8501,http://localhost:3000").split(",")
 
 app.add_middleware(
     CORSMiddleware,

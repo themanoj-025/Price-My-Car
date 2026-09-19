@@ -77,12 +77,8 @@ def render_bulk_prediction(models: dict, preprocessor: object) -> None:
                         )
                         res_pivot["Ensemble (Avg)"] = res_pivot.mean(axis=1)
                         res_pivot.to_excel(writer, sheet_name="Predictions")
-                        pd.DataFrame(MODEL_METRICS).to_excel(
-                            writer, sheet_name="Model Stats", index=False
-                        )
-                    st.success(
-                        f"✅ Processed {len(bulk_df)} records — {len(results_list)} predictions generated!"
-                    )
+                        pd.DataFrame(MODEL_METRICS).to_excel(writer, sheet_name="Model Stats", index=False)
+                    st.success(f"✅ Processed {len(bulk_df)} records — {len(results_list)} predictions generated!")
                     st.download_button(
                         "📥 Download Results (Excel)",
                         output.getvalue(),

@@ -73,8 +73,7 @@ def page_pipeline_inspector() -> None:
         prep_html += (
             "<tr>"
             + "".join(
-                f'<td style="{"color:#e85d04;font-weight:600" if i == 0 else "color:#c8ccd4"}">{c}</td>'
-                for c in row
+                f'<td style="{"color:#e85d04;font-weight:600" if i == 0 else "color:#c8ccd4"}">{c}</td>' for c in row
             )
             + "</tr>"
         )
@@ -109,9 +108,7 @@ def page_pipeline_inspector() -> None:
             f"</div>",
             unsafe_allow_html=True,
         )
-        fig = go.Figure(
-            data=[go.Histogram(x=transformed, nbinsx=50, marker_color="#e85d04", opacity=0.8)]
-        )
+        fig = go.Figure(data=[go.Histogram(x=transformed, nbinsx=50, marker_color="#e85d04", opacity=0.8)])
         fig.update_layout(
             title=f"Transformed Price (λ={log_lambda:.1f}, skew={skew_val:.2f})",
             height=250,
@@ -282,9 +279,7 @@ def show_price_history_simulation() -> None:
     with ph_cols[0]:
         ph_company = st.selectbox("Company", companies, key="ph_comp", index=0)
     with ph_cols[1]:
-        ph_model_name = st.text_input(
-            "Car Model (partial name)", key="ph_name", placeholder="e.g., Swift"
-        )
+        ph_model_name = st.text_input("Car Model (partial name)", key="ph_name", placeholder="e.g., Swift")
     if st.button("Simulate History", key="ph_btn", use_container_width=True):
         ph_df = df[df["company"] == ph_company]
         if ph_model_name:
