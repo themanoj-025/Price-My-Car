@@ -19,7 +19,7 @@ xgboost>=3.4.1
 joblib>=1.6.0
 
 # Visualization
-matplotlib>=3.11.1
+matplotlib>=3.11.2
 seaborn>=0.13.2
 plotly>=6.9.0
 
