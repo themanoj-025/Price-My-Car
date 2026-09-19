@@ -64,7 +64,14 @@ def get_car_name_options(df: pd.DataFrame, company: str) -> list[str]:
     return sorted(df[df["company"] == company]["name"].unique())
 
 
-def get_filtered_data(df: pd.DataFrame, companies: list[str], fuels: list[str], year_r: tuple[int, int], price_r: tuple[float, float], kms_r: tuple[int, int]) -> pd.DataFrame:
+def get_filtered_data(
+    df: pd.DataFrame,
+    companies: list[str],
+    fuels: list[str],
+    year_r: tuple[int, int],
+    price_r: tuple[float, float],
+    kms_r: tuple[int, int],
+) -> pd.DataFrame:
     """Apply multi-column filters to the car DataFrame."""
     mask = df["company"].isin(companies) & df["fuel_type"].isin(fuels)
     if year_r:
@@ -180,7 +187,9 @@ def compute_deal_score(predicted: float, actual: float, rarity: float = 1.0) -> 
     return round(score)
 
 
-def ensemble_prediction(models: dict, input_df: pd.DataFrame, preprocessor: object) -> tuple[float | None, float | None, str]:
+def ensemble_prediction(
+    models: dict, input_df: pd.DataFrame, preprocessor: object
+) -> tuple[float | None, float | None, str]:
     """Ensemble of top-3 models with variance indicator."""
     top3 = ["Linear Regression", "XGBoost", "Gradient Boosting"]
     preds = []
@@ -195,7 +204,9 @@ def ensemble_prediction(models: dict, input_df: pd.DataFrame, preprocessor: obje
     return mean_pred, spread, color
 
 
-def shap_lite_approximation(model: object, input_df: pd.DataFrame, preprocessor: object, feature_names: list[str]) -> list[tuple[str, float]]:
+def shap_lite_approximation(
+    model: object, input_df: pd.DataFrame, preprocessor: object, feature_names: list[str]
+) -> list[tuple[str, float]]:
     """SHAP-lite: approximate top-8 feature contributions."""
     X = preprocessor.transform(input_df)
     if hasattr(model, "coef_"):
@@ -220,7 +231,9 @@ def shap_lite_approximation(model: object, input_df: pd.DataFrame, preprocessor:
 # =========================================================================
 # Reporting helpers
 # =========================================================================
-def generate_data_quality_report(df: pd.DataFrame, df_original: pd.DataFrame) -> list[tuple[str, str]]:
+def generate_data_quality_report(
+    df: pd.DataFrame, df_original: pd.DataFrame
+) -> list[tuple[str, str]]:
     """Auto-generate mini data quality report items."""
     dupes = len(df_original) - len(df)
     nulls = int(df.isnull().sum().sum())
@@ -235,7 +248,9 @@ def generate_data_quality_report(df: pd.DataFrame, df_original: pd.DataFrame) ->
     ]
 
 
-def generate_natural_language_explanation(contributions: list[tuple[str, float]], base_price: float, final_price: float) -> str:
+def generate_natural_language_explanation(
+    contributions: list[tuple[str, float]], base_price: float, final_price: float
+) -> str:
     """Smart Price Explainer — natural language summary."""
     explanation = f"This car is priced at **{fmt_inr(final_price)}**"
     if not contributions:

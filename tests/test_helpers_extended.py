@@ -1,4 +1,5 @@
 """Tests for helpers.py — extended coverage for untested functions."""
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -20,31 +21,37 @@ from app.helpers import (
 @pytest.fixture
 def sample_df() -> None:
     """Sample car DataFrame for testing."""
-    return pd.DataFrame({
-        "company": ["Maruti", "Maruti", "Hyundai", "Hyundai", "Honda"],
-        "name": ["Swift", "Alto", "i20", "Creta", "City"],
-        "year": [2020, 2018, 2021, 2022, 2019],
-        "Price": [500000, 300000, 800000, 1200000, 700000],
-        "kms_driven": [10000, 30000, 5000, 2000, 15000],
-        "fuel_type": ["Petrol", "Petrol", "Diesel", "Diesel", "Petrol"],
-    })
+    return pd.DataFrame(
+        {
+            "company": ["Maruti", "Maruti", "Hyundai", "Hyundai", "Honda"],
+            "name": ["Swift", "Alto", "i20", "Creta", "City"],
+            "year": [2020, 2018, 2021, 2022, 2019],
+            "Price": [500000, 300000, 800000, 1200000, 700000],
+            "kms_driven": [10000, 30000, 5000, 2000, 15000],
+            "fuel_type": ["Petrol", "Petrol", "Diesel", "Diesel", "Petrol"],
+        }
+    )
 
 
 @pytest.fixture
 def mock_model() -> None:
     """Mock model that returns fixed predictions."""
+
     class MockModel:
         def predict(self, X) -> None:
             return np.array([13.0])  # log(442413) ≈ 13.0
+
     return MockModel()
 
 
 @pytest.fixture
 def mock_preprocessor() -> None:
     """Mock preprocessor that passes through data."""
+
     class MockPreprocessor:
         def transform(self, X) -> None:
             return X.values
+
     return MockPreprocessor()
 
 
@@ -275,10 +282,12 @@ class TestGenerateDataQualityReport:
     """Tests for generate_data_quality_report function."""
 
     def test_returns_list_of_tuples(self) -> None:
-        df = pd.DataFrame({
-            "kms_driven": [1000, 2000, 3000],
-            "fuel_type": ["Petrol", "Diesel", "Petrol"],
-        })
+        df = pd.DataFrame(
+            {
+                "kms_driven": [1000, 2000, 3000],
+                "fuel_type": ["Petrol", "Diesel", "Petrol"],
+            }
+        )
         df_original = df.copy()
         result = generate_data_quality_report(df, df_original)
         assert isinstance(result, list)
@@ -286,23 +295,29 @@ class TestGenerateDataQualityReport:
         assert len(result) == 4
 
     def test_counts_duplicates(self) -> None:
-        df = pd.DataFrame({
-            "kms_driven": [1000, 2000],
-            "fuel_type": ["Petrol", "Diesel"],
-        })
-        df_original = pd.DataFrame({
-            "kms_driven": [1000, 2000, 3000, 4000],
-            "fuel_type": ["Petrol", "Diesel", "Petrol", "Diesel"],
-        })
+        df = pd.DataFrame(
+            {
+                "kms_driven": [1000, 2000],
+                "fuel_type": ["Petrol", "Diesel"],
+            }
+        )
+        df_original = pd.DataFrame(
+            {
+                "kms_driven": [1000, 2000, 3000, 4000],
+                "fuel_type": ["Petrol", "Diesel", "Petrol", "Diesel"],
+            }
+        )
         result = generate_data_quality_report(df, df_original)
         # Should report 2 duplicates removed
         assert "2 duplicates removed" in result[1][1]
 
     def test_counts_alternative_fuels(self) -> None:
-        df = pd.DataFrame({
-            "kms_driven": [1000, 2000, 3000],
-            "fuel_type": ["Petrol", "Diesel", "CNG"],
-        })
+        df = pd.DataFrame(
+            {
+                "kms_driven": [1000, 2000, 3000],
+                "fuel_type": ["Petrol", "Diesel", "CNG"],
+            }
+        )
         df_original = df.copy()
         result = generate_data_quality_report(df, df_original)
         # Should report 1 alternative fuel

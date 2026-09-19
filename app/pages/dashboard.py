@@ -25,7 +25,6 @@ CURRENT_YEAR: Any = None
 preprocessor: Any = None
 
 
-
 def page_dashboard_home() -> None:
     st.markdown(
         '<p class="hero-text">AutoIntel — Used Car Price Intelligence</p>',

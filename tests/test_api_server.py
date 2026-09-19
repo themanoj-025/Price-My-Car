@@ -7,8 +7,6 @@ Tests both open access and API key auth modes.
 
 import asyncio
 import os
-import sys
-from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
@@ -26,6 +24,7 @@ pytestmark = pytest.mark.slow
 from app.api_server import app, verify_api_key
 
 # ── Fixtures ──────────────────────────────────────────────────────────────
+
 
 @pytest.fixture
 def client() -> None:
@@ -51,6 +50,7 @@ def sample_df() -> None:
 
 
 # ── Health Endpoint ───────────────────────────────────────────────────────
+
 
 class TestHealthEndpoint:
     def test_health_returns_ok(self, client) -> None:
@@ -86,6 +86,7 @@ class TestHealthEndpoint:
 
 
 # ── Car Stats Endpoint ────────────────────────────────────────────────────
+
 
 class TestCarStats:
     @patch("app.api_server._load_cars_df")
@@ -131,6 +132,7 @@ class TestCarStats:
 
 # ── Car Brands Endpoint ───────────────────────────────────────────────────
 
+
 class TestCarBrands:
     @patch("app.api_server._load_cars_df")
     def test_brands_returns_sorted_list(self, mock_load, client, sample_df) -> None:
@@ -151,6 +153,7 @@ class TestCarBrands:
 
 # ── Fuel Types Endpoint ───────────────────────────────────────────────────
 
+
 class TestFuelTypes:
     @patch("app.api_server._load_cars_df")
     def test_fuel_types_returns_sorted(self, mock_load, client, sample_df) -> None:
@@ -170,6 +173,7 @@ class TestFuelTypes:
 
 
 # ── Predict Endpoint ──────────────────────────────────────────────────────
+
 
 class TestPredictEndpoint:
     @patch("app.api_server._load_cars_df")
@@ -225,6 +229,7 @@ class TestPredictEndpoint:
 
 # ── API Key Auth (via TestClient) ─────────────────────────────────────────
 
+
 class TestAPIKeyAuth:
     @patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": ""})
     def test_no_key_configured_allows_open_access(self) -> None:
@@ -244,22 +249,19 @@ class TestAPIKeyAuth:
 
 # ── verify_api_key Direct Tests ───────────────────────────────────────────
 
+
 class TestVerifyAPIKey:
     def test_returns_credentials_when_no_env_key(self) -> None:
         """verify_api_key returns credentials when no env key is set."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": ""}):
-            creds = HTTPAuthorizationCredentials(
-                scheme="Bearer", credentials="some-token"
-            )
+            creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials="some-token")
             result = asyncio.run(verify_api_key(credentials=creds))
             assert result.credentials == "some-token"
 
     def test_rejects_wrong_key(self) -> None:
         """verify_api_key raises 403 when wrong key is provided."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "correct-key"}):
-            creds = HTTPAuthorizationCredentials(
-                scheme="Bearer", credentials="wrong-key"
-            )
+            creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials="wrong-key")
             with pytest.raises(HTTPException) as exc_info:
                 asyncio.run(verify_api_key(credentials=creds))
             assert exc_info.value.status_code == 403
@@ -274,9 +276,7 @@ class TestVerifyAPIKey:
     def test_accepts_correct_key(self) -> None:
         """verify_api_key passes through when correct key is provided."""
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "my-secret"}):
-            creds = HTTPAuthorizationCredentials(
-                scheme="Bearer", credentials="my-secret"
-            )
+            creds = HTTPAuthorizationCredentials(scheme="Bearer", credentials="my-secret")
             result = asyncio.run(verify_api_key(credentials=creds))
             assert result.credentials == "my-secret"
 
@@ -289,13 +289,12 @@ class TestVerifyAPIKey:
 
 # ── Data Loading Edge Cases ───────────────────────────────────────────────
 
+
 class TestDataLoading:
     def test_load_cars_missing_file_returns_503(self, client) -> None:
         """When dataset file doesn't exist, returns 503."""
         with patch("app.api_server._load_cars_df") as mock_load:
-            mock_load.side_effect = HTTPException(
-                status_code=503, detail="Dataset not found"
-            )
+            mock_load.side_effect = HTTPException(status_code=503, detail="Dataset not found")
             response = client.get("/api/v1/cars/stats")
             assert response.status_code == 503
 
@@ -318,6 +317,7 @@ class TestDataLoading:
 
 
 # ── Response Format Validation ────────────────────────────────────────────
+
 
 class TestResponseFormat:
     @patch("app.api_server._load_cars_df")
@@ -370,6 +370,7 @@ class TestResponseFormat:
 
 # ── HTTP Method Validation ────────────────────────────────────────────────
 
+
 class TestHTTPMethods:
     def test_health_only_accepts_get(self, client) -> None:
         response = client.post("/health")
@@ -389,6 +390,7 @@ class TestHTTPMethods:
 
 
 # ── Edge Cases ────────────────────────────────────────────────────────────
+
 
 class TestEdgeCases:
     @patch("app.api_server._load_cars_df")

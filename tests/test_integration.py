@@ -33,16 +33,18 @@ def client() -> None:
 @pytest.fixture()
 def sample_df() -> None:
     """Sample car dataset for mocking _load_cars_df."""
-    return pd.DataFrame({
-        "name": ["Swift VDI", "Wagon R", "Alto 800", "i20 Magna", "Innova"],
-        "company": ["Maruti", "Maruti", "Maruti", "Hyundai", "Toyota"],
-        "Brand": ["Maruti", "Maruti", "Maruti", "Hyundai", "Toyota"],
-        "fuel_type": ["Diesel", "Petrol", "Petrol", "Diesel", "Diesel"],
-        "Fuel_Type": ["Diesel", "Petrol", "Petrol", "Diesel", "Diesel"],
-        "year": [2018, 2019, 2020, 2019, 2017],
-        "Price": [500000, 300000, 200000, 550000, 1200000],
-        "kms_driven": [30000, 50000, 20000, 40000, 80000],
-    })
+    return pd.DataFrame(
+        {
+            "name": ["Swift VDI", "Wagon R", "Alto 800", "i20 Magna", "Innova"],
+            "company": ["Maruti", "Maruti", "Maruti", "Hyundai", "Toyota"],
+            "Brand": ["Maruti", "Maruti", "Maruti", "Hyundai", "Toyota"],
+            "fuel_type": ["Diesel", "Petrol", "Petrol", "Diesel", "Diesel"],
+            "Fuel_Type": ["Diesel", "Petrol", "Petrol", "Diesel", "Diesel"],
+            "year": [2018, 2019, 2020, 2019, 2017],
+            "Price": [500000, 300000, 200000, 550000, 1200000],
+            "kms_driven": [30000, 50000, 20000, 40000, 80000],
+        }
+    )
 
 
 @pytest.fixture()
@@ -52,14 +54,16 @@ def large_df() -> None:
     n = 200
     brands = ["Maruti", "Hyundai", "Toyota", "Honda", "Tata", "Mahindra", "Kia", "MG"]
     fuels = ["Petrol", "Diesel", "CNG", "Electric"]
-    return pd.DataFrame({
-        "Brand": np.random.choice(brands, n),
-        "Price": np.random.uniform(200000, 5000000, n),
-        "Fuel_Type": np.random.choice(fuels, n),
-        "year": np.random.randint(2010, 2025, n),
-        "kms_driven": np.random.randint(0, 200000, n),
-        "name": [f"Car_{i}" for i in range(n)],
-    })
+    return pd.DataFrame(
+        {
+            "Brand": np.random.choice(brands, n),
+            "Price": np.random.uniform(200000, 5000000, n),
+            "Fuel_Type": np.random.choice(fuels, n),
+            "year": np.random.randint(2010, 2025, n),
+            "kms_driven": np.random.randint(0, 200000, n),
+            "name": [f"Car_{i}" for i in range(n)],
+        }
+    )
 
 
 # ── Full HTTP Lifecycle ───────────────────────────────────────────────────
@@ -134,7 +138,6 @@ class TestCarStatsWorkflow:
         """When dataset is missing, returns 503."""
         with patch("app.api_server._load_cars_df") as mock_load:
             from fastapi import HTTPException
-
 
             mock_load.side_effect = HTTPException(status_code=503, detail="Dataset not found")
             response = client.get("/api/v1/cars/stats")
@@ -433,9 +436,9 @@ class TestAuthFlow:
         with patch.dict(os.environ, {"PRICE_MY_CAR_API_KEY": "my-secret"}):
             c = TestClient(app, raise_server_exceptions=False)
             with patch("app.api_server._load_cars_df") as mock_load:
-                mock_load.return_value = pd.DataFrame({
-                    "Brand": ["A"], "Price": [100000], "Fuel_Type": ["Petrol"]
-                })
+                mock_load.return_value = pd.DataFrame(
+                    {"Brand": ["A"], "Price": [100000], "Fuel_Type": ["Petrol"]}
+                )
                 response = c.get(
                     "/api/v1/cars/stats",
                     headers={"Authorization": "Bearer my-secret"},
@@ -451,11 +454,13 @@ class TestDataLoading:
 
     @patch("app.api_server._load_cars_df")
     def test_stats_with_single_row(self, mock_load, client) -> None:
-        mock_load.return_value = pd.DataFrame({
-            "Brand": ["BMW"],
-            "Price": [3000000.0],
-            "Fuel_Type": ["Diesel"],
-        })
+        mock_load.return_value = pd.DataFrame(
+            {
+                "Brand": ["BMW"],
+                "Price": [3000000.0],
+                "Fuel_Type": ["Diesel"],
+            }
+        )
         response = client.get("/api/v1/cars/stats")
         assert response.status_code == 200
         data = response.json()
@@ -464,11 +469,13 @@ class TestDataLoading:
 
     @patch("app.api_server._load_cars_df")
     def test_predict_with_special_characters(self, mock_load, client) -> None:
-        mock_load.return_value = pd.DataFrame({
-            "Brand": ["BMW", "Mercedes-Benz"],
-            "Price": [3000000, 5000000],
-            "Fuel_Type": ["Diesel", "Petrol"],
-        })
+        mock_load.return_value = pd.DataFrame(
+            {
+                "Brand": ["BMW", "Mercedes-Benz"],
+                "Price": [3000000, 5000000],
+                "Fuel_Type": ["Diesel", "Petrol"],
+            }
+        )
         body = {
             "brand": "Mercedes-Benz",
             "model": "C-Class",
@@ -522,8 +529,12 @@ class TestConcurrentRequests:
         client.post(
             "/api/v1/predict",
             json={
-                "brand": "Maruti", "model": "Swift", "year": 2020,
-                "km_driven": 25000, "fuel_type": "Petrol", "transmission": "Manual",
+                "brand": "Maruti",
+                "model": "Swift",
+                "year": 2020,
+                "km_driven": 25000,
+                "fuel_type": "Petrol",
+                "transmission": "Manual",
             },
         )
         # All should succeed — verify final state
