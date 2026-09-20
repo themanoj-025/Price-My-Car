@@ -226,8 +226,10 @@ uvicorn app.api_server:app --host 0.0.0.0 --port 8000
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PRICE_MY_CAR_API_KEY` | (empty) | API key for Bearer token auth |
-| `API_HOST` | `0.0.0.0` | API server host |
-| `API_PORT` | `8000` | API server port |
+| `PRICE_MY_CAR_CORS_ORIGINS` | `http://localhost:8501,http://localhost:3000` | Comma-separated CORS allowlist |
+| `LOG_DIR` | `logs` | Directory for structured log files |
+
+> 📝 **Note:** the API binds to `0.0.0.0:8000` by default (see the launch command above). Pass `--host` / `--port` to `uvicorn` to override — there are no `API_HOST`/`API_PORT` environment variables. Security posture is documented in [SECURITY.md](SECURITY.md).
 
 ---
 
