@@ -5,7 +5,7 @@ strict DAG flowing data → artifacts → app.
 
 ## 1. Dependency Graph
 
-```
+```text
                      ┌─────────────────────────────────────────────────┐
                      │                 app/ package                    │
                      │                                                 │
