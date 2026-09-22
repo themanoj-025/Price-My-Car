@@ -2,7 +2,7 @@
 
 Annotated tree of the **current (post-restructure)** layout, one-line purpose per entry.
 
-```
+```text
 Price-My-Car/
 ├── .github/
 │   ├── CODEOWNERS / PULL_REQUEST_TEMPLATE.md / ISSUE_TEMPLATE/

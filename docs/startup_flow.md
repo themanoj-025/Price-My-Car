@@ -17,7 +17,7 @@ Boot sequence inside `app/streamlit_app.py`:
 
 ## 2. Docker (prod)
 
-```
+```text
 docker build -t autointel .
 docker compose up -d
 ```

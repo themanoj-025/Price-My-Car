@@ -24,7 +24,7 @@
 - Formatter: black; linter: ruff.
 - Structure:
 
-```
+```text
 streamlit_app.py          # dashboard (auth + 9 pages + admin)
 helpers.py                # pure testable helpers
 prepare_ml_data.py        # preprocessing
