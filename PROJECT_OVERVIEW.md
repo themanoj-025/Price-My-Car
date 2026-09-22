@@ -61,7 +61,7 @@
 
 ## 3. High-Level Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    Streamlit App (app/streamlit_app.py)                  │
 │                                                                     │
@@ -92,7 +92,7 @@
 
 ## 4. Complete Folder Structure Tree
 
-```
+```text
 Price-My-Car/
 ├── .dockerignore
 ├── .editorconfig
@@ -279,7 +279,7 @@ docker compose up -d
 
 ## 11. Dependency Graph Summary
 
-```
+```text
 app/streamlit_app.py → app/helpers.py → ml_ready/models/* → ml_ready/preprocessor.pkl
 scripts/backfills/prepare_ml_data.py → data/Cleaned_Car_data.csv → ml_ready/
 scripts/seed/train_dashboard_models.py → scripts/seed/tune_hyperparameters.py → ml_ready/models/

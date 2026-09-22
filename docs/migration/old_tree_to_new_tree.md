@@ -7,7 +7,7 @@ paths (Dockerfile, compose, Makefile, CI, setup.sh, docs).
 
 ## Before (2026-08-10)
 
-```
+```text
 Price-My-Car/
 ├── .github/ … (unchanged)
 ├── .streamlit/config.toml
@@ -31,7 +31,7 @@ Price-My-Car/
 
 ## After (2026-08-11)
 
-```
+```text
 Price-My-Car/
 ├── .github/ … (unchanged)
 ├── .streamlit/config.toml
