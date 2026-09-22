@@ -104,7 +104,7 @@ streamlit run app/streamlit_app.py
 
 ## Workflow
 
-```
+```text
 data/Cleaned_Car_data.csv
         ↓
   scripts/backfills/prepare_ml_data.py (log1p transform, feature engineering)
@@ -151,7 +151,7 @@ Log-transforming Price was the biggest improvement — boosting Linear Regressio
 
 ## 🏗 Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                  Streamlit Dashboard (9 pages)                  │
 │  Dashboard │ Explorer │ EDA │ Model Lab │ Predictor │ Admin     │
