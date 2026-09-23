@@ -1,3 +1,9 @@
+# Cancel superseded runs of this workflow on the same ref (PR pushes).
+# Never cancels on main pushes or scheduled runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 name: Auto Label
 on:
   pull_request:
@@ -8,6 +14,7 @@ permissions:
 jobs:
   label:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5
         with:
