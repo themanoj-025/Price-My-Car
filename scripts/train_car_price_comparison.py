@@ -344,6 +344,8 @@ def feature_importance(models: dict[str, object], feature_names: list[str], out_
     """XGBoost top-15 feature importance chart."""
     xgb_model = models["XGBoost"]
     if not hasattr(xgb_model, "feature_importances_"):
+        return
+    if not hasattr(xgb_model, "feature_importances_"):
         print(f"SKIP feature importance — {type(xgb_model).__name__} has no feature_importances_")
         return
     importance = xgb_model.feature_importances_
@@ -407,7 +409,7 @@ def residual_analysis(models: dict[str, object], X_test: np.ndarray, y_test: np.
     print(f"Saved: {out_path}")
 
 
-def tune_top_tree_models(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_test: np.ndarray) -> dict[str, object]:
+def tune_top_tree_models(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_test: np.ndarray) -> dict[str, Model]:
     """GridSearchCV the top 3 tree-based models (GB, XGBoost, RF)."""
     tune_config = {
         "Gradient Boosting": {
@@ -445,7 +447,7 @@ def tune_top_tree_models(X_train: np.ndarray, y_train: np.ndarray, X_test: np.nd
     print(f"{'Model':<22} {'Best CV R² (log)':<18} {'Best Params'}")
     print(f"{'=' * 70}")
 
-    tuned_models: dict[str, object] = {}
+    tuned_models: dict[str, Model] = {}
     for name, config in tune_config.items():
         gs = GridSearchCV(config["model"], config["grid"], cv=3, scoring="r2", n_jobs=-1, verbose=0)
         gs.fit(X_train, y_train)
