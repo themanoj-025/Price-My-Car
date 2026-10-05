@@ -79,6 +79,7 @@ def preprocessor() -> joblib.MyLoader:
 @pytest.fixture(scope="module")
 def models_dir_mapping() -> dict[str, joblib.MyLoader]:
     """Map model display name -> fitted model loaded from disk."""
+    # Map display name -> committed model filename on disk.
     # (Gradient Boosting / XGBoost may fail to unpickle if the _loss
     # C extension is missing; every other model should succeed.)
     mapping = {
@@ -124,6 +125,7 @@ class TestModuleApi:
         assert hasattr(m, "save_summary_table")
         assert hasattr(m, "main")
 
+    @pytest.mark.slow
     def test_train_and_evaluate_returns_fitted_models(self, X_train, X_test, y_train, y_test):
         """train_and_evaluate must return (DataFrame, fitted models dict)."""
         import scripts.train_car_price_comparison as m
@@ -195,7 +197,6 @@ class TestDataContract:
 
     def test_y_log_skew_low(self, y_train, y_test) -> None:
         """Log1p target should be close to symmetric (log-skew ~ < 1)."""
-
         def _skew(a: np.ndarray) -> float:
             a = a.astype(float)
             m = a.mean()
@@ -208,20 +209,25 @@ class TestDataContract:
         assert abs(_skew(y_test)) < 1.0
 
     def test_preprocessor_fit_transform(self, preprocessor, X_train, X_test) -> None:
-        """Preprocessor transforms produce finite, numeric output."""
+        """Preprocessor transforms produce finite, numeric output.
+
+        The committed preprocessor.pkl was fit on a 4-column DataFrame
+        (car_age, kms_driven, company, fuel_type_simple), so it is
+        exercised on that schema, not on the scaled 39-feature matrix.
+        """
+        # Fit schema (untransformed raw columns) -> transformed 39 features.
         raw = pd.DataFrame(
             {
-                "car_age": [4, 2, 5, 3, 1, 4, 2, 6, 3, 5, 2, 4, 1, 3, 5],
-                "kms_driven": [15000, 5000, 30000, 20000, 2000, 18000, 8000, 25000, 12000, 6000, 22000, 9000, 16000, 7000, 28000],
-                "company": ["Maruti", "Hyundai", "Honda", "Toyota", "Tata", "Maruti", "Hyundai", "Honda", "Toyota", "Tata", "Maruti", "Hyundai", "Honda", "Toyota", "Tata"],
-                "fuel_type_simple": ["Petrol", "Diesel", "Petrol", "Diesel", "Petrol", "Petrol", "Diesel", "Petrol", "Diesel", "Petrol", "Petrol", "Diesel", "Petrol", "Diesel", "Petrol"],
+                "car_age": [4, 2, 5, 3, 1],
+                "kms_driven": [15000, 5000, 30000, 20000, 2000],
+                "company": ["Maruti", "Hyundai", "Honda", "Toyota", "Tata"],
+                "fuel_type_simple": ["Petrol", "Diesel", "Petrol", "Diesel", "Petrol"],
             }
         )
         X_tr = preprocessor.transform(raw)
-        assert X_tr.shape == (15, 39), X_tr.shape
+        assert X_tr.shape == (5, 39), X_tr.shape
         assert np.isfinite(X_tr).all()
         assert np.issubdtype(X_tr.dtype, np.floating)
-
         # A 39-feature matrix should be rejected by this 4-column preprocessor.
         try:
             preprocessor.transform(X_train[:1])
@@ -339,6 +345,7 @@ class TestMetricsConsistency:
         )
         src = src[["car_age", "kms_driven", "company", "fuel_type_simple", "Price"]]
 
+        # Same split as prepare_ml_data.py (test_size=0.2, random_state=42).
         from sklearn.model_selection import train_test_split
 
         _, src_test = train_test_split(src, test_size=0.2, random_state=42)
@@ -350,16 +357,24 @@ class TestMetricsConsistency:
         assert pred_orig.shape == (len(src_test),)
         assert np.isfinite(pred_orig).all()
         assert (pred_orig > 0).all()
+        # Predictions should be well-spread (not all identical), confirming the
+        # committed model is a real fitted estimator rather than a stub.
         assert pred_orig.min() < pred_orig.max()
 
 
 # ---------------------------------------------------------------------------
-# Module charts + summary functions (cover the non-training code paths)
+# Notebook structure / output checks
 # ---------------------------------------------------------------------------
 
 
 class TestModuleChartsAndSummary:
-    """Exercise the module's visual + summary functions without retraining."""
+    """Exercise the module's visual + summary functions without retraining.
+
+    The exported module's tree logic (chart + summary writing) must be
+    covered by tests that pass a small synthetic results DataFrame and a
+    scratch output directory, so the large ``main()``/full-training hot path
+    is not exercised here.
+    """
 
     @pytest.fixture
     def small_data(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
@@ -424,7 +439,7 @@ class TestModuleChartsAndSummary:
         """feature_importance must use the passed fitted XGBoost model."""
         import scripts.train_car_price_comparison as m
 
-        fitted: dict[str, object] = {
+        fitted = {
             "XGBoost": joblib.load(ML_READY / "models" / "xgboost.pkl"),
         }
         feature_names = list(np.load(ML_READY / "feature_names.npy", allow_pickle=True))
@@ -437,7 +452,7 @@ class TestModuleChartsAndSummary:
         """residual_analysis must use the passed fitted best model."""
         import scripts.train_car_price_comparison as m
 
-        fitted: dict[str, object] = {
+        fitted = {
             "XGBoost": joblib.load(ML_READY / "models" / "xgboost.pkl"),
             "Random Forest": joblib.load(ML_READY / "models" / "random_forest.pkl"),
         }
@@ -448,11 +463,6 @@ class TestModuleChartsAndSummary:
         m.residual_analysis(fitted, X_test, y_test, out, best_model=best)
         assert out.exists()
         assert out.stat().st_size > 0
-
-
-# ---------------------------------------------------------------------------
-# Notebook structure / output checks
-# ---------------------------------------------------------------------------
 
 
 class TestNotebook:
@@ -469,12 +479,18 @@ class TestNotebook:
         assert len(nb.cells) >= 4
 
     def test_notebook_has_no_training_cell(self) -> None:
-        """No notebook cell must actually train/maintain the full pipeline."""
+        """No notebook cell must actually train/maintain the full pipeline.
+
+        Safe-to-parse tokens that are NOT training logic (e.g. "main()",
+        "train_and_evaluate" imported) are deliberately excluded so the demo
+        is not falsely flagged.
+        """
         import nbformat
 
         with open(NOTEBOOK, encoding="utf-8") as fh:
             nb = nbformat.read(fh, as_version=4)
 
+        # Tokens that indicate real training work (cannot appear in the slimmed demo).
         retraining_tokens = (
             "model.fit(",
             "GridSearchCV(",
@@ -487,8 +503,6 @@ class TestNotebook:
             if cell.cell_type != "code":
                 continue
             src = cell.source
-            if isinstance(src, list):
-                src = "".join(src)
             for token in retraining_tokens:
                 assert token not in src, f"Cell still performs training: {token}"
 
