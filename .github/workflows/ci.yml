@@ -1,0 +1,242 @@
+# Cancel superseded runs of this workflow on the same ref (PR pushes).
+# Never cancels on main pushes or scheduled runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Least-privilege token scope; jobs declaring their own permissions override this.
+permissions:
+  contents: read
+
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          cache: pip
+          python-version: "3.12"
+
+      - name: Run pre-commit hooks
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          cache: pip
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install ruff==0.16.4
+
+      - name: Lint with ruff (critical errors)
+        run: |
+          ruff check . --select E9,F63,F7,F82 --output-format=concise
+
+      - name: Lint with ruff (full)
+        run: |
+          ruff check . --statistics
+
+      - name: Format check with ruff
+        run: |
+          ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: lint
+    strategy:
+      matrix:
+        # 3.12 only: numpy>=2.5.1 and xgboost>=3.3.0 (dependabot) require
+        # Python >=3.12, so testing 3.11 would fail the pipeline.
+        python-version: ["3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Syntax check all Python files
+        run: |
+          python -c "
+          import py_compile;
+          py_compile.compile('app/helpers.py', doraise=True);
+          py_compile.compile('app/streamlit_app.py', doraise=True);
+          py_compile.compile('tests/test_helpers.py', doraise=True);
+          print('All files compile OK')
+          "
+
+      - name: Run unit tests
+        run: python -m pytest tests/test_helpers.py -v --tb=short --cov=app --cov-report=term-missing --cov-fail-under=55 -x
+
+  link-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Check for broken links in docs
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2
+        with:
+          args: >-
+            --config /dev/null
+            --no-progress
+            --exclude 'https?://localhost'
+            --exclude 'https?://127\.0\.0\.1'
+            --exclude 'https?://.*shields\.io'
+            --exclude 'https?://.*example\.com'
+            --exclude 'https?://.*test\.org'
+            --exclude 'https?://.*yourusername.*'
+            --exclude 'https?://.*your-username.*'
+            --exclude 'https?://.*static\.streamlit\.io'
+            --exclude 'https?://.*\{.*\}.*'
+            '**/*.md'
+        continue-on-error: true
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    needs: test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Validate compose files
+        run: |
+          docker compose -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.dev.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml config --quiet
+
+      - name: Build image
+        run: docker build -t autointel:ci .
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: autointel:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          # pip vendors msgpack/setuptools under pip/_vendor/ (versions pinned in
+          # pip/_vendor/vendor.txt). Trivy reports those vendored copies against
+          # GHSA-6v7p-g79w-8964 (msgpack 1.1.2) and CVE-2025-47273 (setuptools
+          # 70.3.0) even though the app's real runtime packages in site-packages
+          # are patched (msgpack 1.2.1, setuptools 84.0.0). The app never imports
+          # pip's vendored copies, so exclude that directory from the scan.
+          skip-dirs: /usr/local/lib/python3.12/site-packages/pip/_vendor
+
+  hadolint:
+    name: Container lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+          ignore: DL3066
+
+  typecheck:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          cache: pip
+          # Aligned with the rest of the matrix: the requirements floor at
+          # scipy 1.18.1 / xgboost 3.4.1 / numpy 2.5.x requires Python >=3.12,
+          # so a 3.11 job can never resolve them.
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install mypy==1.15.0
+      - name: Type check with mypy
+        run: mypy . --ignore-missing-imports
+
+  security-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          cache: pip
+          python-version: '3.12'
+      - name: Install tools
+        run: pip install pip-audit bandit==1.9.4
+      - name: pip-audit
+        run: pip-audit -r requirements.txt
+      - name: Bandit security scan
+        run: bandit -r src/ -ll
+
+  docker-cache:
+    name: Docker image build + layer cache
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - name: Build image (cached)
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: .
+          file: Dockerfile
+          load: true
+          tags: autointel:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  dive:
+    name: Docker image size audit (dive)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - name: Build image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: .
+          load: true
+          tags: dive-audit:latest
+          cache-from: type=gha
+      - name: Install dive
+        run: |
+          wget -q https://github.com/wagoodman/dive/releases/download/v0.12.0/dive_0.12.0_linux_amd64.deb
+          sudo dpkg -i dive_0.12.0_linux_amd64.deb
+      - name: Run dive (efficiency check)
+        run: |
+          CI=true dive dive-audit:latest

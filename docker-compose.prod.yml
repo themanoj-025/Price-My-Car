@@ -1,0 +1,17 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Price-My-Car — Production override
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Hardening: restart always, resource limits, no dev mounts.
+# ═══════════════════════════════════════════════════════════════════════
+
+services:
+  app:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M

@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Price-My-Car — Development override
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Adds: source bind mounts + hot reload. NEVER use in production.
+# ═══════════════════════════════════════════════════════════════════════
+
+services:
+  app:
+    build:
+      target: dev
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./scripts:/app/scripts
+      - ./data:/app/data
+      - ./ml_ready:/app/ml_ready
+      # Auth DB is created at runtime; the Makefile's `up` target touches
+      # users_db.json first so this bind mount is a file, not a directory.
+      - ./users_db.json:/app/users_db.json
+    command: >
+      streamlit run app/streamlit_app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+      --server.headless=true
+      --browser.gatherUsageStats=false
+      --server.fileWatcherType=polling
+      --server.runOnSave=true

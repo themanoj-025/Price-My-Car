@@ -1,0 +1,50 @@
+# ======================================================================
+# Car Price Prediction - Dependencies
+# Install: pip install -r requirements.txt
+# ======================================================================
+
+# Core data science
+bcrypt>=5.0.0
+
+pandas>=3.0.6
+# numpy 2.5.x requires Python >=3.12 — resolvable now that the whole CI
+# matrix runs 3.12, but floored at 2.4.6 to stay installable on 3.11 too.
+numpy>=2.5.3
+
+scipy>=1.18.1
+scikit-learn>=1.9.1
+structlog>=26.1.0
+xgboost>=3.4.1
+joblib>=1.6.0
+
+# Visualization
+matplotlib>=3.11.2
+seaborn>=0.13.2
+plotly>=7.1.0
+
+# Dashboard
+streamlit>=1.64.0
+
+# Excel export (bulk prediction download)
+openpyxl>=3.1.5
+
+# VIF calculation (multicollinearity check in EDA)
+statsmodels>=0.14.6
+
+# Notebook utilities
+nbformat>=5.11.1
+jupyter>=1.1.1
+nbconvert>=7.17.1
+
+# Pinned transitive deps with security advisories
+# msgpack: GHSA-6v7p-g79w-8964 (HIGH, OOB read) — fixed in 1.2.1
+# setuptools: CVE-2025-47273 (path traversal) — fixed in 78.1.1
+msgpack>=1.2.1
+setuptools>=84.0.0
+
+# API observability
+fastapi>=0.100.0
+uvicorn>=0.53.0
+slowapi>=0.1.9
+python-multipart>=0.0.32
+prometheus-client>=0.21.0

@@ -1,0 +1,14 @@
+# Gitleaks configuration
+# Extends gitleaks' default ruleset with repository-specific allowlists.
+# NOTE: allowlists here are for NON-PRODUCTION test fixtures only.
+title = "gitleaks config for Price-My-Car"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documentation placeholders (dummy values by design)"
+regexes = [
+  # README.md API-usage curl snippet: placeholder secret key.
+  '''your-secret-key-here''',
+]

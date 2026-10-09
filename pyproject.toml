@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "price-my-car"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "BLE", "UP", "SIM", "C4", "RUF", "PLC", "PIE", "I"]
+ignore = [
+    "DTZ005",  # datetime.now() without tz
+    "BLE001",  # blind except — defensive coding
+    "E722",    # bare except
+    "SIM102",  # collapsible if
+    "SIM117",  # multiple with-statements
+    "B008",    # FastAPI Depends() in defaults
+    "E501",    # line too long
+    "UP031",   # printf formatting
+    "RUF012",  # mutable class default
+    "PLC0415", # import-outside-top-level — lazy imports
+    "F821",    # undefined name — false positives from annotations
+    "RUF001",  # ambiguous unicode — intentional
+    "E402",    # module-import-not-at-top — Streamlit page lazy imports
+    "B904",    # raise-without-from — FastAPI error handling
+    "PLC0206", # dict-without-items — iteration pattern
+    "SIM105",  # suppressible-exception — legacy pattern
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pytest.ini_options]
+addopts = "-m 'not slow' --cov --cov-fail-under=70"
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+markers = [
+    "unit: marks pure unit tests (deselect with '-m \"not unit\"')",
+    "integration: marks tests requiring external services (deselect with '-m \"not integration\"')",
+    "slow: integration tests (database, HTTP, ML models) — excluded from default run; use pytest -m slow"
+]
+
+[tool.mypy]
+python_version = "3.12"
+# app/health.py was reported as both "health" and "app.health" when pre-commit
+# passed the file directly; this makes directly-passed files resolve through
+# the package structure like crawled ones do.
+explicit_package_bases = true
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+skip_empty = true
