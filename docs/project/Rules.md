@@ -1,4 +1,4 @@
-# Rules — AutoIntel: Coding Standards & AI-Agent Operating Rules
+# Rules — AutoIntel: Coding Standards & Engineering Operating Rules
 
 | Field | Value |
 | --- | --- |
@@ -48,7 +48,7 @@ test_helpers.py           # 65 tests
 - MUST have tests: feature engineering, price bounds, auth helpers, CSV parsing.
 - See [Testing.md](../technical/Testing.md).
 
-## 5. AI Agent Operating Rules
+## 5. Engineering Operating Rules
 
 - Always read Tracker.md and ImplementationPlan.md before starting.
 - Never mark a task 🟢 Done without tests passing.
