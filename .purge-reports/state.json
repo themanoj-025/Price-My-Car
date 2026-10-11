@@ -1,0 +1,14 @@
+{
+  "repository": "Price-My-Car",
+  "mode": "AUDIT_ONLY",
+  "aggressiveness": 3,
+  "phase": 9,
+  "status": "COMPLETED_AUDIT",
+  "baseline_sha": "821266f562dba9252e63df994d720c6e29c8b74d",
+  "total_candidates": 103,
+  "t0_count": 79,
+  "t1_count": 0,
+  "t2_count": 24,
+  "t3_count": 0,
+  "updated_at": "2026-10-11T07:39:40.516Z"
+}
