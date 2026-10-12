@@ -59,11 +59,6 @@ Thumbs.db
 # === Streamlit secrets (NEVER COMMIT) ===
 .streamlit/secrets.toml
 
-.gemini/
-.cursorrules
-
-CLAUDE.md
-
 # Test coverage artifacts
 .coverage
 .coverage.*
@@ -76,39 +71,21 @@ radar_balance.txt
 *.db-shm
 *.db-wal
 
-# KEEP: AI provenance & transparency files — these must remain
-
 # ──────────────────────────────────────────────────────────────
-#  AI / LLM ARTIFACTS (prove this project uses NO LLM/AI)
 # ──────────────────────────────────────────────────────────────
 # AI-assistant tooling config (not part of the app)
-AGENTS.md
-AGENTS_FIX.md
-.cursorrules
-.gemini/
 .act-secrets
-ai-provenance.json
-AI_DISCLOSURE.md
-ai-disclosure-check.yml
 
-# AI / Assistant tooling & artifacts
 .claude/
-CLAUDE.md
 .cursor/
-.cursorrules
 .windsurf/
 .windsurfrules
 .cline/
 .clinerules
 .continue/
 .roo/
-.gemini/
 .copilot/
 copilot-instructions.md
 .github/copilot-instructions.md
-AGENTS.md
-AGENTS_FIX.md
 .purge-reports/
 .cleanup-audit/
-ai-provenance.json
-AI_DISCLOSURE.md
