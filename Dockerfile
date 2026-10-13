@@ -17,7 +17,7 @@
 # ═══════════════════════════════════════════════════════════════════════
 
 # ── Base stage ─────────────────────────────────────────────────────────
-FROM python:3.12-slim AS base
+FROM python:3.14-slim AS base
 
 LABEL org.opencontainers.image.title="AutoIntel"
 LABEL org.opencontainers.image.description="Used car price prediction dashboard (Streamlit)"
