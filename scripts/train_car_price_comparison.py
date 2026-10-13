@@ -166,10 +166,7 @@ def train_and_evaluate(
                 "Time (s)": round(elapsed, 2),
             }
         )
-        print(
-            f"{name:<22} {train_r2:<10.4f} {test_r2:<10.4f} "
-            f"Rs.{rmse:<10,.0f} Rs.{mae:<10,.0f} {elapsed:<8.2f}"
-        )
+        print(f"{name:<22} {train_r2:<10.4f} {test_r2:<10.4f} Rs.{rmse:<10,.0f} Rs.{mae:<10,.0f} {elapsed:<8.2f}")
 
     print("\nTraining complete!")
     return pd.DataFrame(results), models
@@ -180,7 +177,14 @@ def save_summary_table(results_df: pd.DataFrame, out_dir: Path | None = None) ->
     out_dir = out_dir or REPORT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
     display_cols = [
-        "Model", "Train R²", "Test R²", "RMSE", "MAE", "CV R² Mean", "CV R² Std", "Time (s)",
+        "Model",
+        "Train R²",
+        "Test R²",
+        "RMSE",
+        "MAE",
+        "CV R² Mean",
+        "CV R² Std",
+        "Time (s)",
     ]
     display_df = results_df[display_cols].copy()
     display_df.index = display_df.index + 1  # 1-based index is display-only
@@ -329,10 +333,14 @@ def radar_chart(results_df: pd.DataFrame, out_path: Path) -> None:
     ax.set_title("ML Algorithm Comparison - Radar Chart", fontsize=16, fontweight="bold", pad=25)
     ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.1), fontsize=9, framealpha=0.9)
     ax.text(
-        0, -0.15,
+        0,
+        -0.15,
         "Higher values are better across all dimensions. "
         "RMSE, MAE & Time are inverted so that outward = better performance.",
-        transform=ax.transAxes, ha="center", fontsize=9, color="gray",
+        transform=ax.transAxes,
+        ha="center",
+        fontsize=9,
+        color="gray",
     )
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
@@ -367,10 +375,16 @@ def feature_importance(models: dict[str, object], feature_names: list[str], out_
     print(f"Saved: {out_path}")
 
 
-def residual_analysis(models: dict[str, object], X_test: np.ndarray, y_test: np.ndarray, out_path: Path, best_model: object | None = None) -> None:
+def residual_analysis(
+    models: dict[str, object],
+    X_test: np.ndarray,
+    y_test: np.ndarray,
+    out_path: Path,
+    best_model: object | None = None,
+) -> None:
     """Actual vs predicted / residuals / predicted vs residual panels."""
-    fitted: object | None = best_model if best_model is not None else next(
-        (m for m in models.values() if hasattr(m, "predict")), None
+    fitted: object | None = (
+        best_model if best_model is not None else next((m for m in models.values() if hasattr(m, "predict")), None)
     )
     if fitted is None:
         raise RuntimeError("best model not found; pass best_model or call train_and_evaluate first")
@@ -409,7 +423,9 @@ def residual_analysis(models: dict[str, object], X_test: np.ndarray, y_test: np.
     print(f"Saved: {out_path}")
 
 
-def tune_top_tree_models(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_test: np.ndarray) -> dict[str, Model]:
+def tune_top_tree_models(
+    X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_test: np.ndarray
+) -> dict[str, Model]:
     """GridSearchCV the top 3 tree-based models (GB, XGBoost, RF)."""
     tune_config = {
         "Gradient Boosting": {

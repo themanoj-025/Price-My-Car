@@ -197,13 +197,14 @@ class TestDataContract:
 
     def test_y_log_skew_low(self, y_train, y_test) -> None:
         """Log1p target should be close to symmetric (log-skew ~ < 1)."""
+
         def _skew(a: np.ndarray) -> float:
             a = a.astype(float)
             m = a.mean()
             s = a.std()
             if s == 0:
                 return 0.0
-            return float(((a - m) ** 3).mean() / s ** 3)
+            return float(((a - m) ** 3).mean() / s**3)
 
         assert abs(_skew(y_train)) < 1.0
         assert abs(_skew(y_test)) < 1.0
@@ -257,13 +258,9 @@ class TestModelArtifacts:
         for name, model in models_dir_mapping.items():
             assert hasattr(model, "predict"), f"{name} missing predict()"
 
-    def test_model_predictions_positive_and_in_range(
-        self, models_dir_mapping, preprocessor, feature_names
-    ) -> None:
+    def test_model_predictions_positive_and_in_range(self, models_dir_mapping, preprocessor, feature_names) -> None:
         """Single-row predictions must be positive and within a reasonable range."""
-        sample = pd.DataFrame(
-            [{"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"}]
-        )
+        sample = pd.DataFrame([{"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"}])
         X = preprocessor.transform(sample)
         for name, model in models_dir_mapping.items():
             pred_log = model.predict(X)[0]
@@ -273,9 +270,7 @@ class TestModelArtifacts:
 
     def test_models_differ(self, models_dir_mapping, preprocessor) -> None:
         """Different models must not all produce identical predictions."""
-        sample = pd.DataFrame(
-            [{"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"}]
-        )
+        sample = pd.DataFrame([{"car_age": 4, "kms_driven": 15000, "company": "Maruti", "fuel_type_simple": "Petrol"}])
         X = preprocessor.transform(sample)
         preds = [float(np.expm1(model.predict(X)[0])) for model in models_dir_mapping.values()]
         assert len({round(p, 0) for p in preds}) > 1
