@@ -50,7 +50,8 @@ RUN pip install --upgrade pip && \
         "setuptools>=78.1.1" \
         "wheel>=0.46.2" \
         "msgpack>=1.2.1" \
-        "jaraco-context>=6.1.0"
+        "jaraco-context>=6.1.0" \
+        "urllib3>=2.8.0"
 
 # ── Prod stage ─────────────────────────────────────────────────────────
 FROM deps AS prod
