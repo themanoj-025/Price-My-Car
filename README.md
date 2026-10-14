@@ -1,296 +1,350 @@
-# AutoIntel v6.0 — Car Price Intelligence Platform
+# Price-My-Car (AutoIntel v6.0)
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.7-blue)](https://scikit-learn.org)
-[![XGBoost](https://img.shields.io/badge/XGBoost-3.2-orange)](https://xgboost.readthedocs.io)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.57-red)](https://streamlit.io)
-[![CI](https://img.shields.io/github/actions/workflow/status/themanoj-025/Price-My-Car/ci.yml?branch=main&label=CI&logo=github)](https://github.com/themanoj-025/Price-My-Car/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/themanoj-025/Price-My-Car/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/themanoj-025/Price-My-Car/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](./LICENSE)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=flat-square)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.143-009688.svg?style=flat-square)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.57-red.svg?style=flat-square)](https://streamlit.io/)
+[![Tests: 285 Passing](https://img.shields.io/badge/Tests-285%20Passing-brightgreen.svg?style=flat-square)](tests/)
 
-A production-ready ML application for predicting used car prices in the Indian market. Features 8 ML models, 9 dashboard pages, user authentication, admin panel, and 10 enhanced features — all in a single deployable Streamlit app.
-
----
-
-## 📋 Table of Contents
-
-- [Dataset](#dataset)
-- [Features](#features)
-- [Pages](#pages)
-- [Installation](#installation)
-- [Workflow](#workflow)
-- [Model Performance](#model-performance)
-- [Files](#files)
-- [License](#-license)
-- [Contributing](#-contributing)
-- [Show Your Support](#-show-your-support)
+Production-ready machine learning intelligence platform for estimating used car
+valuations in the Indian automotive market. Powered by 13,284 listings, an ensemble
+of 8 regression estimators, a 9-page interactive Streamlit terminal, Deal Score
+gauges, depreciation curve analysis, and a production FastAPI service.
 
 ---
 
-## 📸 Screenshots
+## Quick Facts
 
-> _To add screenshots: run `streamlit run app/streamlit_app.py`, capture your screen, save images to `docs/assets/`, and reference them below._
->
-> **Suggested screenshots:**
-> - Price Predictor page with confidence interval
-> - EDA Deep-Dive with correlation heatmaps
-> - Model Lab comparing all 8 models
-> - Market Intelligence depreciation calculator
-
----
-
-## Dataset
-
-The dataset contains 13,284 used car listings from the Indian market:
-
-| Column | Description |
-|--------|-------------|
-| `name` | Car model name |
-| `company` | Manufacturer/brand (36 unique) |
-| `year` | Manufacturing year (1996–2024) |
-| `Price` | Selling price in INR (Rs. 20,000 – Rs. 1,00,00,000) |
-| `kms_driven` | Total distance driven in km |
-| `fuel_type` | Fuel type: Diesel, Petrol, CNG, LPG, Electric |
-
-**Key stats:** 11,149 rows after removing 2,135 duplicates, 39 engineered features, log-transformed target (skewness reduced from 5.64 to -0.12).
+| Dimension | Details |
+| --- | --- |
+| **Domain** | Automotive Intelligence, Price Valuation & Depreciation Modeling |
+| **Dataset Scale** | 13,284 verified Indian used car listings across major metropolitan markets |
+| **ML Algorithms** | 8 models (Linear, Ridge, Lasso, KNN, SVR, RandomForest, GradientBoosting, XGBoost) |
+| **Explainability** | SHAP-Lite linear and tree feature attribution waterfall plots |
+| **Specialized Metrics** | Deal Score (0–100 gauge), multi-year depreciation curves, and INR currency formatting |
+| **Interfaces** | 9-page Streamlit portal + FastAPI async REST microservice |
+| **Test Coverage** | 285 collected tests across 13 unit and integration suites |
+| **License** | [MIT License](./LICENSE) |
 
 ---
 
-## Features
+## Table of Contents
 
-- **Auth System** — Login, signup, forgot password with JSON persistence
-- **8 ML Models** — Linear Regression, Ridge, XGBoost, Gradient Boosting, SVR, Lasso, KNN, Random Forest
-- **Price Predictor** — Real-time predictions with confidence intervals and depreciation curves
-- **EDA Deep-Dive** — 5-tab analysis: price, brands, correlations, outliers, year trends
-- **Market Intelligence** — Price trends, heatmaps, depreciation calculator, brand positioning
-- **User Profiles** — Prediction history, comparisons, preferences
-- **Admin Panel** — User management, usage analytics, app settings
-- **Bulk Upload** — CSV batch predictions with Excel download
-- **Drift Simulator** — See how prices change over time
-
----
-
-## Pages
-
-| # | Page | Description |
-|---|------|-------------|
-| 1 | Dashboard | Hero banner, KPIs, insight cards, Quick Predict widget |
-| 2 | Dataset Explorer | Multi-filter panel, interactive dataframe, dynamic charts |
-| 3 | EDA Deep-Dive | 5 analysis tabs with visualizations |
-| 4 | Model Lab | Metrics table, performance charts, model recommendation |
-| 5 | Residual Analysis | Residual scatter, QQ plots, calibration curves |
-| 6 | Price Predictor | Predict with confidence intervals, depreciation, comparisons |
-| 7 | Market Intelligence | Price trends, brand positioning, value finder |
-| 8 | Pipeline Inspector | 8-stage pipeline diagram, preprocessing stats |
-| 9 | My Profile | Edit info, prediction history, saved comparisons |
+- [What It Does](#what-it-does)
+- [Model Benchmark](#model-benchmark)
+- [Screenshots](#screenshots)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Project Structure](#project-structure)
+- [API Reference](#api-reference)
+- [Testing](#testing)
+- [Limitations](#limitations)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
 
 ---
 
-## Installation
+## What It Does
+
+Used car valuations across India are notoriously non-transparent. Pricing fluctuates
+erratically based on local brand reputation, transmission type, fuel economy,
+mileage thresholds, and geographic registration. Buyers frequently overpay, while
+sellers leave capital on the table.
+
+**AutoIntel (Price-My-Car)** delivers an end-to-end pricing intelligence platform:
+1. **Multi-Model Valuation Ensemble:** Trains and evaluates 8 distinct regression
+   algorithms to establish robust price predictions with calibrated confidence bounds.
+2. **Deal Score Rating:** Computes an objective 0–100 fairness score comparing
+   a listed vehicle price against statistical market equilibrium.
+3. **Depreciation Projections:** Estimates future resale trajectories over 1, 3,
+   and 5 years to forecast total cost of ownership.
+4. **SHAP-Lite Explainability:** Highlights the top positive and negative value
+   drivers (e.g. low mileage premium, older model year penalty).
+5. **Dual Serving Architecture:** Provides a multi-page analytical dashboard
+   for consumer exploration alongside an authenticated FastAPI REST endpoint.
+
+---
+
+## Model Benchmark
+
+The training pipeline preprocesses categorical attributes via one-hot encoding,
+applies log transforms to skewed price distributions, and evaluates 8 estimators:
+
+| Model Family | Algorithm Type | Key Strength | Role in Platform |
+| --- | --- | --- | --- |
+| **Gradient Boosting** | Ensembled Trees | Captures complex non-linear feature splits | Top-tier ensemble member |
+| **XGBoost** | Gradient Boosted Trees | High-velocity prediction on tabular inputs | Primary high-confidence estimator |
+| **Random Forest** | Bagged Decision Trees | Resilient against outlier listings and noise | Generalization baseline |
+| **Support Vector Regressor** | Kernel SVR | Robust margin fitting in feature space | Non-linear comparative baseline |
+| **Ridge Regression** | L2 Regularized Linear | Fast linear baseline preventing collinearity | SHAP-Lite linear explainer |
+| **Lasso Regression** | L1 Regularized Linear | Automated feature sparsity and pruning | Regularization check |
+| **K-Nearest Neighbors** | Instance-Based | Direct neighbor price indexing | Local market comparator |
+| **Linear Regression** | Ordinary Least Squares | Transparent baseline coefficients | Unregularized benchmark |
+
+---
+
+## Screenshots
+
+<!-- TODO[L2-01]: Add car price prediction and Deal Score gauge screenshots from running Streamlit instance -->
+> *Interactive price prediction form, Deal Score fairness gauge, and 5-year depreciation trajectory curves.*
+
+---
+
+## Key Features
+
+- **9 Dashboard Modules:** Dedicated interfaces for market overview, dataset
+  exploration, exploratory data analysis, multi-model evaluation lab, residual
+  diagnostics, interactive pricing, market intelligence, pipeline inspection, and administration.
+- **Deal Score Gauge (0–100):** Visual speedometer gauge indicating whether a
+  quoted listing represents a "Steal", "Fair Price", or "Overpriced" listing.
+- **SHAP-Lite Attributions:** Instant feature importance cards displaying exactly
+  which specifications increased or discounted the final valuation.
+- **Full Offline Portability:** Operates locally with zero mandatory external API keys
+  and persists user profiles locally via encrypted bcrypt hashes.
+- **Enterprise REST Gateway:** Async FastAPI microservice with SlowAPI rate limiting,
+  Prometheus telemetry counters, structured JSON logging, and optional API key protection.
+
+---
+
+## Architecture
+
+```mermaid
+flowchart TD
+    subgraph DataPipeline["Data Ingestion & Preprocessing"]
+        CSV["13,284 Indian Car Listings (data/)"] --> Clean["Data Cleansing & Imputation"]
+        Clean --> Trans["Log Transform (Price) & One-Hot Encoding"]
+        Trans --> Scaler["StandardScaler Pipeline"]
+    end
+
+    subgraph ModelLab["Model Training & Registry"]
+        Scaler --> Train["Model Benchmark Harness (scripts/)"]
+        Train --> Estimators["8 Trained Estimators\n(XGBoost, RF, Ridge, SVR, etc.)"]
+        Estimators --> Artifacts[("Joblib Model Store (ml_ready/)")]
+    end
+
+    subgraph CoreEngine["Valuation & Explainability Engine"]
+        Artifacts --> Predictor["app/helpers.py\n(Prediction, Deal Score, Depreciation)"]
+        Predictor --> SHAP["SHAP-Lite Attribution Engine"]
+    end
+
+    subgraph Serving["Presentation & Consumption"]
+        Predictor --> Streamlit["Streamlit Dashboard (app/streamlit_app.py :8501)"]
+        Predictor --> FastAPI["FastAPI REST Service (app/api_server.py :8000)"]
+        FastAPI --> Prom["Prometheus Metrics (/metrics)"]
+    end
+```
+
+### Core Modules
+
+- **`app/helpers.py`**: Business logic hub providing model loading, single and
+  batch predictions, Deal Score calculation, and Indian Rupee (`fmt_inr`) formatting.
+- **`app/api_server.py`**: Production HTTP server exposing `/api/v1/predict`,
+  `/api/v1/stats`, `/api/v1/brands`, and `/api/v1/fuel-types`.
+- **`app/auth_db.py`**: Authentication subsystem handling user registration,
+  bcrypt password verification, and admin role assignments.
+
+---
+
+## Tech Stack
+
+| Layer | Component | Version | Purpose |
+| --- | --- | --- | --- |
+| **Language** | Python | `>=3.12` | Modern typed runtime |
+| **Dashboard UI** | Streamlit | `1.57.x` | 9-page interactive discovery portal |
+| **API Framework** | FastAPI & Uvicorn | `>=0.143.0` | Production async REST API |
+| **Tabular ML** | scikit-learn & XGBoost | Latest | Regression modeling and preprocessing |
+| **Visualizations** | Plotly & Matplotlib | Latest | Depreciation graphs, residual plots, gauges |
+| **Data Engine** | Pandas & NumPy | Latest | Vector operations and tabular manipulation |
+| **Security** | bcrypt | Latest | Cryptographic password hashing |
+| **Rate Limiter** | SlowAPI | Latest | IP-based request throttling |
+| **Metrics** | Prometheus Client | Latest | Latency and throughput observation |
+
+---
+
+## Prerequisites
+
+- **Python 3.12+**
+- **uv** (recommended) or standard `pip`
+- Optional: **Docker** for containerized execution
+
+---
+
+## Quick Start
+
+### 1. Clone & Set Up Virtual Environment
 
 ```bash
 git clone https://github.com/themanoj-025/Price-My-Car.git
 cd Price-My-Car
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+```
+
+#### Windows (PowerShell)
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.lock
+Copy-Item .env.example .env
+```
+
+#### Linux / macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.lock
+cp .env.example .env
+```
+
+### 2. Launch the Streamlit Analytical Portal
+
+```bash
 streamlit run app/streamlit_app.py
 ```
 
-**Demo credentials:** username = `demo`, password = `demo123`
+The 9-page dashboard will launch in your browser at [http://localhost:8501](http://localhost:8501).
 
-> 💡 **Tip:** `setup.sh` automates environment setup and model training on first clone.
+### 3. Launch the FastAPI Prediction Server
 
----
-
-## Workflow
-
-```text
-data/Cleaned_Car_data.csv
-        ↓
-  scripts/backfills/prepare_ml_data.py (log1p transform, feature engineering)
-        ↓
-  ┌──────────────────────────┬──────────────────────────┬──────────────────────────┐
-  │ scripts/admin/           │ scripts/seed/            │ scripts/seed/            │
-  │ generate_report.py       │ tune_hyperparameters.py  │ train_dashboard_models.py│
-  │ (HTML report, charts)    │ (GridSearchCV)           │ (tuned params)           │
-  └──────────────────────────┴──────────────────────────┴──────────────────────────┘
-                                  ↓
-                    app/streamlit_app.py (auth + 9 pages + admin)
-```
-
----
-
-## Model Performance
-
-| Model | Test R² | RMSE | MAE |
-|-------|---------|------|-----|
-| Linear Regression | 0.7654 | Rs. 247,535 | Rs. 136,979 |
-| Ridge (tuned) | 0.7605 | Rs. 250,108 | Rs. 136,875 |
-| XGBoost (tuned) | 0.7463 | Rs. 257,436 | Rs. 131,764 |
-| Gradient Boosting | 0.7373 | Rs. 261,980 | Rs. 132,826 |
-| SVR | 0.6998 | Rs. 280,045 | Rs. 137,355 |
-
-Log-transforming Price was the biggest improvement — boosting Linear Regression from R² 0.66 to 0.77.
-
----
-
-## Files
-
-| File | Description |
-|------|-------------|
-| `scripts/backfills/prepare_ml_data.py` | Preprocessing, log-transform, feature engineering |
-| `scripts/admin/generate_report.py` | EDA report with visualizations |
-| `scripts/admin/create_notebook.py` | ML comparison notebook builder |
-| `scripts/seed/tune_hyperparameters.py` | GridSearchCV for ensemble models |
-| `scripts/seed/train_dashboard_models.py` | Trains tuned models for dashboard |
-| `app/helpers.py` | Helper functions (testable, no Streamlit deps) |
-| `tests/test_helpers.py` | 65 unit tests |
-| `app/streamlit_app.py` | Single-file dashboard (auth + 9 pages + admin) |
-
----
-
-## 🏗 Architecture
-
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                  Streamlit Dashboard (9 pages)                  │
-│  Dashboard │ Explorer │ EDA │ Model Lab │ Predictor │ Admin     │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    FastAPI REST API                             │
-│  /api/v1/predict │ /api/v1/cars/stats │ /api/v1/cars/brands    │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              ML Pipeline (8 models)                             │
-│  LinearReg │ Ridge │ XGBoost │ GradBoost │ SVR │ Lasso │ KNN   │
-│  Random Forest │ GridSearchCV tuning │ Log-transform target    │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              Indian Used Car Dataset (13K listings)              │
-│  36 brands │ 5 fuel types │ 39 engineered features             │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🔌 REST API
-
-The FastAPI server (`app/api_server.py`) exposes prediction and data endpoints:
-
-### Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/health` | Health check | No |
-| GET | `/api/v1/cars/stats` | Dataset statistics (count, price range) | Optional |
-| GET | `/api/v1/cars/brands` | List of available car brands | Optional |
-| GET | `/api/v1/cars/fuel-types` | List of fuel types | Optional |
-| POST | `/api/v1/predict` | Predict car price from inputs | Optional |
-
-### Authentication
-
-Set `PRICE_MY_CAR_API_KEY` env var to enable Bearer token auth:
+In a separate terminal:
 
 ```bash
-# Enable auth
-export PRICE_MY_CAR_API_KEY=your-secret-key-here
-
-# Request with auth
-curl -H "Authorization: Bearer your-secret-key-here" http://localhost:8000/api/v1/cars/stats
+uvicorn app.api_server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Rate Limiting
+*Expected output:*
+```text
+{"timestamp": "...", "level": "INFO", "message": "AutoIntel ML models and artifacts loaded"}
+{"timestamp": "...", "level": "INFO", "message": "FastAPI server running on http://0.0.0.0:8000"}
+```
 
-All endpoints are rate-limited to **60 requests per minute** per IP (via slowapi).
+Explore OpenAPI documentation at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-### Running the API Server
+---
+
+## Configuration
+
+Configuration parameters can be configured in `.env` or passed via environment variables:
+
+| Variable | Default | Secret? | Description |
+| --- | --- | --- | --- |
+| `PRICE_MY_CAR_API_KEY` | `""` | Yes | Optional Bearer key to secure `/api/v1/predict` endpoint |
+| `API_HOST` | `0.0.0.0` | No | Host binding for FastAPI server |
+| `API_PORT` | `8000` | No | Port binding for FastAPI server |
+
+---
+
+## Project Structure
+
+```text
+Price-My-Car/
+├── app/                        # Application core
+│   ├── api_server.py           # FastAPI prediction and stats microservice
+│   ├── auth_db.py              # User authentication and bcrypt state
+│   ├── chart_utils.py          # Plotly gauge and depreciation plot generators
+│   ├── circuit_breaker.py      # Circuit breaker fault isolation
+│   ├── health.py               # Liveness and model readiness probes
+│   ├── helpers.py              # Prediction math, Deal Score, INR formatting
+│   ├── pages/                  # 9 Streamlit multipage view modules
+│   └── streamlit_app.py        # Streamlit main dashboard landing
+├── data/                       # Raw and processed Indian car listings
+├── ml_ready/                   # Exported preprocessors and model binaries
+├── notebooks/                  # Model training and exploration notebooks
+├── tests/                      # Pytest suite (285 unit and integration tests)
+├── .env.example                # Sample environment template
+├── docker-compose.yml          # Container configuration
+├── Dockerfile                  # Multi-stage production container build
+├── pyproject.toml              # Build specifications and lint rules
+└── README.md
+```
+
+---
+
+## API Reference
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/health` | Public | Liveness probe verifying model availability |
+| `GET` | `/metrics` | Public | Prometheus scraping endpoint for latencies and request counters |
+| `GET` | `/api/v1/stats` | Public | Total dataset listings, brand counts, and average prices |
+| `GET` | `/api/v1/brands` | Public | Alphabetical list of available manufacturer brands |
+| `GET` | `/api/v1/fuel-types` | Public | List of recognized fuel categories (Petrol, Diesel, CNG, etc.) |
+| `POST` | `/api/v1/predict` | Optional | Estimate vehicle price with Deal Score and feature weights |
+
+### Sample Prediction Request
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Start the API server
-uvicorn app.api_server:app --host 0.0.0.0 --port 8000
+curl -X POST "http://localhost:8000/api/v1/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "brand": "Maruti",
+       "year": 2019,
+       "km_driven": 45000,
+       "fuel": "Petrol",
+       "transmission": "Manual",
+       "owner": "First Owner"
+     }'
 ```
 
 ---
 
-## 🔧 Environment Variables
+## Testing
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PRICE_MY_CAR_API_KEY` | (empty) | API key for Bearer token auth |
-| `PRICE_MY_CAR_CORS_ORIGINS` | `http://localhost:8501,http://localhost:3000` | Comma-separated CORS allowlist |
-| `LOG_DIR` | `logs` | Directory for structured log files |
-
-> 📝 **Note:** the API binds to `0.0.0.0:8000` by default (see the launch command above). Pass `--host` / `--port` to `uvicorn` to override — there are no `API_HOST`/`API_PORT` environment variables. Security posture is documented in [SECURITY.md](SECURITY.md).
-
----
-
-## 🧪 Testing
+The test suite covers data preprocessing, log inversions, deal score calculations,
+depreciation curves, API endpoints, rate limits, and structured JSON logs.
 
 ```bash
 # Run all tests
-python -m pytest tests/ -v
+pytest tests/ -v -o addopts=""
 
-# Run specific test file
-python -m pytest tests/test_helpers.py -v
+# Run with test coverage
+pytest tests/ --cov=app -o addopts=""
 ```
 
-**Test coverage:** 65 unit tests covering helper functions, formatting, predictions, and edge cases.
+All test suites execute self-contained against committed model artifacts with
+no external network requirements.
 
 ---
 
-## 🚀 Deployment
+## Limitations
 
-### Docker
-
-```bash
-docker-compose up -d
-```
-
-### Streamlit Cloud
-
-1. Push to GitHub
-2. Connect to [Streamlit Cloud](https://share.streamlit.io/)
-3. Set `requirements.txt` as dependency
-4. Deploy!
+- **Regional Market Scope:** The underlying dataset is trained specifically on
+  Indian used car listings; pricing dynamics do not translate directly to European or US markets.
+- **RTO Tax Variance:** State-level road tax differentials and individual vehicle
+  cosmetic condition are not captured in tabular mileage/year inputs.
+- **Trim-Level Granularity:** High-level model names are used; rare sub-trim packages
+  may exhibit variance around standard confidence intervals.
 
 ---
 
-## 📄 License
+## Contributing
 
-MIT — see [LICENSE](LICENSE).
+Contributions are welcome! Please follow these guidelines:
 
----
+1. Fork the repository.
+2. Create your topic branch: `git checkout -b feat/my-improvement`.
+3. Verify linting and formatting: `ruff check .` and `black .`.
+4. Ensure all tests pass: `pytest tests/ -o addopts=""`.
+5. Open a pull request against `main`.
 
-## 🤝 Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push and open a Pull Request
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full instructions.
 
 ---
 
-## ⭐ Show Your Support
+## Security
 
-- ⭐ Star the repository if you found it useful
-- 🐛 [Report a bug](https://github.com/themanoj-025/Price-My-Car/issues)
-- 💡 [Request a feature](https://github.com/themanoj-025/Price-My-Car/issues)
+Please report vulnerabilities privately via GitHub Security Advisories or by
+contacting the repository maintainers. Never commit sensitive keys or personal data.
+See [SECURITY.md](./SECURITY.md) for full policy.
+
 ---
 
-## ⭐ Star History
+## License
 
-[![Last Commit](https://img.shields.io/github/last-commit/themanoj-025/Price-My-Car?style=flat-square)](https://github.com/themanoj-025/Price-My-Car)
-[![Contributors](https://img.shields.io/github/contributors/themanoj-025/Price-My-Car?style=flat-square)](https://github.com/themanoj-025/Price-My-Car/graphs/contributors)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=themanoj-025/Price-My-Car&type=Date)](https://star-history.com/#Price-My-Car&Date)
+This project is licensed under the [MIT License](./LICENSE).
