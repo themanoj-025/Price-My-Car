@@ -159,7 +159,7 @@ journey
 graph TD
     User["Used Car Buyer / Seller"] -->|"Web Browser HTTPS"| AutoIntel["Price-My-Car System Boundary"]
     DealerApp["Dealership Inventory System"] -->|"HTTP POST /predict-price"| AutoIntel
-    
+
     AutoIntel -->|"Scrapes Telemetry"| Prometheus["Prometheus Monitoring"]
     AutoIntel -->|"Exports Valuation Reports"| PDF["PDF Valuation Certificate Engine"]
 ```
@@ -612,55 +612,55 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 
 ## <a id="exam"></a>§EXAM — Cold-Reader Verification Exam (25 Questions)
 
-1. **Q: What is the Python runtime requirement for Price-My-Car?**  
+1. **Q: What is the Python runtime requirement for Price-My-Car?**
    *A:* Python >= 3.12. Reference: [`pyproject.toml`](pyproject.toml).
-2. **Q: How many total tracked files exist in the Price-My-Car repository?**  
+2. **Q: How many total tracked files exist in the Price-My-Car repository?**
    *A:* 134 files. Reference: [§APP](#app).
-3. **Q: How many automated test functions exist across how many test files?**  
+3. **Q: How many automated test functions exist across how many test files?**
    *A:* 286 test functions across 12 test files. Reference: [`tests/`](tests/).
-4. **Q: What dataset scale powers the used car pricing model?**  
+4. **Q: What dataset scale powers the used car pricing model?**
    *A:* 13,284 verified Indian used car listings across major metropolitan centers. Reference: [`README.md`](README.md).
-5. **Q: How many regression algorithms are benchmarked in `car_price_ml_comparison.py`?**  
+5. **Q: How many regression algorithms are benchmarked in `car_price_ml_comparison.py`?**
    *A:* 8 models (Linear, Ridge, Lasso, KNN, SVR, Random Forest, Gradient Boosting, XGBoost). Reference: [`car_price_ml_comparison.py`](car_price_ml_comparison.py).
-6. **Q: How many pages comprise the interactive Streamlit terminal?**  
+6. **Q: How many pages comprise the interactive Streamlit terminal?**
    *A:* 9 pages. Reference: [`pages/`](pages/).
-7. **Q: What framework powers the asynchronous valuation REST API?**  
+7. **Q: What framework powers the asynchronous valuation REST API?**
    *A:* FastAPI. Reference: [`api_server.py`](api_server.py).
-8. **Q: How many endpoints are exposed by the FastAPI server?**  
+8. **Q: How many endpoints are exposed by the FastAPI server?**
    *A:* 4 endpoints. Reference: [§API](#api).
-9. **Q: What currency formatting standard is utilized?**  
+9. **Q: What currency formatting standard is utilized?**
    *A:* Indian Rupee notation (Lakhs and Crores). Reference: [`helpers.py`](helpers.py).
-10. **Q: What deal ratings are assigned by the Deal Score gauge?**  
+10. **Q: What deal ratings are assigned by the Deal Score gauge?**
     *A:* Great Deal, Fair Deal, or Overpriced. Reference: [§WHAT](#what).
-11. **Q: What total lines of code exist across the codebase?**  
+11. **Q: What total lines of code exist across the codebase?**
     *A:* 31,327 lines of code. Reference: [§META](#meta).
-12. **Q: What git commit hash was verified for this documentation?**  
+12. **Q: What git commit hash was verified for this documentation?**
     *A:* `e372fc9` (`e372fc9b6a90bc0d701778445ce7c8d3afddc3dc`). Reference: [§META](#meta).
-13. **Q: What git tree hash represents the verified codebase?**  
+13. **Q: What git tree hash represents the verified codebase?**
     *A:* `b11c8548112b33ea798284c2854492ab1d92fb07`. Reference: [§META](#meta).
-14. **Q: What test file executes ML comparison tests?**  
+14. **Q: What test file executes ML comparison tests?**
     *A:* `tests/test_car_price_ml_comparison.py`. Reference: [`tests/test_car_price_ml_comparison.py`](tests/test_car_price_ml_comparison.py).
-15. **Q: What endpoint exposes Prometheus operational telemetry?**  
+15. **Q: What endpoint exposes Prometheus operational telemetry?**
     *A:* `/metrics`. Reference: [`api_server.py`](api_server.py).
-16. **Q: What linter is configured for the codebase?**  
+16. **Q: What linter is configured for the codebase?**
     *A:* Ruff. Reference: [`pyproject.toml`](pyproject.toml).
-17. **Q: What module implements the circuit breaker pattern?**  
+17. **Q: What module implements the circuit breaker pattern?**
     *A:* `circuit_breaker.py`. Reference: [`circuit_breaker.py`](circuit_breaker.py).
-18. **Q: What is the target latency for a single car valuation?**  
+18. **Q: What is the target latency for a single car valuation?**
     *A:* Under 15 ms (measured 5.8 ms). Reference: [§PERF](#perf).
-19. **Q: What visual explainability technique details feature impacts?**  
+19. **Q: What visual explainability technique details feature impacts?**
     *A:* SHAP-Lite feature attributions. Reference: [§WHAT](#what).
-20. **Q: Does Price-My-Car require a persistent SQL database for valuations?**  
+20. **Q: Does Price-My-Car require a persistent SQL database for valuations?**
     *A:* No, it operates using serialized pipeline joblib artifacts. Reference: [§ERD](#erd).
-21. **Q: What module renders depreciation plots and deal gauges?**  
+21. **Q: What module renders depreciation plots and deal gauges?**
     *A:* `chart_utils.py`. Reference: [`chart_utils.py`](chart_utils.py).
-22. **Q: What Indian metropolitan cities are included in the dataset?**  
+22. **Q: What Indian metropolitan cities are included in the dataset?**
     *A:* Mumbai, Delhi NCR, Bangalore, Hyderabad, Chennai, and Pune. Reference: [§TLDR](#tldr).
-23. **Q: Where are environment variable templates stored?**  
+23. **Q: Where are environment variable templates stored?**
     *A:* In `.env.example`. Reference: [`.env.example`](.env.example).
-24. **Q: What machine learning library provides the core regressors and pipelines?**  
+24. **Q: What machine learning library provides the core regressors and pipelines?**
     *A:* scikit-learn (`scikit-learn >= 1.4.0`) and XGBoost. Reference: [`requirements.txt`](requirements.txt).
-25. **Q: How many files are cataloged with 100% manifest coverage in Appendix A?**  
+25. **Q: How many files are cataloged with 100% manifest coverage in Appendix A?**
     *A:* All 134 tracked files. Reference: [§APP](#app).
 
 ---
