@@ -1,5 +1,5 @@
 # Auto-detect text files and normalize line endings
-* text=auto
+* text=auto eol=lf
 
 # Python source
 *.py text diff=python
@@ -22,9 +22,36 @@
 *.toml text
 *.json text
 
+# Security: prevent secret files from appearing in diffs if accidentally created
+*.env -diff
+*.pem -diff
+*.key -diff
+*.cert -diff
+*.p12 -diff
+*.pfx -diff
+*.pkcs12 -diff
+
+# Shell / batch scripts
+*.sh text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Requirements
+requirements.txt text
+requirements*.txt text
+
 # Binary files - don't modify
 *.png binary
 *.jpg binary
 *.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
 *.npy binary
 *.pkl binary
+*.pickle binary
+*.joblib binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
