@@ -32,9 +32,12 @@ Usage (framework-agnostic):
 
 from __future__ import annotations
 
+import logging
 import time
 from collections.abc import Callable, Mapping
 from typing import TYPE_CHECKING, Any
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "aggregate_readiness",
@@ -66,10 +69,11 @@ def check_dependency(
         probe()
     except Exception as e:
         # Health checks must never raise — capture the failure instead
+        logger.warning("Dependency %s health check failed: %s", name, e)
         return {
             "name": name,
             "status": "down",
-            "error": f"{type(e).__name__}: {e}",
+            "error": f"{type(e).__name__}: check failed",
             "latency_ms": round((time.monotonic() - started) * 1000, 1),
             **(detail or {}),
         }
