@@ -6,7 +6,7 @@
 # Core data science
 bcrypt>=5.0.0
 
-pandas>=3.0.6
+pandas>=3.1.0
 # numpy 2.5.x requires Python >=3.12 — resolvable now that the whole CI
 # matrix runs 3.12, but floored at 2.4.6 to stay installable on 3.11 too.
 numpy>=2.5.4
@@ -23,7 +23,7 @@ seaborn>=0.13.2
 plotly>=7.1.0
 
 # Dashboard
-streamlit>=1.66.0
+streamlit>=1.66.1
 
 # Excel export (bulk prediction download)
 openpyxl>=3.1.5
@@ -40,10 +40,10 @@ nbconvert>=7.17.2
 # msgpack: GHSA-6v7p-g79w-8964 (HIGH, OOB read) — fixed in 1.2.1
 # setuptools: CVE-2025-47273 (path traversal) — fixed in 78.1.1
 msgpack>=1.2.3
-setuptools>=84.0.0
+setuptools>=84.2.1
 
 # API observability
-fastapi>=0.143.2
+fastapi>=0.161.1
 uvicorn>=0.54.0
 slowapi>=0.1.9
 python-multipart>=0.0.32
