@@ -775,8 +775,8 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`app/pages/shared.py`](app/pages/shared.py) | `.py` | 27 | 720 | Python machine learning, valuation, or API module |
 | [`app/py.typed`](app/py.typed) | `.typed` | 0 | 0 | Configuration or static asset |
 | [`app/streamlit_app.py`](app/streamlit_app.py) | `.py` | 592 | 25210 | Python machine learning, valuation, or API module |
-| [`audit/dependabot-agent/2026-08-13-run.md`](audit/dependabot-agent/2026-08-13-run.md) | `.md` | 19 | 1111 | Documentation asset |
-| [`audit/dependabot-agent/2026-08-15-run.md`](audit/dependabot-agent/2026-08-15-run.md) | `.md` | 26 | 1842 | Documentation asset |
+| [`docs/audit/dependabot-agent/2026-08-13-run.md`](docs/audit/dependabot-agent/2026-08-13-run.md) | `.md` | 19 | 1111 | Documentation asset |
+| [`docs/audit/dependabot-agent/2026-08-15-run.md`](docs/audit/dependabot-agent/2026-08-15-run.md) | `.md` | 26 | 1842 | Documentation asset |
 | [`data/Cleaned_Car_data.csv`](data/Cleaned_Car_data.csv) | `.csv` | 13285 | 850739 | Dataset or preprocessed feature cache |
 | [`docker-compose.dev.yml`](docker-compose.dev.yml) | `.yml` | 29 | 1252 | Configuration or static asset |
 | [`docker-compose.prod.yml`](docker-compose.prod.yml) | `.yml` | 17 | 759 | Configuration or static asset |
@@ -847,3 +847,4 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`tests/test_ml_pipeline.py`](tests/test_ml_pipeline.py) | `.py` | 417 | 18542 | Automated test suite component |
 | [`tests/test_shared.py`](tests/test_shared.py) | `.py` | 61 | 1657 | Automated test suite component |
 | [`tests/test_structured_logging.py`](tests/test_structured_logging.py) | `.py` | 387 | 13326 | Automated test suite component |
+
