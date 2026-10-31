@@ -847,4 +847,3 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`tests/test_ml_pipeline.py`](tests/test_ml_pipeline.py) | `.py` | 417 | 18542 | Automated test suite component |
 | [`tests/test_shared.py`](tests/test_shared.py) | `.py` | 61 | 1657 | Automated test suite component |
 | [`tests/test_structured_logging.py`](tests/test_structured_logging.py) | `.py` | 387 | 13326 | Automated test suite component |
-
