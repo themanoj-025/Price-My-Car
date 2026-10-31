@@ -13,7 +13,6 @@ Price-My-Car/
 ├── .streamlit/
 │   └── config.toml               # Streamlit runtime config (dark theme, headless)
 ├── .vscode/settings.json
-├── AGENTS.md                     # Agent operating instructions
 ├── app/                          # Application package (Streamlit)
 │   ├── __init__.py
 │   ├── streamlit_app.py          # Entry point: streamlit run app/streamlit_app.py
