@@ -723,7 +723,6 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) | `.md` | 35 | 884 | GitHub Actions CI/CD automation workflow |
 | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) | `.md` | 30 | 857 | GitHub Actions CI/CD automation workflow |
 | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) | `.md` | 44 | 1383 | GitHub Actions CI/CD automation workflow |
-| [`.github/copilot-instructions.md`](.github/copilot-instructions.md) | `.md` | 19 | 735 | GitHub Actions CI/CD automation workflow |
 | [`.github/dependabot.yml`](.github/dependabot.yml) | `.yml` | 34 | 666 | GitHub Actions CI/CD automation workflow |
 | [`.github/labeler.yml`](.github/labeler.yml) | `.yml` | 21 | 602 | GitHub Actions CI/CD automation workflow |
 | [`.github/scripts/check_lockfile.py`](.github/scripts/check_lockfile.py) | `.py` | 214 | 7174 | GitHub Actions CI/CD automation workflow |
