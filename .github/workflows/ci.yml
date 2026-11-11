@@ -232,6 +232,7 @@ jobs:
         with:
           context: .
           load: true
+          provenance: false
           tags: dive-audit:latest
           cache-from: type=gha
       - name: Install dive
