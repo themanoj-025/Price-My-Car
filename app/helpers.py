@@ -5,6 +5,8 @@ and unit-tested without a browser runtime.
 
 """
 
+from typing import Any
+
 import numpy as np
 import pandas as pd
 
@@ -173,7 +175,7 @@ TIER_COLORS = {
 # =========================================================================
 # Prediction & model helpers
 # =========================================================================
-def make_prediction(model: object, input_df: pd.DataFrame, preprocessor: object) -> float:
+def make_prediction(model: Any, input_df: pd.DataFrame, preprocessor: Any) -> float:
     """Run a model prediction and invert the log-transform."""
     X = preprocessor.transform(input_df)
     pred_log = model.predict(X)[0]
@@ -188,7 +190,7 @@ def compute_deal_score(predicted: float, actual: float, rarity: float = 1.0) -> 
 
 
 def ensemble_prediction(
-    models: dict, input_df: pd.DataFrame, preprocessor: object
+    models: dict[str, Any], input_df: pd.DataFrame, preprocessor: Any
 ) -> tuple[float | None, float | None, str]:
     """Ensemble of top-3 models with variance indicator."""
     top3 = ["Linear Regression", "XGBoost", "Gradient Boosting"]
@@ -205,7 +207,7 @@ def ensemble_prediction(
 
 
 def shap_lite_approximation(
-    model: object, input_df: pd.DataFrame, preprocessor: object, feature_names: list[str]
+    model: Any, input_df: pd.DataFrame, preprocessor: Any, feature_names: list[str]
 ) -> list[tuple[str, float]]:
     """SHAP-lite: approximate top-8 feature contributions."""
     X = preprocessor.transform(input_df)

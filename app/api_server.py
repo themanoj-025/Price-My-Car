@@ -15,13 +15,15 @@ import json
 import logging
 import os
 import secrets
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -127,7 +129,7 @@ app = FastAPI(
 
 
 @app.middleware("http")
-async def track_metrics(request, call_next) -> Response:
+async def track_metrics(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     import time as _time
 
     request.state.start_time = _time.time()
@@ -155,7 +157,7 @@ app.add_middleware(
 # Rate limiting
 limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, cast(Any, _rate_limit_exceeded_handler))
 app.add_middleware(SlowAPIMiddleware)
 
 security = HTTPBearer(auto_error=False)
@@ -168,7 +170,7 @@ v1_router = APIRouter(prefix="/api/v1")
 
 async def verify_api_key(
     credentials: HTTPAuthorizationCredentials | None = Security(security),
-) -> HTTPAuthorizationCredentials:
+) -> HTTPAuthorizationCredentials | None:
     """Verify API key from Authorization header. Enabled when PRICE_MY_CAR_API_KEY is set."""
     api_key = os.environ.get("PRICE_MY_CAR_API_KEY", "")
     if not api_key:
@@ -283,7 +285,7 @@ app.include_router(create_health_router(checks={"dataset": lambda: _load_cars_df
 async def metrics() -> Response:
     """Prometheus metrics endpoint."""
     if not _PROM_AVAILABLE:
-        return {"status": "prometheus_client not installed"}
+        return JSONResponse({"status": "prometheus_client not installed"})
     return Response(content=generate_latest(), media_type="text/plain")
 
 

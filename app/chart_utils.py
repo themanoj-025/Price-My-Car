@@ -6,10 +6,12 @@ creating circular dependencies.
 
 from __future__ import annotations
 
+from typing import Any
+
 import streamlit as st
 
 
-def apply_plotly_config(fig: object, height: int | None = None) -> object:
+def apply_plotly_config(fig: Any, height: int | None = None) -> Any:
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
@@ -43,6 +45,6 @@ def apply_plotly_config(fig: object, height: int | None = None) -> object:
     return fig
 
 
-def show_chart(fig: object, height: int | None = None) -> None:
+def show_chart(fig: Any, height: int | None = None) -> None:
     fig = apply_plotly_config(fig, height)
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})

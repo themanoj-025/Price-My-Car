@@ -52,7 +52,7 @@ def render_admin_panel() -> None:
         for u in users:
             all_preds.extend(u.get("prediction_history", []))
         if all_preds:
-            model_counts = {}
+            model_counts: dict[str, int] = {}
             for p in all_preds:
                 m = p.get("model_used", "unknown")
                 model_counts[m] = model_counts.get(m, 0) + 1

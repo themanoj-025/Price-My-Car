@@ -151,7 +151,7 @@ def page_eda_deepdive() -> None:
             show_chart(fig2, 500)
 
         st.markdown("### Brand Comparison")
-        sel_brands = st.multiselect(
+        sel_brands: list[str] = st.multiselect(
             "Select 2-4 brands to compare",
             companies,
             default=["Maruti", "Hyundai", "BMW", "Mercedes-Benz"],

@@ -116,7 +116,7 @@ def page_price_predictor() -> None:
                     ),
                 )
                 with st.expander("⚙️ Advanced Options"):
-                    ci = st.select_slider(
+                    st.select_slider(
                         "Confidence Interval",
                         options=["±10%", "±15%", "±20%"],
                         value="±15%",
@@ -400,8 +400,8 @@ def page_price_predictor() -> None:
             st.markdown("### 🏆 A/B Comparison Result")
             # Re-compute both predictions
             inputs = []
-            for ci in range(2):
-                s = f"_{ci}"
+            for car_i in range(2):
+                s = f"_{car_i}"
                 comp = st.session_state.last_pred_inputs.get(f"comp{s}", companies[0])
                 yr = st.session_state.last_pred_inputs.get(f"year{s}", 2018)
                 fl = st.session_state.last_pred_inputs.get(f"fuel{s}", fuel_types[0])
@@ -427,7 +427,7 @@ def page_price_predictor() -> None:
                     p = np.random.uniform(200000, 1500000)
                 inputs.append(
                     {
-                        "label": "Car A" if ci == 0 else "Car B",
+                        "label": "Car A" if car_i == 0 else "Car B",
                         "comp": comp,
                         "year": yr,
                         "fuel": fl,

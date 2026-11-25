@@ -98,13 +98,16 @@ def aggregate_readiness(checks: list[dict[str, Any]]) -> dict[str, Any]:
 
 # ── FastAPI extras (optional) ─────────────────────────────────────────
 
+_HAS_FASTAPI = False
 if TYPE_CHECKING:  # pragma: no cover
     from fastapi import APIRouter, Response
 
 try:  # fastapi is not a hard dependency of every repo
     from fastapi import APIRouter, Response
+
+    _HAS_FASTAPI = True
 except ImportError:  # pragma: no cover
-    APIRouter = None
+    pass
 
 
 def create_health_router(
@@ -123,7 +126,7 @@ def create_health_router(
     ``checks`` maps dependency name -> probe callable. Pass ``{}`` or None
     for a liveness-only router.
     """
-    if APIRouter is None:  # pragma: no cover
+    if not _HAS_FASTAPI:  # pragma: no cover
         raise ImportError(
             "create_health_router requires fastapi; use check_dependency/"
             "aggregate_readiness for framework-agnostic health checks."

@@ -10,6 +10,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any, cast
 
 import bcrypt
 import streamlit as st
@@ -17,9 +18,9 @@ import streamlit as st
 USERS_DB_PATH = Path("users_db.json")
 
 
-def load_users_db() -> dict:
+def load_users_db() -> dict[str, Any]:
     if not USERS_DB_PATH.exists():
-        db = {
+        db: dict[str, Any] = {
             "users": {},
             "meta": {
                 "total_users": 0,
@@ -31,7 +32,8 @@ def load_users_db() -> dict:
         save_users_db(db)
         return db
     with open(USERS_DB_PATH) as f:
-        return json.load(f)
+        data: dict[str, Any] = json.load(f)
+        return data
 
 
 def save_users_db(db: dict) -> None:
@@ -46,13 +48,13 @@ LOGIN_LOCKOUT_MINUTES = 15
 
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt."""
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    return str(bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8"))
 
 
 def verify_password(password: str, hashed: str) -> bool:
     """Verify a password against its bcrypt hash."""
     try:
-        return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+        return bool(bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8")))
     except (ValueError, AttributeError):
         return False
 
@@ -65,19 +67,19 @@ def email_exists(db: dict, email: str) -> bool:
     return any(u["email"].lower() == email.lower() for u in db["users"].values())
 
 
-def get_user_by_username(db: dict, username: str) -> dict | None:
+def get_user_by_username(db: dict[str, Any], username: str) -> dict[str, Any] | None:
     for u in db["users"].values():
         if u["username"].lower() == username.lower():
-            return u
+            return cast(dict[str, Any], u)
     return None
 
 
 AVATAR_COLORS = ["#e85d04", "#4895ef", "#52b788", "#9b5de5", "#f48c06", "#ff6b6b"]
 
 
-def create_user(db: dict, username: str, email: str, password: str, full_name: str) -> dict:
+def create_user(db: dict[str, Any], username: str, email: str, password: str, full_name: str) -> dict[str, Any]:
     uid = str(uuid.uuid4())
-    user = {
+    user: dict[str, Any] = {
         "user_id": uid,
         "username": username,
         "email": email,

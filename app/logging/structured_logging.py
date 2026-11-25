@@ -24,7 +24,7 @@ from contextvars import ContextVar
 from datetime import UTC, datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 # Context variable for request ID tracking (works with async)
 request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
@@ -145,9 +145,9 @@ def setup_logger(
 
         def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:
             record = old_factory(*args, **kwargs)
-            if not hasattr(record, "extra_fields"):
-                record.extra_fields = {}
-            record.extra_fields.update(context)
+            extra_fields: dict[str, Any] = getattr(record, "extra_fields", None) or {}
+            extra_fields.update(context)
+            cast(Any, record).extra_fields = extra_fields
             return record
 
         logging.setLogRecordFactory(record_factory)

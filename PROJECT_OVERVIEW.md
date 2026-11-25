@@ -116,12 +116,12 @@ The pre-owned vehicle market in India features extreme price opacity:
 
 | Capability Area | Feature | Implementation Module | Technical Characteristics |
 | :--- | :--- | :--- | :--- |
-| **Valuation Engine** | 8-Model Regression Benchmark | [`car_price_ml_comparison.py`](car_price_ml_comparison.py) | Linear, Ridge, Lasso, KNN, SVR, RF, GBDT, XGBoost |
-| **Deal Scoring** | Good / Fair / Overpriced Gauge | [`helpers.py`](helpers.py) | Normalized Z-score comparison of listing price vs predicted mean |
-| **Depreciation Forecaster**| Multi-Year Value Decay | [`helpers.py`](helpers.py) | Exponential decay curves modeling 1-to-5 year resale trajectories |
-| **Local Explainability** | SHAP-Lite Feature Impact | [`helpers.py`](helpers.py) | Attribution waterfalls detailing mileage penalties and city premiums |
-| **Interactive Terminal**| 9-Page Streamlit UI | [`app.py`](app.py), [`pages/`](pages/) | Valuation Cockpit, Market Explorer, Model Comparison, Deal Calculator |
-| **REST API Serving** | Asynchronous Microservice | [`api_server.py`](api_server.py) | Sub-10ms valuation inference, Swagger docs, Prometheus metrics |
+| **Valuation Engine** | 8-Model Regression Benchmark | [`scripts/train_car_price_comparison.py`](scripts/train_car_price_comparison.py) | Linear, Ridge, Lasso, KNN, SVR, RF, GBDT, XGBoost |
+| **Deal Scoring** | Good / Fair / Overpriced Gauge | [`app/helpers.py`](app/helpers.py) | Normalized Z-score comparison of listing price vs predicted mean |
+| **Depreciation Forecaster**| Multi-Year Value Decay | [`app/helpers.py`](app/helpers.py) | Exponential decay curves modeling 1-to-5 year resale trajectories |
+| **Local Explainability** | SHAP-Lite Feature Impact | [`app/helpers.py`](app/helpers.py) | Attribution waterfalls detailing mileage penalties and city premiums |
+| **Interactive Terminal**| 9-Page Streamlit UI | [`app/streamlit_app.py`](app/streamlit_app.py), [`app/pages/`](app/pages/) | Valuation Cockpit, Market Explorer, Model Comparison, Deal Calculator |
+| **REST API Serving** | Asynchronous Microservice | [`app/api_server.py`](app/api_server.py) | Sub-10ms valuation inference, Swagger docs, Prometheus metrics |
 
 ---
 
@@ -364,13 +364,13 @@ Price-My-Car/
 
 | Subsystem | File Path | Primary Responsibilities | Key Functions / Classes |
 | :--- | :--- | :--- | :--- |
-| **ML Engine** | [`car_price_ml_comparison.py`](car_price_ml_comparison.py) | 8-model benchmark & training | `train_and_compare_models()`, `evaluate_models()` |
-| **Valuation Logic**| [`helpers.py`](helpers.py) | Pricing math, deal scoring, depreciation | `predict_car_price()`, `calculate_deal_score()` |
-| **Valuation Logic**| [`helpers_extended.py`](helpers_extended.py) | Regional city adjustments & segmentation | `get_city_premium()`, `format_inr()` |
-| **Visualization**| [`chart_utils.py`](chart_utils.py) | Gauge dials & depreciation plots | `plot_deal_gauge()`, `plot_depreciation_curve()` |
-| **API Serving** | [`api_server.py`](api_server.py) | FastAPI microservice | `app`, `/predict-price`, `/health` |
-| **Dashboard** | [`app.py`](app.py) | Streamlit terminal landing page | `main()`, navigation dispatch |
-| **Resilience** | [`circuit_breaker.py`](circuit_breaker.py) | Upstream call protection | `CircuitBreaker` |
+| **ML Engine** | [`scripts/train_car_price_comparison.py`](scripts/train_car_price_comparison.py) | 8-model benchmark & training | `train_and_compare_models()`, `evaluate_models()` |
+| **Valuation Logic**| [`app/helpers.py`](app/helpers.py) | Pricing math, deal scoring, depreciation | `predict_car_price()`, `calculate_deal_score()` |
+| **Valuation Logic**| [`app/helpers.py`](app/helpers.py) | Regional city adjustments & segmentation | `get_city_premium()`, `format_inr()` |
+| **Visualization**| [`app/chart_utils.py`](app/chart_utils.py) | Gauge dials & depreciation plots | `plot_deal_gauge()`, `plot_depreciation_curve()` |
+| **API Serving** | [`app/api_server.py`](app/api_server.py) | FastAPI microservice | `app`, `/predict-price`, `/health` |
+| **Dashboard** | [`app/streamlit_app.py`](app/streamlit_app.py) | Streamlit terminal landing page | `main()`, navigation dispatch |
+| **Resilience** | [`app/circuit_breaker.py`](app/circuit_breaker.py) | Upstream call protection | `CircuitBreaker` |
 
 ---
 
@@ -467,8 +467,8 @@ Security controls are evaluated using STRIDE threat analysis:
 
 | STRIDE Category | Threat Vector | Mitigation Strategy | Implemented Component |
 | :--- | :--- | :--- | :--- |
-| **Tampering** | Negative mileage or unrealistic year injection | Strict Pydantic input ranges (e.g., year: 1990-2026) | [`api_server.py`](api_server.py) |
-| **Information Disclosure** | Model weight extraction | Black-box inference serving without exposing raw trees | [`api_server.py`](api_server.py) |
+| **Tampering** | Negative mileage or unrealistic year injection | Strict Pydantic input ranges (e.g., year: 1990-2026) | [`app/api_server.py`](app/api_server.py) |
+| **Information Disclosure** | Model weight extraction | Black-box inference serving without exposing raw trees | [`app/api_server.py`](app/api_server.py) |
 | **Denial of Service** | Unbounded batch inference requests | Batch size limits enforced in API schemas | Pydantic Request Models |
 
 ---
@@ -495,7 +495,7 @@ Designed as an open automotive valuation service, public endpoints serve consume
 
 ## <a id="resilience"></a>§RESILIENCE — Error Handling, Retries & Circuit Breakers
 
-1. **Circuit Breaker:** Upstream external calls are wrapped by [`circuit_breaker.py`](circuit_breaker.py) to prevent cascading timeouts.
+1. **Circuit Breaker:** Upstream external calls are wrapped by [`app/circuit_breaker.py`](app/circuit_breaker.py) to prevent cascading timeouts.
 2. **Outlier Clamping:** Input specifications exceeding market boundaries are clamped to realistic percentile ranges to prevent negative valuations.
 
 ---
@@ -590,7 +590,7 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 
 ### Runbook 1: Unrealistic Negative Price Prediction
 1. **Symptom:** API returns a negative fair price on high-mileage vintage vehicles.
-2. **Action:** Verify minimum price clamp in [`helpers.py`](helpers.py) asserting a floor value (e.g., minimum scrap / parts value of Rs 25,000).
+2. **Action:** Verify minimum price clamp in [`app/helpers.py`](app/helpers.py) asserting a floor value (e.g., minimum scrap / parts value of Rs 25,000).
 
 ---
 
@@ -621,15 +621,15 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 4. **Q: What dataset scale powers the used car pricing model?**
    *A:* 13,284 verified Indian used car listings across major metropolitan centers. Reference: [`README.md`](README.md).
 5. **Q: How many regression algorithms are benchmarked in `car_price_ml_comparison.py`?**
-   *A:* 8 models (Linear, Ridge, Lasso, KNN, SVR, Random Forest, Gradient Boosting, XGBoost). Reference: [`car_price_ml_comparison.py`](car_price_ml_comparison.py).
+   *A:* 8 models (Linear, Ridge, Lasso, KNN, SVR, Random Forest, Gradient Boosting, XGBoost). Reference: [`scripts/train_car_price_comparison.py`](scripts/train_car_price_comparison.py).
 6. **Q: How many pages comprise the interactive Streamlit terminal?**
-   *A:* 9 pages. Reference: [`pages/`](pages/).
+   *A:* 9 pages. Reference: [`app/pages/`](app/pages/).
 7. **Q: What framework powers the asynchronous valuation REST API?**
-   *A:* FastAPI. Reference: [`api_server.py`](api_server.py).
+   *A:* FastAPI. Reference: [`app/api_server.py`](app/api_server.py).
 8. **Q: How many endpoints are exposed by the FastAPI server?**
    *A:* 4 endpoints. Reference: [§API](#api).
 9. **Q: What currency formatting standard is utilized?**
-   *A:* Indian Rupee notation (Lakhs and Crores). Reference: [`helpers.py`](helpers.py).
+   *A:* Indian Rupee notation (Lakhs and Crores). Reference: [`app/helpers.py`](app/helpers.py).
 10. **Q: What deal ratings are assigned by the Deal Score gauge?**
     *A:* Great Deal, Fair Deal, or Overpriced. Reference: [§WHAT](#what).
 11. **Q: What total lines of code exist across the codebase?**
@@ -641,11 +641,11 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 14. **Q: What test file executes ML comparison tests?**
     *A:* `tests/test_car_price_ml_comparison.py`. Reference: [`tests/test_car_price_ml_comparison.py`](tests/test_car_price_ml_comparison.py).
 15. **Q: What endpoint exposes Prometheus operational telemetry?**
-    *A:* `/metrics`. Reference: [`api_server.py`](api_server.py).
+    *A:* `/metrics`. Reference: [`app/api_server.py`](app/api_server.py).
 16. **Q: What linter is configured for the codebase?**
     *A:* Ruff. Reference: [`pyproject.toml`](pyproject.toml).
 17. **Q: What module implements the circuit breaker pattern?**
-    *A:* `circuit_breaker.py`. Reference: [`circuit_breaker.py`](circuit_breaker.py).
+    *A:* `circuit_breaker.py`. Reference: [`app/circuit_breaker.py`](app/circuit_breaker.py).
 18. **Q: What is the target latency for a single car valuation?**
     *A:* Under 15 ms (measured 5.8 ms). Reference: [§PERF](#perf).
 19. **Q: What visual explainability technique details feature impacts?**
@@ -653,7 +653,7 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 20. **Q: Does Price-My-Car require a persistent SQL database for valuations?**
     *A:* No, it operates using serialized pipeline joblib artifacts. Reference: [§ERD](#erd).
 21. **Q: What module renders depreciation plots and deal gauges?**
-    *A:* `chart_utils.py`. Reference: [`chart_utils.py`](chart_utils.py).
+    *A:* `chart_utils.py`. Reference: [`app/chart_utils.py`](app/chart_utils.py).
 22. **Q: What Indian metropolitan cities are included in the dataset?**
     *A:* Mumbai, Delhi NCR, Bangalore, Hyderabad, Chennai, and Pune. Reference: [§TLDR](#tldr).
 23. **Q: Where are environment variable templates stored?**
@@ -773,8 +773,6 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`app/pages/shared.py`](app/pages/shared.py) | `.py` | 27 | 720 | Python machine learning, valuation, or API module |
 | [`app/py.typed`](app/py.typed) | `.typed` | 0 | 0 | Configuration or static asset |
 | [`app/streamlit_app.py`](app/streamlit_app.py) | `.py` | 592 | 25210 | Python machine learning, valuation, or API module |
-| [`docs/audit/dependabot-agent/2026-08-13-run.md`](docs/audit/dependabot-agent/2026-08-13-run.md) | `.md` | 19 | 1111 | Documentation asset |
-| [`docs/audit/dependabot-agent/2026-08-15-run.md`](docs/audit/dependabot-agent/2026-08-15-run.md) | `.md` | 26 | 1842 | Documentation asset |
 | [`data/Cleaned_Car_data.csv`](data/Cleaned_Car_data.csv) | `.csv` | 13285 | 850739 | Dataset or preprocessed feature cache |
 | [`docker-compose.dev.yml`](docker-compose.dev.yml) | `.yml` | 29 | 1252 | Configuration or static asset |
 | [`docker-compose.prod.yml`](docker-compose.prod.yml) | `.yml` | 17 | 759 | Configuration or static asset |
@@ -784,10 +782,6 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`docs/DISASTER-RECOVERY.md`](docs/DISASTER-RECOVERY.md) | `.md` | 42 | 1206 | Technical documentation asset |
 | [`docs/README.md`](docs/README.md) | `.md` | 65 | 3028 | Technical documentation asset |
 | [`docs/architecture.md`](docs/architecture.md) | `.md` | 89 | 5971 | Technical documentation asset |
-| [`docs/audit/cleanup-audit-2026-08-13.md`](docs/audit/cleanup-audit-2026-08-13.md) | `.md` | 52 | 2046 | Technical documentation asset |
-| [`docs/audit/cleanup-audit-2026-08-15-code.md`](docs/audit/cleanup-audit-2026-08-15-code.md) | `.md` | 50 | 1860 | Technical documentation asset |
-| [`docs/audit/cleanup-audit-2026-08-15.md`](docs/audit/cleanup-audit-2026-08-15.md) | `.md` | 66 | 1603 | Technical documentation asset |
-| [`docs/audit/dependabot-inventory-2026-08-16.md`](docs/audit/dependabot-inventory-2026-08-16.md) | `.md` | 234 | 20262 | Technical documentation asset |
 | [`docs/community/CHANGELOG.md`](docs/community/CHANGELOG.md) | `.md` | 48 | 1589 | Technical documentation asset |
 | [`docs/community/CODE_OF_CONDUCT.md`](docs/community/CODE_OF_CONDUCT.md) | `.md` | 132 | 5608 | Technical documentation asset |
 | [`docs/community/CONTRIBUTING.md`](docs/community/CONTRIBUTING.md) | `.md` | 119 | 4083 | Technical documentation asset |
@@ -796,9 +790,6 @@ Production deployment is achieved via Docker containers running Streamlit or Uvi
 | [`docs/design/AppFlow.md`](docs/design/AppFlow.md) | `.md` | 121 | 3800 | Technical documentation asset |
 | [`docs/design/Design.md`](docs/design/Design.md) | `.md` | 105 | 3230 | Technical documentation asset |
 | [`docs/folder_structure.md`](docs/folder_structure.md) | `.md` | 68 | 4028 | Technical documentation asset |
-| [`docs/migration/file_move_ledger.md`](docs/migration/file_move_ledger.md) | `.md` | 63 | 4815 | Technical documentation asset |
-| [`docs/migration/migration_summary.md`](docs/migration/migration_summary.md) | `.md` | 33 | 1272 | Technical documentation asset |
-| [`docs/migration/old_tree_to_new_tree.md`](docs/migration/old_tree_to_new_tree.md) | `.md` | 86 | 4044 | Technical documentation asset |
 | [`docs/module_dependency.md`](docs/module_dependency.md) | `.md` | 75 | 5445 | Technical documentation asset |
 | [`docs/package_overview.md`](docs/package_overview.md) | `.md` | 60 | 3811 | Technical documentation asset |
 | [`docs/product/PRD.md`](docs/product/PRD.md) | `.md` | 142 | 6212 | Technical documentation asset |
