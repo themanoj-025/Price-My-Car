@@ -120,7 +120,6 @@ jobs:
             --exclude 'https?://.*static\.streamlit\.io'
             --exclude 'https?://.*\{.*\}.*'
             '**/*.md'
-        continue-on-error: true
 
   docker:
     runs-on: ubuntu-latest
@@ -154,6 +153,7 @@ jobs:
           # are patched (msgpack 1.2.1, setuptools 84.0.0). The app never imports
           # pip's vendored copies, so exclude that directory from the scan.
           skip-dirs: /usr/local/lib/python3.15/site-packages/pip/_vendor,/usr/local/lib/python3.14/site-packages/pip/_vendor,/usr/local/lib/python3.12/site-packages/pip/_vendor
+          trivyignores: .trivyignore
 
   hadolint:
     name: Container lint
@@ -184,9 +184,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install mypy==1.15.0
-      - name: Type check with mypy (advisory)
+      - name: Type check with mypy
         run: mypy app/ --ignore-missing-imports --no-error-summary
-        continue-on-error: true
 
   security-audit:
     runs-on: ubuntu-latest
