@@ -242,4 +242,5 @@ jobs:
           sudo dpkg -i dive_0.13.1_linux_amd64.deb
       - name: Run dive (efficiency check)
         run: |
-          CI=true dive dive-audit:latest
+          docker save dive-audit:latest -o /tmp/dive-image.tar
+          CI=true dive --source docker-archive /tmp/dive-image.tar
