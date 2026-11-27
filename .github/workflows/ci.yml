@@ -201,7 +201,7 @@ jobs:
       - name: pip-audit
         run: pip-audit -r requirements.txt
       - name: Bandit security scan
-        run: bandit -r src/ -ll
+        run: bandit -r app -ll
 
   docker-cache:
     name: Docker image build + layer cache
